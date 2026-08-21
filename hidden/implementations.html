@@ -3,29 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Implementation breakdown: visually hidden CSS</title>
+  <title>Visually hidden implementation breakdown</title>
   <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
-  <header>
-    <h1>Implementation breakdown: visually hidden CSS</h1>
-    <nav aria-label="Site navigation">
-      <ul>
-        <li><a href="index.html">Overview</a></li>
-        <li><a aria-current="page" href="implementations.html">Implementation breakdown</a></li>
-        <li><a href="tests.html">Manual test page</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main>
-    <p>This page separates the three implementations idea by idea. The explanations focus on what each declaration does, why it exists, and what it means for blind screen-reader users, users of magnification or high zoom, and keyboard-only users.</p>
-
-    <section class="implementation" aria-labelledby="drupal-current-heading">
-      <h2 id="drupal-current-heading">1. Existing Drupal 11.x implementation</h2>
-      <p><strong>Source:</strong> <a href="https://api.drupal.org/api/drupal/core%21modules%21system%21css%21components%21hidden.module.css/11.x">Drupal API: hidden.module.css, 11.x</a>.</p>
-
-      <pre><code>.visually-hidden {
+<header>
+  <h1>Visually hidden implementation breakdown</h1>
+  <nav aria-label="Site navigation">
+    <ul>
+      <li><a href="index.html">Overview</a></li>
+      <li><a aria-current="page" href="implementations.html">Implementation breakdown</a></li>
+      <li><a href="tests.html">Accessibility tests</a></li>
+    </ul>
+  </nav>
+</header>
+<main>
+<section>
+<h2>Current Drupal</h2>
+<pre><code>.visually-hidden {
   position: absolute !important;
   overflow: hidden;
   clip: rect(1px, 1px, 1px, 1px);
@@ -43,122 +38,142 @@
   height: auto;
 }</code></pre>
 
-      <h3>Line-by-line explanation</h3>
-      <dl class="line-explanation">
-        <dt><code>position: absolute !important;</code></dt>
-        <dd>Removes the element from normal document flow so its one-pixel box does not create visible layout space. This is effective for hiding, but absolute positioning is also implicated in the loss of surrounding whitespace in some browser and accessibility API combinations. The <code>!important</code> protects the utility from accidental component-level overrides.</dd>
+<dl class="line-explanation">
+<dt><code>position: absolute !important;</code></dt>
+<dd>Removes the element from normal document flow so that its content does not reserve visible layout space. The <code>!important</code> protects this utility from ordinary theme rules that might otherwise reposition it.</dd>
 
-        <dt><code>overflow: hidden;</code></dt>
-        <dd>Prevents text from painting outside the tiny one-pixel box. Without clipping or overflow control, hidden text can become visually exposed.</dd>
+<dt><code>overflow: hidden;</code></dt>
+<dd>Prevents content from painting outside the very small box created by the width and height declarations.</dd>
 
-        <dt><code>clip: rect(1px, 1px, 1px, 1px);</code></dt>
-        <dd>Clips the absolutely positioned box to an effectively invisible rectangle. This is the legacy CSS <code>clip</code> technique. The property is deprecated and modern guidance uses <code>clip-path</code> instead.</dd>
+<dt><code>clip: rect(...);</code></dt>
+<dd>Uses the legacy CSS clipping mechanism. <code>clip</code> is deprecated and applies only to absolutely positioned elements. Modern implementations generally use <code>clip-path</code>.</dd>
 
-        <dt><code>width: 1px;</code> and <code>height: 1px;</code></dt>
-        <dd>Shrink the element to a tiny box. These declarations are part of the conventional visually-hidden pattern. Because Drupal does not also reset margin, padding, and border here, inherited or component styles can theoretically enlarge the effective box.</dd>
+<dt><code>width: 1px; height: 1px;</code></dt>
+<dd>Leaves the element with a non-zero box while reducing its visible footprint to approximately one pixel.</dd>
 
-        <dt><code>word-wrap: normal;</code></dt>
-        <dd>Restores the older wrapping behavior if another rule set <code>word-wrap</code> or <code>overflow-wrap</code>. It does not prevent normal word wrapping inside the one-pixel box. GOV.UK instead uses <code>white-space: nowrap</code> so long hidden text is not laid out one word per line while hidden.</dd>
+<dt><code>word-wrap: normal;</code></dt>
+<dd>Attempts to avoid aggressive wrapping, but it does not provide the same explicit no-wrap behavior as <code>white-space: nowrap</code>.</dd>
+</dl>
 
-        <dt><code>.visually-hidden.focusable:active, .visually-hidden.focusable:focus-within</code></dt>
-        <dd>This is an important Drupal behavior. It reveals a hidden element when it is active or when it or any descendant contains focus. The use of <code>:focus-within</code> supports containers, not just directly focusable elements.</dd>
+<h3>Drupal's reveal rule</h3>
+<p>Drupal does not make all visually hidden content focus-revealable. Authors add the additional <code>focusable</code> class. Drupal then overrides several hidden-state properties when the element is active or contains focus.</p>
+<p>This works, but it has a maintenance cost: every hiding declaration that matters while visible may need a corresponding reset.</p>
+</section>
 
-        <dt><code>position: static !important;</code></dt>
-        <dd>Returns the revealed element to normal flow. For keyboard and magnification users this makes the previously hidden content occupy ordinary page space.</dd>
-
-        <dt><code>overflow: visible; clip: auto; width: auto; height: auto;</code></dt>
-        <dd>Individually undo the main hiding declarations. This works with the current small rule set, but it creates a maintenance problem: every new property added to the hidden state may need a corresponding reset in the visible state.</dd>
-      </dl>
-
-      <h3>Main accessibility strengths</h3>
-      <ul>
-        <li>Uses a long-established visually-hidden technique.</li>
-        <li>Preserves <code>:focus-within</code>, which is useful when a hidden wrapper contains a keyboard-focusable descendant.</li>
-        <li>Revealed content returns to normal document flow.</li>
-      </ul>
-
-      <h3>Main limitations</h3>
-      <ul>
-        <li>No generated whitespace fix for the NVDA and JAWS concatenation problem described in Drupal issue #3591112.</li>
-        <li>Uses deprecated <code>clip</code>.</li>
-        <li>Uses a reset block for the focusable state, so the reset list must remain synchronized with the hiding list.</li>
-        <li>Does not normalize margin, padding, or border while hidden.</li>
-      </ul>
-    </section>
-
-    <section class="implementation" aria-labelledby="govuk-heading">
-      <h2 id="govuk-heading">2. GOV.UK Frontend implementation</h2>
-      <p><strong>Source:</strong> <a href="https://github.com/alphagov/govuk-frontend/blob/main/packages/govuk-frontend/src/govuk/helpers/_visually-hidden.scss">GOV.UK Frontend <code>_visually-hidden.scss</code></a>. GOV.UK authors this as Sass mixins. The CSS below expresses the relevant behavior in plain CSS for comparison.</p>
-
-      <pre><code>.govuk-visually-hidden {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  clip: rect(0 0 0 0) !important;
-  clip-path: inset(50%) !important;
-  border: 0 !important;
-  white-space: nowrap !important;
-  user-select: none;
-}
-
-.govuk-visually-hidden::before {
-  content: "\00a0";
-}
-
-.govuk-visually-hidden::after {
-  content: "\00a0";
-}
-
-.govuk-visually-hidden-focusable:not(:active):not(:focus) {
-  /* same hiding declarations */
+<section>
+<h2>The A11Y Project</h2>
+<pre><code>.visually-hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }</code></pre>
 
-      <h3>Line-by-line explanation</h3>
-      <dl class="line-explanation">
-        <dt><code>position: absolute !important;</code></dt>
-        <dd>Removes the hidden box from normal layout. GOV.UK documents the trade-off that negative margins can affect VoiceOver order, so it explicitly uses a zero margin rather than the negative-margin variant found in some visually-hidden recipes.</dd>
+<dl class="line-explanation">
+<dt><code>clip: rect(0 0 0 0);</code></dt>
+<dd>Legacy fallback. It clips the visible area to nothing. For new Drupal CSS this is primarily historical compatibility evidence rather than a requirement.</dd>
 
-        <dt><code>width: 1px !important; height: 1px !important;</code></dt>
-        <dd>Constrains the hidden box to one pixel in each dimension.</dd>
+<dt><code>clip-path: inset(50%);</code></dt>
+<dd>Modern clipping technique. Insetting each edge by half the element's size collapses the visible clipped region while preserving the element for assistive technologies.</dd>
 
-        <dt><code>margin: 0 !important; padding: 0 !important; border: 0 !important;</code></dt>
-        <dd>Neutralizes box-model styles that could otherwise make an arbitrary component larger than the intended one-pixel hiding box. This makes the utility more predictable when applied to different elements.</dd>
+<dt><code>height: 1px; width: 1px;</code></dt>
+<dd>Constrains the element to a tiny box rather than setting either dimension to zero.</dd>
 
-        <dt><code>overflow: hidden !important;</code></dt>
-        <dd>Prevents hidden text from visually escaping the small box.</dd>
+<dt><code>overflow: hidden;</code></dt>
+<dd>Stops text or replaced content from escaping the tiny box.</dd>
 
-        <dt><code>clip: rect(0 0 0 0) !important;</code></dt>
-        <dd>Legacy fallback retained by GOV.UK for Internet Explorer 11. GOV.UK's own source comment says that IE11 support is the reason it remains.</dd>
+<dt><code>position: absolute;</code></dt>
+<dd>Prevents the one-pixel element from affecting surrounding layout.</dd>
 
-        <dt><code>clip-path: inset(50%) !important;</code></dt>
-        <dd>Modern clipping mechanism. The inset clips the painted content away while the content remains in the accessibility tree. MDN lists <code>clip-path</code> as widely available.</dd>
+<dt><code>white-space: nowrap;</code></dt>
+<dd>Prevents the contents from wrapping into many one-pixel-wide lines. This is useful because wrapping inside a tiny off-screen box has historically caused assistive-technology text concatenation problems.</dd>
+</dl>
 
-        <dt><code>white-space: nowrap !important;</code></dt>
-        <dd>Stops long hidden content from wrapping one word per line in a one-pixel box. This addresses a known class of screen-reader problems associated with "smushed" off-screen text.</dd>
+<h3>Conditional hiding</h3>
+<pre><code>.visually-hidden:not(:focus):not(:active) {
+  /* hiding declarations */
+}</code></pre>
+<p>This model reverses Drupal's current logic. Instead of hiding first and later trying to undo each declaration, the hiding rule simply stops matching when the element receives focus or becomes active.</p>
+<p>That is simpler for directly focusable elements such as skip links. It does not, by itself, reveal a hidden wrapper when a child inside the wrapper receives focus.</p>
+</section>
 
-        <dt><code>user-select: none;</code></dt>
-        <dd>Prevents hidden text from being accidentally selected or copied. GOV.UK explicitly documents this as a copying/usability choice, not as part of the screen-reader hiding mechanism. Drupal does not need to inherit this policy automatically.</dd>
+<section>
+<h2>GOV.UK Frontend</h2>
+<p>GOV.UK uses the modern clipped one-pixel pattern, retains <code>clip</code> as a legacy fallback, uses <code>white-space: nowrap</code>, and adds generated non-breaking spaces before and after visually hidden content to protect text boundaries in screen-reader output.</p>
 
-        <dt><code>::before</code> and <code>::after</code> with <code>content: "\00a0";</code></dt>
-        <dd>Insert a non-breaking space before and after non-focusable visually hidden text. GOV.UK added this because absolute positioning can cause surrounding whitespace to disappear from the accessibility tree, producing announcements such as words being concatenated. Their PR #3836 reports testing across JAWS, NVDA, VoiceOver, and TalkBack. A known caveat is that macOS VoiceOver in Safari can explicitly announce the inserted space during heading navigation.</dd>
+<pre><code>.visually-hidden::before {
+  content: "\00a0";
+}
 
-        <dt><code>.govuk-visually-hidden-focusable:not(:active):not(:focus)</code></dt>
-        <dd>GOV.UK does not hide the focusable helper first and then reset it. Instead, the hiding declarations apply only while the element is neither active nor focused. When the element receives focus, the hiding declarations stop matching and the element's ordinary CSS applies. This is a cleaner state model for a directly focusable element such as a skip link.</dd>
-      </dl>
+.visually-hidden::after {
+  content: "\00a0";
+}</code></pre>
 
-      <h3>Important GOV.UK-specific details</h3>
-      <ul>
-        <li>Its source includes an additional escaped <code>.\:focus</code> companion selector for a PostCSS pseudo-class plugin. The standalone test site does not use that plugin, so the test CSS omits that build-tool-specific selector.</li>
-        <li>The focusable helper is documented for a focusable element such as a link. It does not attempt to reproduce Drupal's broader <code>:focus-within</code> wrapper behavior.</li>
-      </ul>
-    </section>
+<p>This addresses a different failure from wrapping inside the hidden element. It targets the boundary between visible text and hidden text, such as the Drupal issue where “Place block” and “in the Header region” can be concatenated.</p>
 
-    <section class="implementation" aria-labelledby="proposed-heading">
-      <h2 id="proposed-heading">3. Proposed Drupal adaptation</h2>
-      <pre><code>.visually-hidden:not(.focusable),
+<p>GOV.UK also applies <code>user-select: none</code>. That is a product choice that prevents accidentally copying visually hidden text. It is not required to hide content, so Drupal should decide independently whether it wants that behavior.</p>
+</section>
+
+<section id="focus-within">
+<h2>Understanding <code>:focus-within</code></h2>
+
+<h3><code>:focus</code> and <code>:focus-within</code> are not interchangeable</h3>
+<p><code>:focus</code> matches an element only when that element itself currently has focus.</p>
+
+<pre><code>&lt;a class="visually-hidden" href="#main"&gt;
+  Skip to main content
+&lt;/a&gt;</code></pre>
+
+<p>When the link receives keyboard focus, <code>.visually-hidden:focus</code> matches because the link itself is focused.</p>
+
+<p><code>:focus-within</code> is broader. It matches if the element itself is focused <strong>or if any descendant inside it is focused</strong>.</p>
+
+<pre><code>&lt;div class="visually-hidden focusable"&gt;
+  &lt;a href="#main"&gt;Skip to main content&lt;/a&gt;
+&lt;/div&gt;</code></pre>
+
+<p>In this example the <code>div</code> cannot normally receive keyboard focus. The link can. When the link receives focus:</p>
+
+<ul>
+  <li>the link matches <code>:focus</code>;</li>
+  <li>the wrapper does not match <code>:focus</code>;</li>
+  <li>the wrapper does match <code>:focus-within</code>.</li>
+</ul>
+
+<p>That distinction explains why Drupal currently uses <code>:focus-within</code>. It allows a hidden container to reveal itself when an interactive descendant receives focus.</p>
+
+<h3>Why this matters for keyboard users</h3>
+<p>A keyboard user must never be able to move focus onto an interactive element that remains visually hidden. If a utility can be applied to a wrapper containing focusable descendants, direct <code>:focus</code> on the wrapper is insufficient.</p>
+
+<p><code>:focus-within</code> lets CSS react to the actual focus path through the DOM rather than requiring every focusable child to carry a second class or duplicate reveal rule.</p>
+
+<h3>Why this matters for screen magnification</h3>
+<p>A user working at high zoom or with screen magnification often follows keyboard focus visually. Revealing the whole relevant wrapper can provide context around the newly focused child. If only the child is exposed while its wrapper remains clipped to one pixel, the focused content can be difficult or impossible to locate.</p>
+
+<h3>Why this matters for Drupal compatibility</h3>
+<p>Drupal already exposes this behavior through <code>.visually-hidden.focusable:focus-within</code>. Replacing it with an implementation based only on <code>:focus</code> would be a behavioral change, not merely a modernization of CSS syntax.</p>
+
+<p>This does not mean every design system needs <code>:focus-within</code>. GOV.UK's helper is designed primarily to be placed on the focusable element itself. Drupal's utility is more general and already supports hidden wrappers.</p>
+
+<h3>Conditional hiding with <code>:focus-within</code></h3>
+<p>The cleaner Drupal model is to combine The A11Y Project's conditional-hiding architecture with Drupal's broader focus behavior:</p>
+
+<pre><code>.visually-hidden.focusable:not(:active):not(:focus-within) {
+  /* hidden-state declarations */
+}</code></pre>
+
+<p>When neither the element nor anything inside it has focus, the hidden-state declarations apply. As soon as focus enters the element or one of its descendants, the selector no longer matches. The browser therefore falls back to the component's normal CSS rather than relying on a list of reset declarations.</p>
+
+<h3>Why not apply this to every <code>.visually-hidden</code> element?</h3>
+<p>That is a possible future simplification, but Drupal currently distinguishes permanently visually hidden content from content intended to become visible on focus. Keeping the <code>focusable</code> class preserves the existing API while allowing the internal CSS architecture to improve.</p>
+</section>
+
+<section>
+<h2>Proposed Drupal adaptation</h2>
+<pre><code>.visually-hidden:not(.focusable),
 .visually-hidden.focusable:not(:active):not(:focus-within) {
   position: absolute !important;
   width: 1px !important;
@@ -176,118 +191,34 @@
   content: "\00a0";
 }</code></pre>
 
-      <h3>Selector logic first</h3>
-      <dl class="line-explanation">
-        <dt><code>.visually-hidden:not(.focusable)</code></dt>
-        <dd>Ordinary visually hidden content is always hidden visually and remains available to accessibility APIs. This is where the generated whitespace fix applies.</dd>
+<p>This combines:</p>
+<ul>
+  <li>The A11Y Project's conditional-hiding model;</li>
+  <li>Drupal's existing <code>:focus-within</code> behavior;</li>
+  <li>modern <code>clip-path</code> rather than relying on deprecated <code>clip</code>;</li>
+  <li>GOV.UK's generated-space mitigation for visible/hidden text boundaries;</li>
+  <li>no inherited <code>user-select: none</code> restriction.</li>
+</ul>
 
-        <dt><code>.visually-hidden.focusable:not(:active):not(:focus-within)</code></dt>
-        <dd>A focusable Drupal visually-hidden element is hidden only when it is not active and neither it nor a descendant contains focus. As soon as focus enters it, this selector stops matching. There is no focused-state reset block to maintain.</dd>
-      </dl>
+<p>The generated-space selector remains an area that requires assistive-technology testing. The test page deliberately keeps this observable rather than declaring the proposal correct in advance.</p>
+</section>
 
-      <h3>Declaration-by-declaration explanation</h3>
-      <dl class="line-explanation">
-        <dt><code>position: absolute !important;</code></dt>
-        <dd>Keeps hidden content out of normal layout while hidden. This is retained because removing absolute positioning would change layout behavior and requires a substantially larger regression test effort.</dd>
-
-        <dt><code>width: 1px !important; height: 1px !important;</code></dt>
-        <dd>Creates the conventional tiny hiding box.</dd>
-
-        <dt><code>margin: 0 !important; padding: 0 !important; border: 0 !important;</code></dt>
-        <dd>Prevents arbitrary component styling from enlarging the hidden box. Unlike a permanent reset, these declarations disappear automatically for the <code>.focusable</code> variant when it is revealed.</dd>
-
-        <dt><code>overflow: hidden !important;</code></dt>
-        <dd>Prevents hidden content from visually escaping the box.</dd>
-
-        <dt><code>clip-path: inset(50%) !important;</code></dt>
-        <dd>Uses the modern clipping mechanism. The deprecated <code>clip</code> fallback is intentionally omitted because Drupal does not support Internet Explorer 11.</dd>
-
-        <dt><code>white-space: nowrap !important;</code></dt>
-        <dd>Prevents hidden text from wrapping into many one-word lines. For <code>.focusable</code> content, this declaration stops applying when focus enters, so the revealed control can wrap according to its normal theme or component CSS at high zoom.</dd>
-
-        <dt><code>::before</code> and <code>::after</code> with <code>content: "\00a0";</code></dt>
-        <dd>Adopts GOV.UK's authored non-breaking-space fix for non-focusable visually hidden content. It is excluded from the focusable variant because the focusable helper has different interaction semantics and GOV.UK does not apply the generated-space rule to its focusable helper.</dd>
-      </dl>
-
-      <h3>Why this is different from copying GOV.UK</h3>
-      <ul>
-        <li><strong>No legacy <code>clip</code>:</strong> Drupal does not need GOV.UK's IE11 fallback.</li>
-        <li><strong>No <code>user-select: none</code>:</strong> Drupal should not globally disable selection as part of an accessibility utility unless it has a Drupal-specific requirement to do so.</li>
-        <li><strong>Preserves <code>:focus-within</code>:</strong> this maintains existing Drupal behavior for wrappers containing a focusable descendant.</li>
-        <li><strong>Preserves Drupal's two-class API:</strong> existing markup uses <code>class="visually-hidden focusable"</code>, so the proposal changes the state model without requiring new markup.</li>
-      </ul>
-    </section>
-
-    <h2>Side-by-side summary</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Concern</th>
-            <th scope="col">Drupal 11.x</th>
-            <th scope="col">GOV.UK Frontend</th>
-            <th scope="col">Proposed Drupal</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Modern clipping</th>
-            <td>Legacy <code>clip</code></td>
-            <td><code>clip</code> plus <code>clip-path</code></td>
-            <td><code>clip-path</code> only</td>
-          </tr>
-          <tr>
-            <th scope="row">Screen-reader word boundary</th>
-            <td>No generated-space fix</td>
-            <td>NBSP before and after ordinary visually hidden content</td>
-            <td>Same NBSP strategy for non-focusable visually hidden content</td>
-          </tr>
-          <tr>
-            <th scope="row">Long hidden text</th>
-            <td><code>word-wrap: normal</code></td>
-            <td><code>white-space: nowrap</code></td>
-            <td><code>white-space: nowrap</code> only while hidden</td>
-          </tr>
-          <tr>
-            <th scope="row">Focusable state</th>
-            <td>Hide first, reset selected properties later</td>
-            <td>Hide only while not active/focused</td>
-            <td>Hide only while not active/focus-within</td>
-          </tr>
-          <tr>
-            <th scope="row">Descendant focus</th>
-            <td>Supported with <code>:focus-within</code></td>
-            <td>Not part of the documented helper pattern</td>
-            <td>Preserved with <code>:focus-within</code></td>
-          </tr>
-          <tr>
-            <th scope="row">Text selection policy</th>
-            <td>Unchanged</td>
-            <td><code>user-select: none</code> while hidden</td>
-            <td>Unchanged</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h2>References</h2>
-    <ul>
-      <li><a href="https://www.drupal.org/project/drupal/issues/3591112">Drupal issue #3591112: Update the visually-hidden class</a></li>
-      <li><a href="https://api.drupal.org/api/drupal/core%21modules%21system%21css%21components%21hidden.module.css/11.x">Drupal 11.x hidden.module.css</a></li>
-      <li><a href="https://www.drupal.org/docs/getting-started/accessibility/hide-content-properly">Drupal.org: Hide Content Properly</a></li>
-      <li><a href="https://design-system.service.gov.uk/styles/layout/#hide-elements-and-keep-them-accessible-to-screen-readers">GOV.UK Design System: hide elements and keep them accessible to screen readers</a></li>
-      <li><a href="https://github.com/alphagov/govuk-frontend/blob/main/packages/govuk-frontend/src/govuk/helpers/_visually-hidden.scss">GOV.UK Frontend visually-hidden Sass helper</a></li>
-      <li><a href="https://github.com/alphagov/govuk-frontend/pull/3836">GOV.UK Frontend PR #3836: screen-reader whitespace fix</a></li>
-      <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/reflow.html">WCAG 2.2 Understanding 1.4.10 Reflow</a></li>
-      <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html">WCAG 2.2 Understanding 2.4.7 Focus Visible</a></li>
-      <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html">WCAG 2.2 Understanding 2.4.11 Focus Not Obscured</a></li>
-      <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/clip-path">MDN: clip-path</a></li>
-      <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/white-space">MDN: white-space</a></li>
-    </ul>
-  </main>
-
-  <footer>
-    <p><a href="tests.html">Continue to the manual test page</a>.</p>
-  </footer>
+<section>
+<h2>Comparison summary</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Approach</th><th>Modern clip-path</th><th>No wrapping</th><th>Generated boundary spaces</th><th>Conditional hiding</th><th>Descendant focus</th></tr>
+</thead>
+<tbody>
+<tr><th scope="row">Current Drupal</th><td>No</td><td>Partial</td><td>No</td><td>No, reset model</td><td>Yes, <code>:focus-within</code></td></tr>
+<tr><th scope="row">A11Y Project</th><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td><td>No with direct <code>:focus</code></td></tr>
+<tr><th scope="row">GOV.UK</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Not part of its direct-focus helper</td></tr>
+<tr><th scope="row">Proposed Drupal</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes, <code>:focus-within</code></td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
 </body>
 </html>

@@ -1,0 +1,16 @@
+.visually-hidden:not(.focusable),
+.visually-hidden.focusable:not(:active):not(:focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+.visually-hidden:not(.focusable)::before,
+.visually-hidden:not(.focusable)::after {
+  content: "\00a0";
+}

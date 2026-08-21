@@ -1,0 +1,12 @@
+{
+  "name": "hidden-accessibility-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:voiceover": "playwright test guidepup/voiceover.spec.js"
+  },
+  "devDependencies": {
+    "@guidepup/guidepup": "^0.33.1",
+    "@playwright/test": "^1.55.0"
+  }
+}
