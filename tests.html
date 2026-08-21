@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manual accessibility tests for visually hidden CSS</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="stylesheet" href="assets/implementations.css">
+</head>
+<body>
+  <header>
+    <h1>Manual accessibility tests for visually hidden CSS</h1>
+    <nav aria-label="Site navigation">
+      <ul>
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="implementations.html">Implementation breakdown</a></li>
+        <li><a aria-current="page" href="tests.html">Manual test page</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="callout">
+      <p><strong>Testing rule:</strong> do not assume the proposed version passes because it is labelled "proposed." Record what the assistive technology actually announces and what is visually observable. Some tests are expected to show GOV.UK and the proposed version behaving the same.</p>
+    </div>
+
+    <h2>Test environment</h2>
+    <form class="environment-form">
+      <label>Tester
+        <input name="tester" autocomplete="name">
+      </label>
+      <label>Date
+        <input type="date" name="date">
+      </label>
+      <label>Operating system and version
+        <input name="os">
+      </label>
+      <label>Browser and version
+        <input name="browser">
+      </label>
+      <label>Screen reader or magnifier and version
+        <input name="at">
+      </label>
+      <label>Zoom / magnification level
+        <input name="zoom" placeholder="For example: 100%, 400%, Windows Magnifier 300%">
+      </label>
+      <label style="grid-column: 1 / -1;">General notes
+        <textarea name="notes"></textarea>
+      </label>
+    </form>
+
+    <h2>Recommended assistive-technology coverage</h2>
+    <ul>
+      <li>NVDA with Firefox, Chrome, and Edge on Windows.</li>
+      <li>JAWS with Chrome and Edge on Windows.</li>
+      <li>VoiceOver with Safari on macOS, including heading navigation.</li>
+      <li>VoiceOver with Safari on iOS.</li>
+      <li>TalkBack with Chrome on Android.</li>
+      <li>Keyboard only at 100%, 200%, and 400% browser zoom.</li>
+      <li>Windows Magnifier and macOS Zoom while moving keyboard focus.</li>
+      <li>Forced-colours or high-contrast mode where available.</li>
+    </ul>
+
+    <section class="test-case" aria-labelledby="test-1-heading">
+      <h2 id="test-1-heading">Test 1: hidden suffix inside a link</h2>
+      <p><strong>Purpose:</strong> reproduce the Drupal issue's primary word-boundary problem. The intended announcement is approximately "Place block in the Header region", not "Place blockin the Header region".</p>
+      <div class="test-grid">
+        <article class="test-sample">
+          <h3>Drupal 11.x</h3>
+          <div class="sample-stage"><a href="#target-1">Place block <span class="drupal-current-vh">in the Header region</span></a></div>
+        </article>
+        <article class="test-sample">
+          <h3>GOV.UK behavior</h3>
+          <div class="sample-stage"><a href="#target-1">Place block <span class="govuk-vh">in the Header region</span></a></div>
+        </article>
+        <article class="test-sample">
+          <h3>Proposed Drupal</h3>
+          <div class="sample-stage"><a href="#target-1">Place block <span class="proposed-vh">in the Header region</span></a></div>
+        </article>
+      </div>
+      <p id="target-1"><strong>Expected difference:</strong> GOV.UK and proposed Drupal insert an accessibility-tree word boundary. Current Drupal may concatenate the visible and hidden strings in affected browser/screen-reader combinations.</p>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-2-heading">
+      <h2 id="test-2-heading">Test 2: hidden prefix inside a link</h2>
+      <p><strong>Purpose:</strong> test the other side of the boundary. The intended announcement is approximately "Search all content".</p>
+      <div class="test-grid">
+        <article class="test-sample">
+          <h3>Drupal 11.x</h3>
+          <div class="sample-stage"><a href="#target-2"><span class="drupal-current-vh">Search</span> all content</a></div>
+        </article>
+        <article class="test-sample">
+          <h3>GOV.UK behavior</h3>
+          <div class="sample-stage"><a href="#target-2"><span class="govuk-vh">Search</span> all content</a></div>
+        </article>
+        <article class="test-sample">
+          <h3>Proposed Drupal</h3>
+          <div class="sample-stage"><a href="#target-2"><span class="proposed-vh">Search</span> all content</a></div>
+        </article>
+      </div>
+      <p id="target-2"><strong>Expected difference:</strong> same rationale as Test 1, but with hidden text before visible text.</p>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-3-heading">
+      <h2 id="test-3-heading">Test 3: heading navigation</h2>
+      <p><strong>Purpose:</strong> specifically check the known macOS VoiceOver/Safari caveat reported by GOV.UK. Navigate by headings, not only by normal reading commands.</p>
+      <div class="test-grid">
+        <article class="test-sample">
+          <h3>Drupal 11.x sample</h3>
+          <div class="sample-stage"><h4>Account <span class="drupal-current-vh">settings</span></h4></div>
+        </article>
+        <article class="test-sample">
+          <h3>GOV.UK behavior sample</h3>
+          <div class="sample-stage"><h4>Account <span class="govuk-vh">settings</span></h4></div>
+        </article>
+        <article class="test-sample">
+          <h3>Proposed Drupal sample</h3>
+          <div class="sample-stage"><h4>Account <span class="proposed-vh">settings</span></h4></div>
+        </article>
+      </div>
+      <p><strong>Record:</strong> whether any implementation announces "space", produces an unnatural pause, separates the hidden text into another heading announcement, or concatenates words.</p>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-4-heading">
+      <h2 id="test-4-heading">Test 4: multiple HTML contexts</h2>
+      <p><strong>Purpose:</strong> make sure this is not treated as a link-only or <code>span</code>-only problem. Read each example in normal browse mode.</p>
+      <div class="test-grid">
+        <article class="test-sample">
+          <h3>Drupal 11.x</h3>
+          <div class="sample-stage">
+            <p>Paragraph <span class="drupal-current-vh">additional context</span></p>
+            <button type="button">Save <span class="drupal-current-vh">draft</span></button>
+            <fieldset><legend>Delivery <span class="drupal-current-vh">address</span></legend><label><input type="radio" name="delivery-current"> Home</label></fieldset>
+            <details><summary>More <span class="drupal-current-vh">information</span></summary><p>Details content.</p></details>
+            <table><caption>Current Drupal table sample</caption><tbody><tr><th scope="row">Plan</th><td>Standard <span class="drupal-current-vh">subscription</span></td></tr></tbody></table>
+          </div>
+        </article>
+        <article class="test-sample">
+          <h3>GOV.UK behavior</h3>
+          <div class="sample-stage">
+            <p>Paragraph <span class="govuk-vh">additional context</span></p>
+            <button type="button">Save <span class="govuk-vh">draft</span></button>
+            <fieldset><legend>Delivery <span class="govuk-vh">address</span></legend><label><input type="radio" name="delivery-govuk"> Home</label></fieldset>
+            <details><summary>More <span class="govuk-vh">information</span></summary><p>Details content.</p></details>
+            <table><caption>GOV.UK behavior table sample</caption><tbody><tr><th scope="row">Plan</th><td>Standard <span class="govuk-vh">subscription</span></td></tr></tbody></table>
+          </div>
+        </article>
+        <article class="test-sample">
+          <h3>Proposed Drupal</h3>
+          <div class="sample-stage">
+            <p>Paragraph <span class="proposed-vh">additional context</span></p>
+            <button type="button">Save <span class="proposed-vh">draft</span></button>
+            <fieldset><legend>Delivery <span class="proposed-vh">address</span></legend><label><input type="radio" name="delivery-proposed"> Home</label></fieldset>
+            <details><summary>More <span class="proposed-vh">information</span></summary><p>Details content.</p></details>
+            <table><caption>Proposed Drupal table sample</caption><tbody><tr><th scope="row">Plan</th><td>Standard <span class="proposed-vh">subscription</span></td></tr></tbody></table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-5-heading">
+      <h2 id="test-5-heading">Test 5: long visually hidden text</h2>
+      <p><strong>Purpose:</strong> compare Drupal's <code>word-wrap: normal</code> approach with <code>white-space: nowrap</code> while hidden. Listen for unexpected pauses, fragmentation, or one-word-at-a-time behavior.</p>
+      <div class="test-grid">
+        <article class="test-sample">
+          <h3>Drupal 11.x</h3>
+          <div class="sample-stage"><button type="button">Continue <span class="drupal-current-vh">to the next step where you will review all configuration choices before saving the form</span></button></div>
+        </article>
+        <article class="test-sample">
+          <h3>GOV.UK behavior</h3>
+          <div class="sample-stage"><button type="button">Continue <span class="govuk-vh">to the next step where you will review all configuration choices before saving the form</span></button></div>
+        </article>
+        <article class="test-sample">
+          <h3>Proposed Drupal</h3>
+          <div class="sample-stage"><button type="button">Continue <span class="proposed-vh">to the next step where you will review all configuration choices before saving the form</span></button></div>
+        </article>
+      </div>
+      <p><strong>Expected difference:</strong> GOV.UK and proposed Drupal prevent wrapping while the hidden text is constrained to one pixel. This is intended as defensive behavior, not a reason to put long prose in visually hidden content.</p>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-6-heading">
+      <h2 id="test-6-heading">Test 6: directly focusable skip link</h2>
+      <p><strong>Purpose:</strong> confirm that all three approaches reveal a directly focusable hidden link when reached with <kbd>Tab</kbd>. Test at 100%, 200%, and 400% zoom.</p>
+      <div class="test-grid">
+        <article class="test-sample">
+          <h3>Drupal 11.x</h3>
+          <div class="sample-stage"><a class="drupal-current-vh focusable long-focus-link" href="#main-test-target">Skip directly to the main test target and continue reading from there</a></div>
+        </article>
+        <article class="test-sample">
+          <h3>GOV.UK behavior</h3>
+          <div class="sample-stage"><a class="govuk-vh-focusable long-focus-link" href="#main-test-target">Skip directly to the main test target and continue reading from there</a></div>
+        </article>
+        <article class="test-sample">
+          <h3>Proposed Drupal</h3>
+          <div class="sample-stage"><a class="proposed-vh focusable long-focus-link" href="#main-test-target">Skip directly to the main test target and continue reading from there</a></div>
+        </article>
+      </div>
+      <p><strong>Pass condition:</strong> the focused link is visibly identifiable, fits the viewport, and its text wraps normally when necessary. The utility reveals the element; component or theme CSS remains responsible for the final focus appearance.</p>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-7-heading">
+      <h2 id="test-7-heading">Test 7: Drupal <code>:focus-within</code> compatibility</h2>
+      <p><strong>Purpose:</strong> test a hidden wrapper that contains a focusable descendant. This is specifically a Drupal compatibility test. GOV.UK documents its focusable helper for the focusable element itself, so failure of the GOV.UK column here is not a GOV.UK Design System defect.</p>
+      <div class="test-grid">
+        <article class="test-sample">
+          <h3>Drupal 11.x</h3>
+          <div class="sample-stage"><div class="drupal-current-vh focusable"><a href="#wrapper-target-current">Current Drupal descendant link</a></div></div>
+        </article>
+        <article class="test-sample">
+          <h3>Literal GOV.UK selector on wrapper</h3>
+          <div class="sample-stage"><div class="govuk-vh-focusable"><a href="#wrapper-target-govuk">GOV.UK descendant link</a></div></div>
+        </article>
+        <article class="test-sample">
+          <h3>Proposed Drupal</h3>
+          <div class="sample-stage"><div class="proposed-vh focusable"><a href="#wrapper-target-proposed">Proposed Drupal descendant link</a></div></div>
+        </article>
+      </div>
+      <p id="wrapper-target-current"><strong>Expected Drupal behavior:</strong> current Drupal and proposed Drupal reveal the wrapper when the child link receives focus because both use <code>:focus-within</code>. A direct copy of GOV.UK's <code>:focus</code>-based helper would not preserve this Drupal behavior.</p>
+      <p id="wrapper-target-govuk">GOV.UK target.</p>
+      <p id="wrapper-target-proposed">Proposed Drupal target.</p>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-8-heading">
+      <h2 id="test-8-heading">Test 8: 400% zoom and magnification</h2>
+      <p><strong>Purpose:</strong> verify that revealing focusable content does not retain one-pixel dimensions, clipping, hidden overflow, or <code>white-space: nowrap</code>. At a 1280 CSS pixel starting viewport, 400% zoom corresponds to the 320 CSS pixel width used by WCAG 2.2 Reflow.</p>
+      <ol>
+        <li>Set browser zoom to 400%.</li>
+        <li>Use <kbd>Tab</kbd> to move through the three skip-link samples in Test 6.</li>
+        <li>Confirm the focused link is visible without horizontal scrolling caused by the link itself.</li>
+        <li>Repeat with Windows Magnifier or macOS Zoom if available.</li>
+      </ol>
+      <p><strong>Why the proposed state model matters:</strong> when the proposed focusable element is revealed, the hiding selector no longer matches at all. This means future hidden-state properties do not need a matching "undo" declaration. This is primarily a maintainability and regression-resistance advantage; the current Drupal implementation may still pass this test today.</p>
+    </section>
+
+    <section class="test-case" aria-labelledby="test-9-heading">
+      <h2 id="test-9-heading">Test 9: generated-space regression checks</h2>
+      <p><strong>Purpose:</strong> make sure the screen-reader fix does not create worse announcements elsewhere.</p>
+      <ul>
+        <li>Navigate the GOV.UK and proposed samples by headings with macOS VoiceOver/Safari and record whether "space" is announced.</li>
+        <li>Check iOS VoiceOver to see whether hidden text becomes a separate announcement.</li>
+        <li>Check punctuation such as <code>Save<span> draft</span>:</code>, parentheses, and RTL text in an expanded test if problems appear.</li>
+        <li>Check that generated content is not exposed as an extra stop or element in browse navigation.</li>
+      </ul>
+    </section>
+
+    <section class="test-case" aria-labelledby="results-heading">
+      <h2 id="results-heading">Result notes</h2>
+      <p>This form is intentionally local and does not submit anywhere. Copy the results into the Drupal issue or a test report.</p>
+      <form class="environment-form">
+        <label style="grid-column: 1 / -1;">Results and exact announcements
+          <textarea name="results" placeholder="Record exact speech where possible, for example: NVDA 2026.x + Firefox: Drupal current announces 'Place blockin the Header region'; proposed announces 'Place block in the Header region'."></textarea>
+        </label>
+      </form>
+    </section>
+
+    <div id="main-test-target" class="skip-target" tabindex="-1">
+      <h2>Main test target</h2>
+      <p>This target exists so the skip-link examples have a real destination.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>References and declaration-level rationale are on the <a href="implementations.html">implementation breakdown page</a>.</p>
+  </footer>
+</body>
+</html>

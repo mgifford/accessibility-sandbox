@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visually hidden CSS comparison and accessibility test harness</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <header>
+    <h1>Visually hidden CSS comparison and accessibility test harness</h1>
+    <nav aria-label="Site navigation">
+      <ul>
+        <li><a aria-current="page" href="index.html">Overview</a></li>
+        <li><a href="implementations.html">Implementation breakdown</a></li>
+        <li><a href="tests.html">Manual test page</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <p>This site compares three approaches to visually hiding content while retaining it in the accessibility tree: Drupal 11.x core, GOV.UK Frontend, and a proposed Drupal adaptation for issue #3591112.</p>
+
+    <div class="callout">
+      <p><strong>Purpose:</strong> this is a test and documentation site, not production CSS. The proposed implementation should not be committed to Drupal core until the manual assistive-technology testing described on the test page is complete.</p>
+    </div>
+
+    <h2>What is being tested</h2>
+    <ul>
+      <li>Whether visible and visually hidden text retain a word boundary in NVDA, JAWS, VoiceOver, and TalkBack.</li>
+      <li>Whether focusable hidden content becomes fully visible and usable with a keyboard.</li>
+      <li>Whether Drupal's existing <code>:focus-within</code> behavior continues to reveal a wrapper when focus moves to a descendant.</li>
+      <li>Whether revealed content wraps normally at 200% and 400% browser zoom.</li>
+      <li>Whether headings, buttons, legends, summaries, paragraphs, and table cells produce unexpected screen-reader announcements.</li>
+    </ul>
+
+    <h2>What the proposed version changes</h2>
+    <ul>
+      <li>Replaces deprecated <code>clip</code> with <code>clip-path: inset(50%)</code>.</li>
+      <li>Adds generated non-breaking spaces around non-focusable visually hidden content to preserve text boundaries in affected accessibility APIs.</li>
+      <li>Uses <code>white-space: nowrap</code> while content is hidden.</li>
+      <li>Hides <code>.visually-hidden.focusable</code> only while it is not active and does not contain focus, instead of hiding first and undoing selected properties later.</li>
+      <li>Preserves Drupal's <code>:focus-within</code> behavior.</li>
+      <li>Does not copy GOV.UK's <code>user-select: none</code> because text-selection policy is separate from the hiding mechanism.</li>
+    </ul>
+
+    <h2>Important comparison caveat</h2>
+    <p>The proposed Drupal version should not be described as generally better than GOV.UK Frontend. GOV.UK has broader published assistive-technology testing. The Drupal proposal adapts that work to Drupal's existing API and browser-support requirements. In particular, the <code>:focus-within</code> test demonstrates a Drupal compatibility requirement, not a defect in the documented GOV.UK usage pattern.</p>
+
+    <h2>Pages</h2>
+    <ul>
+      <li><a href="implementations.html">Implementation breakdown</a> explains each declaration and why it exists.</li>
+      <li><a href="tests.html">Manual test page</a> provides matched examples for screen readers, keyboard-only navigation, magnification, and zoom.</li>
+    </ul>
+  </main>
+
+  <footer>
+    <p>Prepared as a reproducible test harness for Drupal core issue <a href="https://www.drupal.org/project/drupal/issues/3591112">#3591112</a>.</p>
+  </footer>
+</body>
+</html>

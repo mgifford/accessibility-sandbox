@@ -1,0 +1,86 @@
+/*
+ * Test implementation 1: Drupal 11.x current core behavior.
+ * Source: core/modules/system/css/components/hidden.module.css
+ */
+.drupal-current-vh {
+  position: absolute !important;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  word-wrap: normal;
+}
+
+.drupal-current-vh.focusable:active,
+.drupal-current-vh.focusable:focus-within {
+  position: static !important;
+  overflow: visible;
+  clip: auto;
+  width: auto;
+  height: auto;
+}
+
+/*
+ * Test implementation 2: GOV.UK Frontend behavior expressed as plain CSS.
+ * The source is Sass. The extra .\\:focus companion selector used by GOV.UK's
+ * PostCSS tooling is omitted because this standalone test site does not use
+ * that plugin.
+ */
+.govuk-vh {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+  user-select: none;
+}
+
+.govuk-vh::before {
+  content: "\00a0";
+}
+
+.govuk-vh::after {
+  content: "\00a0";
+}
+
+.govuk-vh-focusable:not(:active):not(:focus) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+  user-select: none;
+}
+
+/*
+ * Test implementation 3: Proposed Drupal adaptation.
+ * Retains Drupal's .visually-hidden + .focusable API and :focus-within
+ * semantics, while adopting the modern hidden-state model and whitespace fix.
+ */
+.proposed-vh:not(.focusable),
+.proposed-vh.focusable:not(:active):not(:focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  border: 0 !important;
+  white-space: nowrap !important;
+}
+
+.proposed-vh:not(.focusable)::before,
+.proposed-vh:not(.focusable)::after {
+  content: "\00a0";
+}
