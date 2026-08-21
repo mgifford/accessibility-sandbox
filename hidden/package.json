@@ -3,9 +3,28 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:voiceover": "playwright test guidepup/voiceover.spec.js"
+    "test:axe": "playwright test guidepup/axe.spec.js --browser=webkit",
+    "test:compare": "playwright test guidepup/comparison.spec.js --browser=webkit",
+    "test:voiceover:diagnose": "node guidepup/diagnose-voiceover.mjs",
+    "test:voiceover:preflight": "playwright test guidepup/voiceover-preflight.spec.js --browser=webkit",
+    "test:voiceover:preflight:headed": "playwright test guidepup/voiceover-preflight.spec.js --browser=webkit --headed",
+    "test:validate": "npm run test:axe && npm run test:compare",
+    "test:voiceover": "npm run test:voiceover:preflight && playwright test guidepup/voiceover.spec.js --browser=webkit",
+    "test:voiceover:headed": "npm run test:voiceover:preflight:headed && playwright test guidepup/voiceover.spec.js --browser=webkit --headed",
+    "test:voiceover:headed:long": "VOICEOVER_TEST_TIMEOUT_MS=240000 VOICEOVER_TRAVERSAL_STEPS=160 VOICEOVER_STEP_DELAY_MS=220 VOICEOVER_STAGNATION_LIMIT=28 npm run test:voiceover:headed",
+    "test:voiceover:single:proposed": "VOICEOVER_IMPLEMENTATIONS=proposed npm run test:voiceover",
+    "test:voiceover:single:proposed:headed": "VOICEOVER_IMPLEMENTATIONS=proposed npm run test:voiceover:headed",
+    "test:voiceover:single:proposed:capture": "VOICEOVER_IMPLEMENTATIONS=proposed VOICEOVER_TEST_TIMEOUT_MS=240000 VOICEOVER_TRAVERSAL_STEPS=140 VOICEOVER_STEP_DELAY_MS=300 VOICEOVER_STAGNATION_LIMIT=35 VOICEOVER_REPEAT_PHRASE_LIMIT=8 VOICEOVER_MIN_CHECKPOINT_MATCHES=1 VOICEOVER_REQUIRE_SPOKEN_LOG=0 npm run test:voiceover:headed",
+    "test:voiceover:single:proposed:scan": "VOICEOVER_IMPLEMENTATIONS=proposed VOICEOVER_TEST_TIMEOUT_MS=240000 VOICEOVER_TRAVERSAL_STEPS=150 VOICEOVER_STEP_DELAY_MS=320 VOICEOVER_STAGNATION_LIMIT=40 VOICEOVER_REPEAT_PHRASE_LIMIT=10 VOICEOVER_MIN_CHECKPOINT_MATCHES=1 VOICEOVER_REQUIRE_SPOKEN_LOG=0 VOICEOVER_PROGRESS_LOG=1 npm run test:voiceover:headed",
+    "test:voiceover:single:drupal": "VOICEOVER_IMPLEMENTATIONS=drupal npm run test:voiceover",
+    "test:voiceover:single:drupal:headed": "VOICEOVER_IMPLEMENTATIONS=drupal npm run test:voiceover:headed",
+    "test:voiceover:single:drupal:headed:long": "VOICEOVER_IMPLEMENTATIONS=drupal VOICEOVER_TEST_TIMEOUT_MS=240000 VOICEOVER_TRAVERSAL_STEPS=160 VOICEOVER_STEP_DELAY_MS=300 VOICEOVER_STAGNATION_LIMIT=35 VOICEOVER_REPEAT_PHRASE_LIMIT=8 npm run test:voiceover:headed",
+    "test:voiceover:single:drupal:capture": "VOICEOVER_IMPLEMENTATIONS=drupal VOICEOVER_TEST_TIMEOUT_MS=240000 VOICEOVER_TRAVERSAL_STEPS=140 VOICEOVER_STEP_DELAY_MS=300 VOICEOVER_STAGNATION_LIMIT=35 VOICEOVER_REPEAT_PHRASE_LIMIT=8 VOICEOVER_MIN_CHECKPOINT_MATCHES=1 VOICEOVER_REQUIRE_SPOKEN_LOG=0 npm run test:voiceover:headed",
+    "test:voiceover:strict": "VOICEOVER_MIN_CHECKPOINT_MATCHES=6 VOICEOVER_REQUIRE_SPOKEN_LOG=1 npm run test:voiceover:headed:long",
+    "test:a11y": "npm run test:validate && npm run test:voiceover"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "@guidepup/guidepup": "^0.33.1",
     "@playwright/test": "^1.55.0"
   }
