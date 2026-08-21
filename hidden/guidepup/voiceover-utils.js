@@ -1,3 +1,8 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
+
 export async function moveNextWithFallback(voiceOver) {
   try {
     await voiceOver.next();
@@ -16,5 +21,27 @@ export async function moveNextWithFallback(voiceOver) {
 
     await voiceOver.perform(voiceOver.keyboardCommands.moveToNext);
     return { method: "keyboardMoveToNext", fallbackFrom: message };
+  }
+}
+
+export async function activateLikelyBrowserApp() {
+  const script = `
+tell application "System Events"
+  repeat with p in (application processes whose background only is false)
+    set processName to name of p
+    if processName contains "Playwright" or processName contains "MiniBrowser" or processName is "Safari" then
+      set frontmost of p to true
+      return processName
+    end if
+  end repeat
+end tell
+return ""
+`;
+
+  try {
+    const { stdout } = await execFileAsync("/usr/bin/osascript", ["-e", script]);
+    return stdout.trim();
+  } catch {
+    return "";
   }
 }

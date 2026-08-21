@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { implementations, voiceOverNeedles } from "./scenarios.js";
-import { moveNextWithFallback } from "./voiceover-utils.js";
+import { activateLikelyBrowserApp, moveNextWithFallback } from "./voiceover-utils.js";
 
 const defaultBaseURL = `${pathToFileURL(path.resolve("tests.html")).href}`;
 const baseURL =
@@ -23,6 +23,8 @@ const voiceOverRepeatPhraseLimit = Number(process.env.VOICEOVER_REPEAT_PHRASE_LI
 const voiceOverMinCheckpointMatches = Number(process.env.VOICEOVER_MIN_CHECKPOINT_MATCHES || "1");
 const voiceOverRequireSpokenLog = process.env.VOICEOVER_REQUIRE_SPOKEN_LOG === "1";
 const voiceOverProgressLog = process.env.VOICEOVER_PROGRESS_LOG !== "0";
+const voiceOverHeadingProbeEvery = Number(process.env.VOICEOVER_HEADING_PROBE_EVERY || "18");
+const voiceOverLinkProbeEvery = Number(process.env.VOICEOVER_LINK_PROBE_EVERY || "11");
 
 test.describe.configure({ mode: "serial" });
 
@@ -62,16 +64,32 @@ async function runNavigationStep(voiceOver, phase) {
   return moveNextWithFallback(voiceOver);
 }
 
+function getTraversalPhase(stepIndex) {
+  // Mostly move sequentially through content; only probe headings/links periodically.
+  if (voiceOverHeadingProbeEvery > 0 && stepIndex > 0 && stepIndex % voiceOverHeadingProbeEvery === 0) {
+    return "heading";
+  }
+
+  if (voiceOverLinkProbeEvery > 0 && stepIndex > 0 && stepIndex % voiceOverLinkProbeEvery === 0) {
+    return "link";
+  }
+
+  return "next";
+}
+
 for (const implementation of selectedImplementations) {
   test(`${implementation}: VoiceOver speech log`, async ({ page }) => {
     test.setTimeout(voiceOverTestTimeoutMs);
 
     await page.goto(`${baseURL}?implementation=${implementation}`);
     await page.waitForLoadState("domcontentloaded");
+    await page.bringToFront();
     await page.locator("body").click();
+    await activateLikelyBrowserApp();
     await voiceOver.start();
     try {
       if (typeof voiceOver.navigateToWebContent === "function") {
+        await activateLikelyBrowserApp();
         await voiceOver.navigateToWebContent();
         await delay(voiceOverStepDelayMs);
       }
@@ -81,7 +99,7 @@ for (const implementation of selectedImplementations) {
         await delay(voiceOverStepDelayMs);
       }
 
-      const firstMove = await runNavigationStep(voiceOver, "heading");
+      const firstMove = await runNavigationStep(voiceOver, "next");
       const firstSpokenPhrase = await voiceOver.lastSpokenPhrase();
       await delay(voiceOverStepDelayMs);
 
@@ -94,7 +112,7 @@ for (const implementation of selectedImplementations) {
       let traversalStopReason = "max_steps";
 
       for (let i = 0; i < voiceOverTraversalSteps; i++) {
-        const phase = i < 45 ? "heading" : i < 95 ? "link" : "next";
+        const phase = getTraversalPhase(i + 1);
         const move = await runNavigationStep(voiceOver, phase);
         traversalMethods.push(move.method);
 

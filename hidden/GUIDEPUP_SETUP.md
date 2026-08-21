@@ -149,13 +149,23 @@ HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.h
 HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.html" npm run test:voiceover:headed:long
 HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.html" npm run test:voiceover:single:proposed:capture
 HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.html" npm run test:voiceover:single:proposed:scan
+HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.html" npm run test:voiceover:single:proposed:scan:noheadings
+HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.html" npm run test:voiceover:single:proposed:scan:sequential
 HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.html" npm run test:voiceover:single:drupal:headed:long
 HIDDEN_TEST_URL="https://mgifford.github.io/accessibility-sandbox/hidden/tests.html" npm run test:voiceover:single:drupal:capture
+```
+
+If you run commands from the repository root by mistake, use npm prefix mode:
+
+```sh
+npm --prefix /Users/mike.gifford/accessibility-sandbox/hidden run test:voiceover:single:proposed:scan:sequential
 ```
 
 The full VoiceOver traversal can exceed Playwright's default 30s timeout. Use `test:voiceover:headed:long` for slower machines/sessions.
 If you want one stable pass before comparing all implementations, use `test:voiceover:single:proposed:capture` first.
 If VoiceOver seems to stop early or repeat the same phrase, use `test:voiceover:single:proposed:scan` for phased heading/link navigation with step-by-step progress logs.
+If you hear repeated `heading not found`, use `test:voiceover:single:proposed:scan:noheadings`.
+If you want no heading/link probe jumps at all, use `test:voiceover:single:proposed:scan:sequential`.
 Use `single:drupal:*` only when you explicitly want to compare that variant.
 After that, use `test:voiceover:strict` for full strict comparison assertions.
 You can also tune runtime with env vars:
@@ -165,6 +175,8 @@ You can also tune runtime with env vars:
 - `VOICEOVER_STEP_DELAY_MS` (default `220`)
 - `VOICEOVER_STAGNATION_LIMIT` (default `28`)
 - `VOICEOVER_REPEAT_PHRASE_LIMIT` (default `10`)
+- `VOICEOVER_HEADING_PROBE_EVERY` (default `18`; use `99999` to effectively disable heading probes)
+- `VOICEOVER_LINK_PROBE_EVERY` (default `11`)
 - `VOICEOVER_IMPLEMENTATIONS` (default `drupal,a11yproject,govuk,proposed`; set `proposed` for a single pass)
 - `VOICEOVER_MIN_CHECKPOINT_MATCHES` (default `1`)
 - `VOICEOVER_REQUIRE_SPOKEN_LOG` (default `0`; set `1` for strict runs)

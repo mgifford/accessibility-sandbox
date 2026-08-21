@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { voiceOver } from "@guidepup/guidepup";
-import { moveNextWithFallback } from "./voiceover-utils.js";
+import { activateLikelyBrowserApp, moveNextWithFallback } from "./voiceover-utils.js";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -19,12 +19,15 @@ test("VoiceOver preflight", async ({ page }) => {
   try {
     await page.goto(`${baseURL}?implementation=${preflightImplementation}`);
     await page.waitForLoadState("domcontentloaded");
+    await page.bringToFront();
     await page.locator("body").click();
+    await activateLikelyBrowserApp();
 
     await voiceOver.start();
 
     // Ensure VoiceOver is interacting with browser content before movement checks when supported.
     if (typeof voiceOver.navigateToWebContent === "function") {
+      await activateLikelyBrowserApp();
       await voiceOver.navigateToWebContent();
     }
 
