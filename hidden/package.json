@@ -3,6 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "setup:voiceover:open-ui": "bash scripts/open-voiceover-setup.sh",
+    "test:elements": "playwright test guidepup/elements-report.spec.js --browser=webkit",
+    "test:elements:headed": "playwright test guidepup/elements-report.spec.js --browser=webkit --headed",
+    "test:elements:strict": "ELEMENTS_STRICT_BASELINE=1 npm run test:elements",
+    "test:elements:strict:headed": "ELEMENTS_STRICT_BASELINE=1 npm run test:elements:headed",
+    "test:elements:summary": "node scripts/print-elements-summary.mjs",
+    "test:elements:summary:strict": "ELEMENTS_SUMMARY_STRICT=1 node scripts/print-elements-summary.mjs",
     "test:axe": "playwright test guidepup/axe.spec.js --browser=webkit",
     "test:compare": "playwright test guidepup/comparison.spec.js --browser=webkit",
     "test:voiceover:diagnose": "node guidepup/diagnose-voiceover.mjs",
@@ -23,7 +30,12 @@
     "test:voiceover:single:drupal:headed:long": "VOICEOVER_IMPLEMENTATIONS=drupal VOICEOVER_TEST_TIMEOUT_MS=240000 VOICEOVER_TRAVERSAL_STEPS=160 VOICEOVER_STEP_DELAY_MS=300 VOICEOVER_STAGNATION_LIMIT=35 VOICEOVER_REPEAT_PHRASE_LIMIT=8 npm run test:voiceover:headed",
     "test:voiceover:single:drupal:capture": "VOICEOVER_IMPLEMENTATIONS=drupal VOICEOVER_TEST_TIMEOUT_MS=240000 VOICEOVER_TRAVERSAL_STEPS=140 VOICEOVER_STEP_DELAY_MS=300 VOICEOVER_STAGNATION_LIMIT=35 VOICEOVER_REPEAT_PHRASE_LIMIT=8 VOICEOVER_MIN_CHECKPOINT_MATCHES=1 VOICEOVER_REQUIRE_SPOKEN_LOG=0 npm run test:voiceover:headed",
     "test:voiceover:strict": "VOICEOVER_MIN_CHECKPOINT_MATCHES=6 VOICEOVER_REQUIRE_SPOKEN_LOG=1 npm run test:voiceover:headed:long",
-    "test:a11y": "npm run test:validate && npm run test:voiceover"
+    "test:all": "HEADED=1 bash scripts/run-all-tests.sh",
+    "test:all:headed": "HEADED=1 bash scripts/run-all-tests.sh",
+    "test:all:setup-ui": "OPEN_VOICEOVER_SETUP_UI=1 HEADED=1 bash scripts/run-all-tests.sh",
+    "test:all:no-voiceover": "SKIP_VOICEOVER=1 bash scripts/run-all-tests.sh",
+    "test:all:voiceover-only": "SKIP_VALIDATE=1 SKIP_ELEMENTS=1 bash scripts/run-all-tests.sh",
+    "test:a11y": "npm run test:all"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",

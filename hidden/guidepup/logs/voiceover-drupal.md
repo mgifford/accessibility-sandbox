@@ -1,6 +1,6 @@
-# VoiceOver Log - proposed
+# VoiceOver Log - drupal
 
-URL: file:///Users/mike.gifford/accessibility-sandbox/hidden/tests.html?implementation=proposed
+URL: file:///Users/mike.gifford/accessibility-sandbox/hidden/tests.html?implementation=drupal
 First phrase: banner
 Scenario checkpoints matched: 8/9
 

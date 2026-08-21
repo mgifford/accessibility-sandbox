@@ -1,6 +1,6 @@
-# VoiceOver Log - proposed
+# VoiceOver Log - a11yproject
 
-URL: file:///Users/mike.gifford/accessibility-sandbox/hidden/tests.html?implementation=proposed
+URL: file:///Users/mike.gifford/accessibility-sandbox/hidden/tests.html?implementation=a11yproject
 First phrase: banner
 Scenario checkpoints matched: 8/9
 

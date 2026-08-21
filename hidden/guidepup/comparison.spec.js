@@ -289,6 +289,21 @@ test("implementation comparison report", async ({ page }) => {
         `| ${index + 1} | ${item.implementation} | ${item.automatedPassed} | ${item.automatedFailed} | ${item.manualCount} |`
     ),
     "",
+    "## Case Consistency",
+    "",
+    `Cases identical across all implementations: ${scenarios.filter((scenario) => {
+      const statuses = reportRows.map((row) => row.scenarioResults[scenario.id].status);
+      return statuses.every((status) => status === statuses[0]);
+    }).length}/${scenarios.length}`,
+    "",
+    "| Scenario | drupal | a11yproject | govuk | proposed | Same? |",
+    "|---|---|---|---|---|---|",
+    ...scenarios.map((scenario) => {
+      const statuses = reportRows.map((row) => row.scenarioResults[scenario.id].status);
+      const same = statuses.every((status) => status === statuses[0]);
+      return `| ${scenario.id} | ${statuses.join(" | ")} | ${same ? "yes" : "no"} |`;
+    }),
+    "",
     "## Scenario Matrix",
     "",
     "| Implementation | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |",

@@ -37,6 +37,31 @@ npx @guidepup/setup install
 npm run test:voiceover:preflight
 ```
 
+Quickly open the manual GUI setup screens from terminal:
+
+```sh
+npm run setup:voiceover:open-ui
+```
+
+Run per-element hidden content checks (records where expected phrases appear):
+
+```sh
+npm run test:elements
+npm run test:elements:headed
+npm run test:elements:strict
+npm run test:elements:strict:headed
+npm run test:elements:summary
+npm run test:elements:summary:strict
+```
+
+Outputs:
+
+- `guidepup/logs/elements-report.json`
+- `guidepup/logs/elements-report.md`
+
+Strict mode treats `proposed` as canonical and fails if other implementations diverge in status or phrase presence.
+Summary mode prints only failures and baseline divergences from the latest report.
+
 ## Manual macOS steps (required)
 
 Complete every step in the official guide:
