@@ -4,6 +4,10 @@ import { voiceOver } from "@guidepup/guidepup";
 
 const execFileAsync = promisify(execFile);
 
+function isAppleEventPermissionError(text) {
+  return typeof text === "string" && text.includes("-10810");
+}
+
 async function runAppleScript(script) {
   const { stdout } = await execFileAsync("/usr/bin/osascript", ["-e", script]);
   return stdout.trim();
@@ -29,6 +33,35 @@ async function main() {
     result.diagnosis.push("Guidepup VoiceOver automation requires macOS.");
     console.log(JSON.stringify(result, null, 2));
     process.exit(1);
+  }
+
+  try {
+    const runningBeforeStart = await runAppleScript('tell application "VoiceOver" to running');
+    result.checks.voiceOverRunning = { ok: true, output: runningBeforeStart };
+  } catch (error) {
+    result.checks.voiceOverRunning = {
+      ok: false,
+      output: error instanceof Error ? error.message : String(error)
+    };
+  }
+
+  if (result.checks.voiceOverRunning.ok && result.checks.voiceOverRunning.output === "true") {
+    try {
+      await runAppleScript('tell application "VoiceOver" to quit');
+      result.diagnosis.push("VoiceOver was already running and the script asked it to quit before continuing.");
+    } catch (error) {
+      result.diagnosis.push(
+        `VoiceOver was already running and the script could not turn it off automatically: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+      result.checks.guidepupStart = {
+        ok: false,
+        output: "Could not turn off VoiceOver automatically."
+      };
+      console.log(JSON.stringify(result, null, 2));
+      process.exit(1);
+    }
   }
 
   try {
@@ -103,9 +136,24 @@ async function main() {
     result.diagnosis.push("Automation permissions are not fully available from this session.");
   }
 
+  if (
+    isAppleEventPermissionError(result.checks.voiceOverActivate.output) ||
+    isAppleEventPermissionError(result.checks.systemEventsUiElementsEnabled.output)
+  ) {
+    result.diagnosis.push(
+      "macOS denied AppleScript automation (-10810). Grant Accessibility and Automation to the terminal app that launched this command, then rerun from that same app."
+    );
+  }
+
   if (result.checks.voiceOverActivate.ok && result.checks.systemEventsUiElementsEnabled.ok && !result.checks.guidepupMoveNext.ok) {
     result.diagnosis.push(
       "VoiceOver is reachable by AppleScript, but Guidepup navigation command failed. This is usually a Guidepup/VoiceOver compatibility issue for this macOS version or an incomplete manual VoiceOver setup."
+    );
+  }
+
+  if (!result.checks.guidepupStart.ok && /VoiceOver cannot be started/i.test(result.checks.guidepupStart.output)) {
+    result.diagnosis.push(
+      "Guidepup could not start VoiceOver. If macOS permissions are already granted, rerun npx @guidepup/setup setup and npx @guidepup/setup install from the same terminal app after confirming the AppleEvents and Accessibility grants."
     );
   }
 

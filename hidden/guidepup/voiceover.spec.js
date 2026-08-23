@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { implementations, voiceOverNeedles } from "./scenarios.js";
-import { activateLikelyBrowserApp, moveNextWithFallback } from "./voiceover-utils.js";
+import { activateLikelyBrowserApp, ensureVoiceOverIsOff, moveNextWithFallback } from "./voiceover-utils.js";
 
 const defaultBaseURL = `${pathToFileURL(path.resolve("tests.html")).href}`;
 const baseURL =
@@ -80,6 +80,8 @@ function getTraversalPhase(stepIndex) {
 for (const implementation of selectedImplementations) {
   test(`${implementation}: VoiceOver speech log`, async ({ page }) => {
     test.setTimeout(voiceOverTestTimeoutMs);
+
+    await ensureVoiceOverIsOff();
 
     await page.goto(`${baseURL}?implementation=${implementation}`);
     await page.waitForLoadState("domcontentloaded");

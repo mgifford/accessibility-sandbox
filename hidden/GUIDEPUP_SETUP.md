@@ -24,6 +24,7 @@ npm run test:voiceover:diagnose
 ```
 
 This prints a JSON diagnosis for AppleScript baseline checks and Guidepup move/phrase checks.
+The VoiceOver scripts will try to turn VoiceOver off automatically before starting it again. If that fails, they now print a friendly message telling you to turn it off manually.
 
 ## Run order
 
@@ -139,9 +140,26 @@ npm run test:voiceover:preflight
 
 If preflight still fails with `right doesn\'t understand the "move" message (-1708)`, use the fallback section at the end of this file.
 
+If `npm run test:voiceover:diagnose` shows AppleScript checks passing but `guidepupStart` still reports `VoiceOver cannot be started`, treat that as a startup/mount problem rather than a permissions problem:
+
+- Re-run `npx @guidepup/setup setup`.
+- Re-run `npx @guidepup/setup install`.
+- Make sure you are launching every VoiceOver command from the same terminal app.
+- Then run `npm run test:voiceover:diagnose` again before retrying preflight.
+
+If the start failure persists after that, keep using `npm run test:validate` as the repeatable gate and record manual VoiceOver notes in `MANUAL_SCENARIO_SUMMARY.md` until the startup path is restored.
+
 ## Current known failure in this workspace
 
-Preflight currently fails with AppleScript automation error `-1708`:
+Preflight may fail in two different ways in this workspace:
+
+- AppleScript automation error `-1708`
+- `VoiceOver cannot be started`
+
+The `-1708` case usually means VoiceOver is reachable but the move command is not.
+The `VoiceOver cannot be started` case means the startup path itself failed, even if AppleScript permission checks passed.
+
+For the `-1708` case, the usual symptom is:
 
 - `VoiceOver unable to move`
 - `right doesn’t understand the “move” message`

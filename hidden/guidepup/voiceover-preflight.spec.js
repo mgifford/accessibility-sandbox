@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { voiceOver } from "@guidepup/guidepup";
-import { activateLikelyBrowserApp, moveNextWithFallback } from "./voiceover-utils.js";
+import { activateLikelyBrowserApp, ensureVoiceOverIsOff, moveNextWithFallback } from "./voiceover-utils.js";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -14,6 +14,12 @@ test("VoiceOver preflight", async ({ page }) => {
 
   if (process.platform !== "darwin") {
     failures.push("Guidepup VoiceOver automation requires macOS.");
+  }
+
+  try {
+    await ensureVoiceOverIsOff();
+  } catch (error) {
+    failures.push(error instanceof Error ? error.message : String(error));
   }
 
   try {
@@ -49,10 +55,18 @@ test("VoiceOver preflight", async ({ page }) => {
   }
 
   if (failures.length > 0) {
+    const permissionHint = /-10810|not authorized|AppleScript/i.test(failures.join("\n"))
+      ? [
+          "- Grant Accessibility and Automation to the terminal app that launched this command.",
+          "- Use the same app consistently for all VoiceOver runs (iTerm2 or VS Code)."
+        ]
+      : [];
+
     throw new Error(
       [
         "Guidepup preflight failed.",
         ...failures.map((item) => `- ${item}`),
+        ...permissionHint,
         "",
         "Required setup steps:",
         "- npx @guidepup/setup setup",
