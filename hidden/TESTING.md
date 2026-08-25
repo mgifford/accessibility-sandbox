@@ -88,6 +88,41 @@ Automated determination uses the matrix report:
 
 This means the report demonstrates which implementation is better for what is testable in deterministic automation.
 
+## Deck chairs versus real improvement
+
+The purpose of this repository is to decide whether a proposed change is an actual
+accessibility improvement, not merely a tidier stylesheet or simpler markup. Two
+of the strongest claims for the proposal are the two that deterministic automation
+cannot verify on its own:
+
+1. **Boundary spaces.** The proposal adds generated non-breaking spaces so that a
+   screen reader does not concatenate visible and hidden text (for example
+   "Place block" and "in the Header region"). The `textContent` and phrase-presence
+   checks in `comparison.spec.js` and `elements-report.spec.js` are **structurally
+   blind to this**: both words are present in the DOM whether or not the screen
+   reader inserts a boundary, so those checks pass regardless of the spoken result.
+   A test that passes no matter what the feature does is not evidence for the
+   feature.
+
+2. **Skip target without `tabindex="-1"`.** Moving `#main-content` onto `<main>` and
+   removing the workaround relies on the browser's sequential focus navigation
+   starting point. Whether keyboard focus and the screen-reader reading position
+   actually resume in the main region is a runtime behavior. Inspecting the
+   generated markup (as `variants.spec.js` does) confirms the shape is correct but
+   says nothing about the behavior.
+
+For claims like these, the deterministic layer should assert only what it can
+honestly observe (that the CSS or markup *differs* in the expected direction), and
+the behavioral conclusion must come from driving a real screen reader. This is the
+role of the Guidepup track. Treat a green deterministic run as necessary but not
+sufficient; it rules out regressions in structure, not in experience.
+
+A differential framing is more useful here than pass/fail. The question is not
+"does the proposed page pass" but "does the proposed page produce an observably
+different, better screen-reader result than current Drupal for the same DOM." The
+`variants/` pages exist so current and proposed can be compared directly on that
+basis.
+
 ## What cannot be fully tested here
 
 The repository cannot fully automate or prove:
@@ -125,3 +160,25 @@ Use this sequence for repeatable decision-making:
 3. Run `npm run test:voiceover` on a configured macOS machine.
 4. Review `guidepup/logs/voiceover-differences.md` for spoken differences.
 5. Add manual notes for Scenario 4 and Scenario 9 before final conclusions.
+
+### Reading the VoiceOver result honestly
+
+`npm run test:voiceover` defaults to `VOICEOVER_MIN_CHECKPOINT_MATCHES=1`, so the
+test can pass after matching a single checkpoint out of nine. That default proves
+VoiceOver *ran and moved*, not that the proposal *helped*. A passing default run is
+a smoke test, not evidence of improvement.
+
+For decision-making, do not rely on the default threshold. Instead:
+
+- Raise the bar (`test:voiceover:strict` sets `VOICEOVER_MIN_CHECKPOINT_MATCHES=6`
+  and requires a non-empty spoken log), and
+- Read `voiceover-differences.md` directly to compare spoken phrases between
+  current Drupal and proposed for the boundary scenarios (2, 3, 7). The evidence is
+  in the *difference* between implementations, not in whether any single run
+  reached a pass count.
+
+The checkpoint needles only test that a phrase appears somewhere in the spoken log.
+They do not, on their own, test whether a word boundary was preserved. Judging
+boundary quality still requires reading the spoken phrases (or the manual Scenario 4
+notes), which is why boundary claims are treated as assistive-technology evidence
+rather than automated pass/fail.

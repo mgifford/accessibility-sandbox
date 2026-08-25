@@ -204,17 +204,73 @@
 </section>
 
 <section>
+<h2>Skip link target: removing <code>tabindex="-1"</code></h2>
+
+<p>The proposal is not only a CSS change. It also changes how the skip link's destination is marked up.</p>
+
+<h3>Current Drupal</h3>
+<pre><code>&lt;a href="#main-content"&gt;Skip to main content&lt;/a&gt;
+&lt;main&gt;
+  &lt;a id="main-content" tabindex="-1"&gt;&lt;/a&gt;
+  ...
+&lt;/main&gt;</code></pre>
+<p>The second anchor is not the skip link. It is an empty destination anchor made focusable with <code>tabindex="-1"</code> so that activating the skip link moved keyboard focus onto it, and the next <kbd>Tab</kbd> continued from there rather than jumping back to the top of the page.</p>
+
+<h3>Proposed</h3>
+<pre><code>&lt;a href="#main-content"&gt;Skip to main content&lt;/a&gt;
+&lt;main id="main-content"&gt;
+  ...
+&lt;/main&gt;</code></pre>
+<p>The fragment <code>id</code> moves onto the semantic <code>&lt;main&gt;</code> landmark, and the empty destination anchor and its <code>tabindex="-1"</code> are removed.</p>
+
+<h3>Why this is expected to work</h3>
+<p>Modern browsers implement a <em>sequential focus navigation starting point</em>. Following an in-page fragment link sets that starting point at the target, so the next <kbd>Tab</kbd> resumes from the target even when the target is not itself focusable. The <code>tabindex="-1"</code> workaround is therefore no longer required in supported browsers. Adding <code>tabindex="-1"</code> to a landmark also has reported side effects, such as interfering with the iOS back gesture, which is a further reason to prefer the landmark-only form.</p>
+
+<h3>Why this needs real testing, not just markup inspection</h3>
+<p>This is the change most at risk of being <q>rearranging deck chairs</q>: the markup is objectively simpler, but simpler markup is not automatically a better experience. What matters is behavioral:</p>
+<ul>
+  <li>After activating the skip link, does the next <kbd>Tab</kbd> actually land inside the main content?</li>
+  <li>Does the screen reader move its reading position to the main region, or is only the tab order affected?</li>
+</ul>
+<p>Neither question can be answered by checking the generated HTML. Both require driving a real browser and a real screen reader. The variant pages under <a href="variants/index.html">the variants index</a> exist so each skip-target pattern can be observed independently rather than assumed.</p>
+</section>
+
+<section>
+<h2>What this comparison can and cannot prove</h2>
+
+<p>The claims below differ in how strongly they can be tested. Reading a stylesheet or the DOM proves a <em>difference</em>; it does not prove that difference reaches a user. Only assistive-technology observation can confirm the latter.</p>
+
+<div class="table-wrap">
+<table>
+<caption>Verifiability of each claim</caption>
+<thead>
+<tr><th scope="col">Claim</th><th scope="col">Deterministic check</th><th scope="col">What only AT can confirm</th></tr>
+</thead>
+<tbody>
+<tr><th scope="row">Boundary spaces (visible/hidden text not concatenated)</th><td>Proposed adds <code>::before</code>/<code>::after</code> <code>\00a0</code>; current Drupal does not</td><td>Whether the screen reader actually speaks a boundary between the words. A <code>textContent</code> check is blind to this: both words are present in the DOM either way.</td></tr>
+<tr><th scope="row">No wrapping of long hidden text</th><td><code>white-space: nowrap</code> is computed</td><td>Whether historical concatenation from tiny-box wrapping is avoided in spoken output</td></tr>
+<tr><th scope="row">Modern clipping</th><td><code>clip-path: inset(50%)</code> present, <code>clip</code> not relied upon</td><td>(no meaningful AT-only aspect)</td></tr>
+<tr><th scope="row"><code>:focus-within</code> reveals hidden wrappers</th><td>Wrapper leaves the 1px box when a descendant is focused</td><td>Whether a magnification user can locate the revealed context</td></tr>
+<tr><th scope="row">Skip target without <code>tabindex="-1"</code></th><td><code>#main-content</code> is on <code>&lt;main&gt;</code>; no <code>tabindex</code></td><td>Whether keyboard focus and the screen-reader reading position actually resume in the main region after activation</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>The two rows whose value lives almost entirely in the AT column &mdash; boundary spaces and the skip target &mdash; are the two that determine whether the proposal is a genuine improvement. Automated <code>textContent</code> assertions cannot see them, which is why this repository treats screen-reader observation as required rather than optional.</p>
+</section>
+
+<section>
 <h2>Comparison summary</h2>
 <div class="table-wrap">
 <table>
 <thead>
-<tr><th>Approach</th><th>Modern clip-path</th><th>No wrapping</th><th>Generated boundary spaces</th><th>Conditional hiding</th><th>Descendant focus</th></tr>
+<tr><th>Approach</th><th>Modern clip-path</th><th>No wrapping</th><th>Generated boundary spaces</th><th>Conditional hiding</th><th>Descendant focus</th><th>Skip target</th></tr>
 </thead>
 <tbody>
-<tr><th scope="row">Current Drupal</th><td>No</td><td>Partial</td><td>No</td><td>No, reset model</td><td>Yes, <code>:focus-within</code></td></tr>
-<tr><th scope="row">A11Y Project</th><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td><td>No with direct <code>:focus</code></td></tr>
-<tr><th scope="row">GOV.UK</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Not part of its direct-focus helper</td></tr>
-<tr><th scope="row">Proposed Drupal</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes, <code>:focus-within</code></td></tr>
+<tr><th scope="row">Current Drupal</th><td>No</td><td>Partial</td><td>No</td><td>No, reset model</td><td>Yes, <code>:focus-within</code></td><td>Empty <code>tabindex="-1"</code> anchor</td></tr>
+<tr><th scope="row">A11Y Project</th><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td><td>No with direct <code>:focus</code></td><td><code>tabindex="-1"</code> on <code>&lt;main&gt;</code></td></tr>
+<tr><th scope="row">GOV.UK</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Not part of its direct-focus helper</td><td><code>tabindex="-1"</code> on <code>&lt;main&gt;</code> + focus JS</td></tr>
+<tr><th scope="row">Proposed Drupal</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes, <code>:focus-within</code></td><td><code>id</code> on <code>&lt;main&gt;</code>, no <code>tabindex</code> (SFNSP)</td></tr>
 </tbody>
 </table>
 </div>
