@@ -10,6 +10,8 @@
     "test:elements:strict:headed": "ELEMENTS_STRICT_BASELINE=1 npm run test:elements:headed",
     "test:elements:summary": "node scripts/print-elements-summary.mjs",
     "test:elements:summary:strict": "ELEMENTS_SUMMARY_STRICT=1 node scripts/print-elements-summary.mjs",
+    "build:variants": "node scripts/build-variants.mjs",
+    "test:variants": "playwright test guidepup/variants.spec.js --browser=webkit",
     "test:axe": "playwright test guidepup/axe.spec.js --browser=webkit",
     "test:compare": "playwright test guidepup/comparison.spec.js --browser=webkit",
     "test:voiceover:diagnose": "node guidepup/diagnose-voiceover.mjs",

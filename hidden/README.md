@@ -1,13 +1,44 @@
-# Visually hidden CSS comparison
+# Visually hidden implementation comparison
 
 This directory compares current Drupal, The A11Y Project, GOV.UK Frontend, and a proposed Drupal adaptation.
 
-The test page uses one DOM and switches only the implementation stylesheet:
+The implementations differ in visually-hidden CSS and, for the proposed Drupal
+variant, in skip-target markup as well (the fragment `id` moves onto the
+`<main>` landmark and the empty `tabindex="-1"` destination anchor is removed).
+The test page switches the implementation stylesheet and the corresponding
+skip-target markup:
 
 - `tests.html?implementation=drupal`
 - `tests.html?implementation=a11yproject`
 - `tests.html?implementation=govuk`
 - `tests.html?implementation=proposed`
+
+## Faithful skip-link variants
+
+For skip-link / `tabindex` testing, `variants/` holds static pages that reproduce
+each real and proposed pattern faithfully (no runtime DOM mutation), so
+assistive-technology testing observes exactly what each project ships:
+
+- Current Drupal (empty `tabindex="-1"` destination anchor inside `<main>`)
+- A11Y Project and GOV.UK (`id` + `tabindex="-1"` on `<main>`)
+- Proposed Drupal variants crossing three skip-target patterns (SFNSP `<main id>`,
+  `<main id tabindex="-1">`, retained empty anchor) with two reveal-CSS strategies
+  (`:focus`/`:active`, `:focus-within`)
+
+The pages are generated from a single source of truth. Regenerate after editing the
+manifest or body template:
+
+```sh
+npm run build:variants
+```
+
+Validate that each page's skip target stays faithful:
+
+```sh
+npm run test:variants
+```
+
+See `variants/index.html` for the full matrix.
 
 ## Focus-within
 
