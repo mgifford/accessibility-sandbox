@@ -16,8 +16,11 @@
   <nav aria-label="Site navigation">
     <ul>
       <li><a href="index.html">Overview</a></li>
+      <li><a href="decision.html">The decision</a></li>
       <li><a href="implementations.html">Implementation breakdown</a></li>
       <li><a aria-current="page" href="tests.html">Accessibility tests</a></li>
+      <li><a href="variants/index.html">Skip-link variants</a></li>
+      <li><a href="testing-plan.html">Testing plan</a></li>
     </ul>
   </nav>
 
@@ -104,6 +107,13 @@
 <section>
 <h2>9. High zoom and magnification</h2>
 <p>At 400% browser zoom, reload and start again from the skip link. Confirm revealed focusable content is not constrained by one-pixel dimensions, clipping, or hidden overflow.</p>
+</section>
+
+<section>
+<h2>10. Negative margin and announcement order</h2>
+<p>GOV.UK's stylesheet keeps <code>margin: 0</code> on visually hidden content with the note that a negative margin can cause text to be announced in the wrong order in VoiceOver on macOS. The link below has a visually hidden middle span; the expected spoken order is “Start here”, then the hidden “then read this hidden middle part”, then “and finish here”.</p>
+<p><a href="#order-target">Start here<span class="visually-hidden"> then read this hidden middle part</span> and finish here</a></p>
+<p id="order-target">This page uses <code>margin: 0</code> (no bug expected here). The automated probe <code>npm run test:margin-order</code> compares this against a deliberately negative margin to check whether announcement order actually changes on this platform. Wrong order (the hidden phrase announced first or last) would reproduce the bug the <code>margin: 0</code> reset guards against.</p>
 </section>
 </main>
 </body>

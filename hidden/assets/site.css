@@ -21,3 +21,4 @@ th, td { border: var(--border); padding: .65rem; text-align: left; vertical-alig
 .skip-link { z-index: 9999; padding: .75rem 1rem; background: Canvas; color: CanvasText; border: .2rem solid currentColor; max-width: calc(100vw - 2rem); }
 .focus-wrapper { padding: 1rem; border: .15rem solid currentColor; }
 .variant-meta { font-size: .9em; opacity: .8; }
+.callout-lead { padding: .75rem 1rem; border-inline-start: .3rem solid currentColor; background: color-mix(in srgb, Canvas 92%, CanvasText); }

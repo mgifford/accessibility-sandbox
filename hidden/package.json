@@ -15,6 +15,7 @@
     "test:skip-focus": "playwright test guidepup/skip-focus.spec.js --browser=webkit",
     "test:focus-within": "playwright test guidepup/focus-within-reveal.spec.js --browser=webkit",
     "test:boundary-speech": "node guidepup/run-boundary-speech.mjs",
+    "test:margin-order": "node guidepup/run-margin-order.mjs",
     "test:axe": "playwright test guidepup/axe.spec.js --browser=webkit",
     "test:compare": "playwright test guidepup/comparison.spec.js --browser=webkit",
     "test:voiceover:diagnose": "node guidepup/diagnose-voiceover.mjs",

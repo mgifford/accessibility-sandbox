@@ -2,6 +2,10 @@
 
 This directory compares current Drupal, The A11Y Project, GOV.UK Frontend, and a proposed Drupal adaptation.
 
+**Start here:** `decision.html` is the one-page summary for decision-makers.
+**To reproduce the tests:** see `REPRODUCE.md`.
+**To see the raw evidence:** see `evidence/` and `guidepup/logs/at-findings.md`.
+
 The implementations differ in visually-hidden CSS and, for the proposed Drupal
 variant, in skip-target markup as well (the fragment `id` moves onto the
 `<main>` landmark and the empty `tabindex="-1"` destination anchor is removed).

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hiding content in Drupal 12: the decision</title>
+  <link rel="stylesheet" href="assets/site.css">
+  <style>
+    .callout { border: .15rem solid currentColor; border-radius: .4rem; padding: 1rem 1.25rem; margin-block: 1.5rem; }
+    .verdict { font-weight: 700; }
+    .v-yes::before { content: "\2713 "; }   /* check */
+    .v-open::before { content: "\25CB "; }   /* circle */
+    .v-no::before { content: "\2717 "; }     /* cross */
+    .sample { border: var(--border); border-radius: .4rem; padding: 1rem; margin-block: .75rem; }
+    .sample p { max-width: none; }
+    .spoken { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; padding: .15em .35em; border: 1px solid CanvasText; border-radius: .25rem; }
+    .tldr { font-size: 1.1em; }
+    table td, table th { vertical-align: top; }
+  </style>
+</head>
+<body>
+<a class="visually-hidden focusable skip-link" href="#main-content">Skip to main content</a>
+<header>
+  <h1>Hiding content in Drupal 12: the decision</h1>
+  <nav aria-label="Site navigation">
+    <ul>
+      <li><a href="index.html">Overview</a></li>
+      <li><a aria-current="page" href="decision.html">The decision</a></li>
+      <li><a href="implementations.html">Implementation breakdown</a></li>
+      <li><a href="tests.html">Accessibility tests</a></li>
+      <li><a href="variants/index.html">Skip-link variants</a></li>
+      <li><a href="testing-plan.html">Testing plan</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main id="main-content">
+
+<section>
+<h2>The short version</h2>
+<div class="callout">
+<p class="tldr">Drupal's utility for hiding content from sight while keeping it for screen readers should adopt a small set of proven improvements. The changes make screen readers announce hidden text correctly, let keyboard users see content that receives focus, and simplify the "skip to main content" link. Each recommendation below is backed by testing on real screen readers, not by inspecting the code.</p>
+</div>
+<p>If you only read one thing: <strong>two changes are proven and ready</strong> (skip-link simplification, and generated spaces that stop screen readers running words together), <strong>one is already in core and should stay</strong> (revealing hidden wrappers on focus), and <strong>three are deliberate judgment calls</strong> left for follow-up. Details below.</p>
+</section>
+
+<section>
+<h2>See it and hear it: one sample, three screen readers</h2>
+<p>The clearest way to understand the decision is one concrete case. A link reads <strong>"Place block"</strong> on screen, with the words <strong>"in the Header region"</strong> hidden but available to screen readers. What does a screen reader actually say?</p>
+
+<div class="sample">
+<p><strong>Current approach</strong> (no generated spaces)</p>
+<ul>
+  <li>NVDA + Chrome speaks: <span class="spoken">Place block<strong>in</strong> the Header region</span> &mdash; the words run together. Wrong.</li>
+  <li>NVDA + Firefox: fine (Firefox keeps them separate).</li>
+  <li>VoiceOver (Mac): fine.</li>
+</ul>
+</div>
+
+<div class="sample">
+<p><strong>Proposed approach</strong> (adds an invisible space at the boundary)</p>
+<ul>
+  <li>NVDA + Chrome speaks: <span class="spoken">Place block in the Header region</span> &mdash; correct.</li>
+  <li>NVDA + Firefox: fine (unchanged).</li>
+  <li>VoiceOver (Mac): fine (unchanged).</li>
+</ul>
+</div>
+
+<p>The proposed version is never worse and is sometimes clearly better, on one of the most common screen-reader-and-browser combinations in the world. That is the pattern for the whole decision: <strong>fix a real problem for some users, change nothing for the rest.</strong></p>
+<p>You can try every scenario yourself on the <a href="tests.html">accessibility tests page</a>, switching between implementations, and compare the exact markup on the <a href="variants/index.html">variants index</a>.</p>
+</section>
+
+<section>
+<h2>The recommendation at a glance</h2>
+<div class="table-wrap">
+<table>
+<caption>What to change, and how sure we are</caption>
+<thead>
+<tr><th scope="col">Change</th><th scope="col">Recommendation</th><th scope="col">Why</th><th scope="col">Evidence</th></tr>
+</thead>
+<tbody>
+<tr>
+  <th scope="row">Reveal hidden content when it (or a child) receives focus (<code>:focus-within</code>)</th>
+  <td class="verdict v-yes">Keep &mdash; already in core</td>
+  <td>Prevents a keyboard user from landing on a link that stays invisible. The GOV.UK and A11Y Project patterns fail this case.</td>
+  <td>Measured on WebKit and Blink: <code>focus-within-reveal.spec.js</code> asserts the wrapper reveals for <code>:focus-within</code> and stays hidden for <code>:focus</code>-only. See <a href="guidepup/logs/at-findings.md">at-findings.md</a> §3.</td>
+</tr>
+<tr>
+  <th scope="row">Add invisible spaces around hidden text so words are not run together</th>
+  <td class="verdict v-yes">Adopt</td>
+  <td>Fixes real "blockin" concatenation. Neutral where it is not needed. Not solved by <code>white-space: nowrap</code> alone (different mechanism).</td>
+  <td>NVDA 2026.1.1 + Chrome 151 concatenated without it, clean with it (reported in the Drupal a11y review). VoiceOver capture: <a href="evidence/boundary-speech.json">evidence/boundary-speech.json</a>. See <a href="guidepup/logs/at-findings.md">at-findings.md</a> §1.</td>
+</tr>
+<tr>
+  <th scope="row">Simplify the "skip to main content" target (drop the empty <code>tabindex="-1"</code> anchor)</th>
+  <td class="verdict v-yes">Adopt</td>
+  <td>Modern browsers resume focus at the target without the old workaround. One screen-reader reading-position check still open (below).</td>
+  <td>Measured on WebKit and Blink: <code>skip-focus.spec.js</code> asserts the next Tab after activating the skip link lands inside <code>&lt;main&gt;</code> for every target variant. See <a href="guidepup/logs/at-findings.md">at-findings.md</a> §2.</td>
+</tr>
+<tr>
+  <th scope="row">Use modern clipping (<code>clip-path</code>) instead of the deprecated <code>clip</code></th>
+  <td class="verdict v-open">Optional cleanup</td>
+  <td>Modern idiom; fine to adopt as tidy-up, not as a fix.</td>
+  <td>No user-facing difference found in testing; a stylistic modernization, so the evidence is the absence of a behavioral delta rather than a positive result.</td>
+</tr>
+<tr>
+  <th scope="row">Apply the reveal to all hidden content, not only elements marked <code>focusable</code></th>
+  <td class="verdict v-open">Follow-up</td>
+  <td>More correct in principle (a focused-but-hidden element is always a bug), but changing the base behavior on hundreds of thousands of sites is a migration risk.</td>
+  <td>Design argument, not a measured result. Raised in the Drupal a11y review; recorded as an open decision on <a href="implementations.html">the implementation breakdown</a>.</td>
+</tr>
+<tr>
+  <th scope="row">Prevent copying hidden text (<code>user-select: none</code>)</th>
+  <td class="verdict v-no">Not in this change</td>
+  <td>A separate UX choice, not needed to hide content. If ever added it must include the <code>-webkit-</code> prefix or it does nothing in Safari.</td>
+  <td>Not tested here (out of scope). The prefix requirement is a documented Safari behavior; GOV.UK relies on its build to add it.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Scope: this lives in more than one place</h2>
+<p>An important practical point for whoever implements this. The rule for hiding content is <strong>duplicated in several files</strong> in Drupal core, not defined once. A site-wide change has to update all of them, or they will drift:</p>
+<div class="table-wrap">
+<table>
+<caption>Where the hide rule is defined in Drupal core</caption>
+<thead>
+<tr><th scope="col">File</th><th scope="col">Role</th><th scope="col">State</th></tr>
+</thead>
+<tbody>
+<tr><th scope="row"><code>system/css/components/hidden.module.css</code></th><td>The canonical, site-wide rule</td><td>The primary target; already uses focus-within</td></tr>
+<tr><th scope="row"><code>misc/dialog/off-canvas/css/utility.css</code></th><td>Off-canvas dialogs keep their own copy</td><td><strong>Has the old bug:</strong> uses <code>:focus</code> only, so it does <em>not</em> reveal a hidden wrapper when a child is focused</td></tr>
+<tr><th scope="row"><code>modules/navigation/css/base/admin-reset-styles.css</code></th><td>The Navigation module keeps another copy</td><td>Uses the old <code>clip</code> pattern</td></tr>
+</tbody>
+</table>
+</div>
+<p>The most valuable structural improvement may be to <strong>consolidate these to one rule</strong> rather than maintaining three copies that already disagree with each other &mdash; the off-canvas copy is missing the focus-within fix that core added.</p>
+</section>
+
+<section>
+<h2>What is still open before final sign-off</h2>
+<ul>
+  <li><strong>Screen-reader reading position on the skip link.</strong> Keyboard focus resumption is confirmed; whether NVDA moves its <em>reading cursor</em> into the main content after activating the skip link is being checked. See <a href="testing-plan.html">the testing plan</a>.</li>
+  <li><strong>Is <code>margin: 0</code> load-bearing?</strong> GOV.UK keeps it citing a VoiceOver announcement-order bug with negative margins. There is now a test for it; result pending.</li>
+  <li><strong>JAWS, mobile screen readers, and 400% magnification</strong> have not been tested yet.</li>
+</ul>
+<p>None of these block the two proven changes; they refine confidence and settle the follow-up decisions.</p>
+</section>
+
+<section>
+<h2>Why not just copy GOV.UK or The A11Y Project?</h2>
+<p>Both are excellent and widely used. But testing showed that <strong>both fail one case Drupal needs</strong>: when a focusable link sits inside a hidden wrapper, their <code>:focus</code>-only rule leaves the wrapper &mdash; and the link &mdash; visually hidden. A keyboard user can focus something they cannot see. Drupal's utility is more general and already handles this with <code>:focus-within</code>, so matching GOV.UK or A11Y Project exactly would be a regression. GOV.UK's clipboard protection is a nice extra, but it is a separate choice.</p>
+<p>The evidence is <code>focus-within-reveal.spec.js</code>, which measures the wrapper's clipped state after a descendant is focused: it reveals for <code>:focus-within</code> (proposed, current Drupal) and stays hidden for the GOV.UK and A11Y Project <code>:focus</code>-only rules, on both WebKit and Blink. The full comparison with all measured results is on the <a href="implementations.html">implementation breakdown</a>.</p>
+</section>
+
+</main>
+</body>
+</html>

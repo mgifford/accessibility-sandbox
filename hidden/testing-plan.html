@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visually hidden testing plan</title>
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header>
+  <h1>Testing plan: proving the approach in 2026</h1>
+  <nav aria-label="Site navigation">
+    <ul>
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="decision.html">The decision</a></li>
+      <li><a href="implementations.html">Implementation breakdown</a></li>
+      <li><a href="tests.html">Accessibility tests</a></li>
+      <li><a href="variants/index.html">Skip-link variants</a></li>
+      <li><a aria-current="page" href="testing-plan.html">Testing plan</a></li>
+    </ul>
+  </nav>
+</header>
+<main id="main-content">
+
+<section>
+<h2>Why this page exists</h2>
+<p>The <a href="implementations.html">implementation breakdown</a> reports findings from one screen reader on one operating system: VoiceOver on macOS 26, driving WebKit and Chromium. That is enough to have already changed one conclusion &mdash; the boundary-space mitigation showed no observable effect on VoiceOver &mdash; but it is not enough to call any approach the best practice for 2026.</p>
+<p>This page lists what still needs to be tested, what each test would prove, and which test could <em>overturn</em> a current finding. The goal is to decide the approach on evidence across the assistive technologies people actually use, not on one platform.</p>
+</section>
+
+<section>
+<h2>What has been established so far</h2>
+<div class="table-wrap">
+<table>
+<caption>Findings to date (VoiceOver / macOS 26 / WebKit; deterministic checks also on Blink)</caption>
+<thead>
+<tr><th scope="col">Claim</th><th scope="col">Status</th><th scope="col">Confidence</th></tr>
+</thead>
+<tbody>
+<tr><th scope="row"><code>:focus-within</code> reveals hidden wrappers</th><td>Real and differential</td><td>High &mdash; measured on WebKit and Blink; purely CSS behavior</td></tr>
+<tr><th scope="row">Skip target without <code>tabindex="-1"</code> resumes focus in <code>&lt;main&gt;</code></th><td>Works</td><td>Medium-high &mdash; measured on WebKit and Blink; desktop only so far</td></tr>
+<tr><th scope="row">Boundary spaces change spoken output</th><td>Real on NVDA + Chrome; neutral on Firefox and VoiceOver</td><td>Medium &mdash; confirmed on the most common Windows combination (NVDA 2026.1.1 + Chrome 151, reported in review); JAWS still unverified</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Testing still needed</h2>
+<p>Ordered by how much each would change the decision.</p>
+
+<div class="table-wrap">
+<table>
+<caption>Outstanding tests and what they would settle</caption>
+<thead>
+<tr><th scope="col">Test</th><th scope="col">What it would prove</th><th scope="col">Could it overturn a finding?</th></tr>
+</thead>
+<tbody>
+<tr>
+  <th scope="row">NVDA + Firefox and Chrome (Windows) &mdash; partially done</th>
+  <td>Whether the boundary-space mitigation actually helps on the most-used screen reader. NVDA and JAWS are where the <code>\00a0</code> pattern originated.</td>
+  <td><strong>Answered for the boundary claim (reported in review).</strong> NVDA 2026.1.1 + Chrome 151 concatenated <q>Place blockin the Header region</q> without the spaces and spoke a clean boundary with them; Firefox 154 exposed separate nodes (neutral). This overturned the VoiceOver-only "no effect" reading. Re-running the other claims (skip target, <code>margin: 0</code> order) on NVDA is still open.</td>
+</tr>
+<tr>
+  <th scope="row">JAWS (Windows)</th>
+  <td>Second most-used screen reader; dominant in government and enterprise, which is Drupal's core audience.</td>
+  <td>Yes, for the boundary claim.</td>
+</tr>
+<tr>
+  <th scope="row">Chrome / Blink + VoiceOver (macOS)</th>
+  <td>Whether Blink's accessibility tree changes the boundary result versus WebKit.</td>
+  <td>Possibly, for the boundary claim. Blocked in automation here by a macOS Automation-authorization quirk when Chromium is frontmost; needs a machine where that gate can be cleared.</td>
+</tr>
+<tr>
+  <th scope="row">iOS VoiceOver and the back gesture</th>
+  <td>Whether <code>tabindex="-1"</code> on a landmark actually interferes with the iOS back gesture, the specific mobile argument for removing it.</td>
+  <td>Yes, for the skip-target claim &mdash; it could add a concrete mobile benefit currently only asserted.</td>
+</tr>
+<tr>
+  <th scope="row">Android TalkBack</th>
+  <td>Boundary and skip-target behavior on the dominant mobile screen reader outside iOS.</td>
+  <td>Yes, for the boundary claim.</td>
+</tr>
+<tr>
+  <th scope="row">400% zoom and screen magnification</th>
+  <td>Whether revealing the whole wrapper (rather than only the focused child) actually helps a magnification user locate context &mdash; the magnification argument for <code>:focus-within</code>.</td>
+  <td>No, but it would confirm a benefit currently asserted rather than shown. Best done as manual review with screenshots at 100/200/400%.</td>
+</tr>
+<tr>
+  <th scope="row"><code>margin: 0</code> and VoiceOver announcement order</th>
+  <td>Whether a negative margin actually causes VoiceOver on macOS to announce visually hidden text in the wrong order &mdash; the GOV.UK 2019 rationale for keeping <code>margin: 0</code>. Automated by <code>npm run test:margin-order</code> (standalone VoiceOver runner), comparing <code>margin: 0</code> against a negative margin.</td>
+  <td>No, but it confirms or refutes a specific untested rationale in the proposed CSS. Ready to run when VoiceOver automation (Full Disk Access) is available.</td>
+</tr>
+<tr>
+  <th scope="row">Clipboard behavior (<code>user-select</code>)</th>
+  <td>Whether GOV.UK's <code>user-select: none</code> meaningfully prevents copying hidden text, and whether Drupal wants that behavior.</td>
+  <td>No, but it isolates a real behavioral difference between the models that is easy to demonstrate.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>How each screen reader would be driven</h2>
+<ul>
+  <li><strong>VoiceOver (macOS)</strong> &mdash; already automated with Guidepup. See <a href="GUIDEPUP_SETUP.md">the Guidepup setup notes</a>. VoiceOver capture runs as a standalone Node runner, not under the Playwright test runner, because the test runner's browser has no frontable window.</li>
+  <li><strong>NVDA and JAWS (Windows)</strong> &mdash; Guidepup supports both on Windows. This requires a Windows machine or virtual machine; it cannot be run from macOS. This is the single highest-value gap.</li>
+  <li><strong>iOS VoiceOver / Android TalkBack</strong> &mdash; mobile screen readers are harder to automate. Start with manual scripted passes on a simulator or device, capturing spoken output and the back-gesture behavior.</li>
+  <li><strong>Magnification and clipboard</strong> &mdash; partly deterministic (computed <code>user-select</code>, wrapper reveal) and partly manual (visual tracking at zoom, actual copy-paste into another application).</li>
+</ul>
+</section>
+
+<section>
+<h2>What "proven" would mean</h2>
+<p>An approach is ready to recommend as 2026 best practice when, for each claimed benefit, there is either:</p>
+<ul>
+  <li>a deterministic check that the difference exists (CSS or markup), <em>and</em></li>
+  <li>screen-reader evidence, on more than one screen reader, that the difference reaches the user &mdash; or an explicit, recorded decision that the change is neutral and retained for another reason (for example clipboard protection, or forward compatibility).</li>
+</ul>
+<p>Until then, findings are reported with their platform and their confidence, and no single-platform result is treated as settled. That discipline is the difference between demonstrating an improvement and rearranging the deck chairs.</p>
+</section>
+
+</main>
+</body>
+</html>

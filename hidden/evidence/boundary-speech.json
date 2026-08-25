@@ -1,0 +1,19 @@
+{
+  "platform": "darwin",
+  "claim": "Generated ::before/::after \\00a0 spaces change VoiceOver boundary output",
+  "captured": [
+    {
+      "file": "drupal-current.html",
+      "label": "current (no generated spaces)",
+      "boundaryPhrase": "Place block in the Header region link"
+    },
+    {
+      "file": "proposed-sfnsp-focuswithin.html",
+      "label": "proposed (generated \\00a0 spaces)",
+      "boundaryPhrase": "Place block in the Header region link"
+    }
+  ],
+  "allImplementationsSpokeBoundary": true,
+  "voiceOverBoundaryIdentical": true,
+  "interpretation": "No VoiceOver-observable difference between current and proposed on this platform. The generated-space mitigation is a no-op for VoiceOver here; verify against other screen readers (JAWS, NVDA) before claiming a benefit."
+}
