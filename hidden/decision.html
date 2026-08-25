@@ -76,38 +76,44 @@
 <table>
 <caption>What to change, and how sure we are</caption>
 <thead>
-<tr><th scope="col">Change</th><th scope="col">Recommendation</th><th scope="col">Why / evidence</th></tr>
+<tr><th scope="col">Change</th><th scope="col">Recommendation</th><th scope="col">Why</th><th scope="col">Evidence</th></tr>
 </thead>
 <tbody>
 <tr>
   <th scope="row">Reveal hidden content when it (or a child) receives focus (<code>:focus-within</code>)</th>
   <td class="verdict v-yes">Keep &mdash; already in core</td>
-  <td>Measured on two browser engines. Prevents a keyboard user from landing on a link that stays invisible. The GOV.UK and A11Y Project patterns fail this case.</td>
+  <td>Prevents a keyboard user from landing on a link that stays invisible. The GOV.UK and A11Y Project patterns fail this case.</td>
+  <td>Measured on WebKit and Blink: <code>focus-within-reveal.spec.js</code> asserts the wrapper reveals for <code>:focus-within</code> and stays hidden for <code>:focus</code>-only. See <a href="guidepup/logs/at-findings.md">at-findings.md</a> §3.</td>
 </tr>
 <tr>
   <th scope="row">Add invisible spaces around hidden text so words are not run together</th>
   <td class="verdict v-yes">Adopt</td>
-  <td>Fixes real "blockin" concatenation on NVDA + Chrome (confirmed in review). Neutral elsewhere. Not solved by other properties alone.</td>
+  <td>Fixes real "blockin" concatenation. Neutral where it is not needed. Not solved by <code>white-space: nowrap</code> alone (different mechanism).</td>
+  <td>NVDA 2026.1.1 + Chrome 151 concatenated without it, clean with it (reported in the Drupal a11y review). VoiceOver capture: <a href="evidence/boundary-speech.json">evidence/boundary-speech.json</a>. See <a href="guidepup/logs/at-findings.md">at-findings.md</a> §1.</td>
 </tr>
 <tr>
   <th scope="row">Simplify the "skip to main content" target (drop the empty <code>tabindex="-1"</code> anchor)</th>
   <td class="verdict v-yes">Adopt</td>
-  <td>Keyboard focus still lands in the main content afterward, on two engines. Modern browsers handle it without the old workaround. One screen-reader check still open (below).</td>
+  <td>Modern browsers resume focus at the target without the old workaround. One screen-reader reading-position check still open (below).</td>
+  <td>Measured on WebKit and Blink: <code>skip-focus.spec.js</code> asserts the next Tab after activating the skip link lands inside <code>&lt;main&gt;</code> for every target variant. See <a href="guidepup/logs/at-findings.md">at-findings.md</a> §2.</td>
 </tr>
 <tr>
   <th scope="row">Use modern clipping (<code>clip-path</code>) instead of the deprecated <code>clip</code></th>
   <td class="verdict v-open">Optional cleanup</td>
-  <td>No user-facing difference found. Modern idiom; fine to adopt as tidy-up, not as a fix.</td>
+  <td>Modern idiom; fine to adopt as tidy-up, not as a fix.</td>
+  <td>No user-facing difference found in testing; a stylistic modernization, so the evidence is the absence of a behavioral delta rather than a positive result.</td>
 </tr>
 <tr>
   <th scope="row">Apply the reveal to all hidden content, not only elements marked <code>focusable</code></th>
   <td class="verdict v-open">Follow-up</td>
-  <td>More correct in principle (a focused-but-hidden element is always a bug), but changing the base behavior on hundreds of thousands of sites is a migration risk. Decide separately.</td>
+  <td>More correct in principle (a focused-but-hidden element is always a bug), but changing the base behavior on hundreds of thousands of sites is a migration risk.</td>
+  <td>Design argument, not a measured result. Raised in the Drupal a11y review; recorded as an open decision on <a href="implementations.html">the implementation breakdown</a>.</td>
 </tr>
 <tr>
   <th scope="row">Prevent copying hidden text (<code>user-select: none</code>)</th>
   <td class="verdict v-no">Not in this change</td>
   <td>A separate UX choice, not needed to hide content. If ever added it must include the <code>-webkit-</code> prefix or it does nothing in Safari.</td>
+  <td>Not tested here (out of scope). The prefix requirement is a documented Safari behavior; GOV.UK relies on its build to add it.</td>
 </tr>
 </tbody>
 </table>
@@ -145,7 +151,8 @@
 
 <section>
 <h2>Why not just copy GOV.UK or The A11Y Project?</h2>
-<p>Both are excellent and widely used. But we measured that <strong>both fail one case Drupal needs</strong>: when a focusable link sits inside a hidden wrapper, their <code>:focus</code>-only rule leaves the wrapper &mdash; and the link &mdash; visually hidden. A keyboard user can focus something they cannot see. Drupal's utility is more general and already handles this with <code>:focus-within</code>, so matching GOV.UK or A11Y Project exactly would be a regression. GOV.UK's clipboard protection is a nice extra, but it is a separate choice. The full comparison, with the measured results, is on the <a href="implementations.html">implementation breakdown</a>.</p>
+<p>Both are excellent and widely used. But testing showed that <strong>both fail one case Drupal needs</strong>: when a focusable link sits inside a hidden wrapper, their <code>:focus</code>-only rule leaves the wrapper &mdash; and the link &mdash; visually hidden. A keyboard user can focus something they cannot see. Drupal's utility is more general and already handles this with <code>:focus-within</code>, so matching GOV.UK or A11Y Project exactly would be a regression. GOV.UK's clipboard protection is a nice extra, but it is a separate choice.</p>
+<p>The evidence is <code>focus-within-reveal.spec.js</code>, which measures the wrapper's clipped state after a descendant is focused: it reveals for <code>:focus-within</code> (proposed, current Drupal) and stays hidden for the GOV.UK and A11Y Project <code>:focus</code>-only rules, on both WebKit and Blink. The full comparison with all measured results is on the <a href="implementations.html">implementation breakdown</a>.</p>
 </section>
 
 </main>

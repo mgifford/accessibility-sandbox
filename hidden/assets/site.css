@@ -9,7 +9,7 @@ nav ul { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; padding: 0; list-st
 a { color: LinkText; text-underline-offset: .15em; }
 a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible { outline: .2rem solid Highlight; outline-offset: .2rem; }
 section { border-top: var(--border); padding-block: 1.5rem; }
-p, li, dd { max-width: 78ch; text-align: justify; text-justify: inter-word; hyphens: auto; }
+p, li, dd { max-width: 78ch; }
 pre { overflow-x: auto; padding: 1rem; border: var(--border); }
 code, kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .line-explanation dt { margin-block-start: 1rem; font-weight: 700; }
