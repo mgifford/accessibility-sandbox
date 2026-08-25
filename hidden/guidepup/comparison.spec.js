@@ -99,12 +99,12 @@ test("implementation comparison report", async ({ page }) => {
       const suffixLink = document.querySelector('a[href="#suffix-target"]');
       const prefixLink = document.querySelector('a[href="#prefix-target"]');
       const heading = document.querySelector("h3");
-      const saveButton = document.querySelector('button[type="button"]');
-      const deliverySection = document.querySelector("section:nth-of-type(5)");
-      const legend = deliverySection?.querySelector("fieldset legend");
-      const summary = document.querySelector("details summary");
-      const tableCell = document.querySelector("table td");
-      const continueButton = document.querySelectorAll('button[type="button"]')[1];
+      const contextSection = document.querySelector("section:nth-of-type(5)");
+      const saveButton = contextSection?.querySelector('button[type="button"]');
+      const legend = contextSection?.querySelector("fieldset legend");
+      const summary = contextSection?.querySelector("details summary");
+      const tableCell = contextSection?.querySelector("table td");
+      const continueButton = document.querySelector('section:nth-of-type(7) button[type="button"]');
       const continueHidden = continueButton?.querySelector(".visually-hidden");
       const continueHiddenStyle = continueHidden ? getComputedStyle(continueHidden) : null;
       const selectionSample = document.querySelector("section:nth-of-type(8) p .visually-hidden");
@@ -264,14 +264,14 @@ test("implementation comparison report", async ({ page }) => {
   );
 
   const markdownLines = [
-    "# Visually Hidden CSS Matrix Report",
+    "# Visually Hidden Implementation Matrix Report",
     "",
     `Generated: ${output.generatedAt}`,
     `Base URL: ${output.baseURL}`,
     "",
     "## Scope",
     "",
-    "- 4 implementations x 9 scenarios",
+    "- 4 implementations x 9 scenarios (CSS and, for proposed, skip-target markup)",
     "- Status keys: pass, fail, manual",
     "",
     "## Scenario Types",
