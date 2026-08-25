@@ -6,7 +6,22 @@ accessibility improvement apart from a change that only tidies markup or CSS
 ("moving deck chairs"). Each claim below was tested against actual behavior, not
 inferred from the stylesheet or the DOM.
 
-Environment: macOS 26 (VoiceOver), WebKit via Playwright.
+Environment: macOS 26 (VoiceOver), WebKit and Chromium via Playwright.
+
+## Cross-engine note (WebKit vs Blink)
+
+The two deterministic verdicts were re-run against Chromium (Blink) as well as
+WebKit and **hold on both engines**: skip-target focus resumption
+(`skip-focus.spec.js`) and `:focus-within` wrapper reveal
+(`focus-within-reveal.spec.js`) each pass identically under `--browser=chromium`.
+
+The VoiceOver *spoken-output* capture could not be run against Chrome in this
+environment: driving VoiceOver via AppleScript while Chromium is the frontmost app
+returns "Not authorized to send Apple events to VoiceOver" (a macOS Automation
+authorization that is scoped differently for Chromium than for WebKit). VoiceOver
+reads Chrome fine for a human; only the automation is gated. The boundary-speech
+finding below is therefore VoiceOver-on-WebKit only and should be re-confirmed on
+Chrome/Blink where that automation gate can be cleared.
 
 ## Summary
 

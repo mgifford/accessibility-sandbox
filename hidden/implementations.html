@@ -14,6 +14,8 @@
       <li><a href="index.html">Overview</a></li>
       <li><a aria-current="page" href="implementations.html">Implementation breakdown</a></li>
       <li><a href="tests.html">Accessibility tests</a></li>
+      <li><a href="variants/index.html">Skip-link variants</a></li>
+      <li><a href="testing-plan.html">Testing plan</a></li>
     </ul>
   </nav>
 </header>
@@ -238,25 +240,59 @@
 <section>
 <h2>What this comparison can and cannot prove</h2>
 
-<p>The claims below differ in how strongly they can be tested. Reading a stylesheet or the DOM proves a <em>difference</em>; it does not prove that difference reaches a user. Only assistive-technology observation can confirm the latter.</p>
+<p>The claims below differ in how strongly they can be tested. Reading a stylesheet or the DOM proves a <em>difference</em>; it does not prove that difference reaches a user. Only assistive-technology observation can confirm the latter. The <strong>Finding</strong> column records what was actually observed to date, not what is assumed.</p>
+
+<p><strong>Test environment for findings:</strong> VoiceOver on macOS 26, with WebKit and Chromium via Playwright. These are early results on one screen reader; see <a href="testing-plan.html">the testing plan</a> for what still needs to be checked before any conclusion is treated as settled.</p>
 
 <div class="table-wrap">
 <table>
-<caption>Verifiability of each claim</caption>
+<caption>Each claim: how it is checked, and what has been found</caption>
 <thead>
-<tr><th scope="col">Claim</th><th scope="col">Deterministic check</th><th scope="col">What only AT can confirm</th></tr>
+<tr><th scope="col">Claim</th><th scope="col">Deterministic check</th><th scope="col">What only AT can confirm</th><th scope="col">Finding to date</th></tr>
 </thead>
 <tbody>
-<tr><th scope="row">Boundary spaces (visible/hidden text not concatenated)</th><td>Proposed adds <code>::before</code>/<code>::after</code> <code>\00a0</code>; current Drupal does not</td><td>Whether the screen reader actually speaks a boundary between the words. A <code>textContent</code> check is blind to this: both words are present in the DOM either way.</td></tr>
-<tr><th scope="row">No wrapping of long hidden text</th><td><code>white-space: nowrap</code> is computed</td><td>Whether historical concatenation from tiny-box wrapping is avoided in spoken output</td></tr>
-<tr><th scope="row">Modern clipping</th><td><code>clip-path: inset(50%)</code> present, <code>clip</code> not relied upon</td><td>(no meaningful AT-only aspect)</td></tr>
-<tr><th scope="row"><code>:focus-within</code> reveals hidden wrappers</th><td>Wrapper leaves the 1px box when a descendant is focused</td><td>Whether a magnification user can locate the revealed context</td></tr>
-<tr><th scope="row">Skip target without <code>tabindex="-1"</code></th><td><code>#main-content</code> is on <code>&lt;main&gt;</code>; no <code>tabindex</code></td><td>Whether keyboard focus and the screen-reader reading position actually resume in the main region after activation</td></tr>
+<tr><th scope="row">Boundary spaces (visible/hidden text not concatenated)</th><td>Proposed adds <code>::before</code>/<code>::after</code> <code>\00a0</code>; current Drupal does not</td><td>Whether the screen reader actually speaks a boundary between the words. A <code>textContent</code> check is blind to this: both words are present in the DOM either way.</td><td><strong>No observable effect on VoiceOver.</strong> VoiceOver spoke <q>Place block in the Header region</q> with and without the generated spaces &mdash; even with no whitespace at all in the DOM. Unverified on NVDA/JAWS, where the mitigation originated.</td></tr>
+<tr><th scope="row">No wrapping of long hidden text</th><td><code>white-space: nowrap</code> is computed</td><td>Whether historical concatenation from tiny-box wrapping is avoided in spoken output</td><td>CSS difference confirmed; spoken effect not isolated from the boundary-space case yet.</td></tr>
+<tr><th scope="row">Modern clipping</th><td><code>clip-path: inset(50%)</code> present, <code>clip</code> not relied upon</td><td>(no meaningful AT-only aspect)</td><td>Cosmetic modernization; no user-facing difference expected or found.</td></tr>
+<tr><th scope="row"><code>:focus-within</code> reveals hidden wrappers</th><td>Wrapper leaves the clipped 1px state when a descendant is focused</td><td>Whether a magnification user can locate the revealed context</td><td><strong>Real and differential.</strong> <code>:focus-within</code> (proposed, current Drupal) reveals the wrapper; <code>:focus</code>-only (GOV.UK, A11Y Project) leaves it hidden. Holds on WebKit and Blink.</td></tr>
+<tr><th scope="row">Skip target without <code>tabindex="-1"</code></th><td><code>#main-content</code> is on <code>&lt;main&gt;</code>; no <code>tabindex</code></td><td>Whether keyboard focus and the screen-reader reading position actually resume in the main region after activation</td><td><strong>Works.</strong> After activating the skip link, the next Tab resumes inside <code>&lt;main&gt;</code> for every target variant, including the no-<code>tabindex</code> form. Holds on WebKit and Blink.</td></tr>
 </tbody>
 </table>
 </div>
 
-<p>The two rows whose value lives almost entirely in the AT column &mdash; boundary spaces and the skip target &mdash; are the two that determine whether the proposal is a genuine improvement. Automated <code>textContent</code> assertions cannot see them, which is why this repository treats screen-reader observation as required rather than optional.</p>
+<p>Two findings stand out. The <code>:focus-within</code> reveal and the skip-target simplification are <strong>demonstrated improvements</strong> so far. The boundary-space mitigation &mdash; often cited as the main screen-reader benefit &mdash; showed <strong>no observable effect on VoiceOver</strong>, which is exactly the kind of result that separates a real improvement from a change that only looks better in the stylesheet. It is not dismissed: it may still matter on other screen readers, and that is now a specific thing to test rather than assume.</p>
+</section>
+
+<section>
+<h2>Arguments against changing Drupal, and for the other models</h2>
+
+<p>A proposal that lists no counter-arguments is advocacy, not analysis. Here is the honest case against the proposed change, and the case for keeping closer to GOV.UK or The A11Y Project.</p>
+
+<h3>Arguments against changing Drupal's current approach at all</h3>
+<ul>
+  <li><strong>Scale and churn risk.</strong> This utility ships on hundreds of thousands of sites. Any change to a base class risks subtle regressions in themes and modules that override or depend on the current computed values &mdash; for example code keyed to <code>clip: rect(1px, 1px, 1px, 1px)</code> or to today's <code>word-wrap</code> behavior. The bar for touching it should be a demonstrated user benefit, not tidier source.</li>
+  <li><strong>The <code>clip</code> deprecation is cosmetic.</strong> <code>clip</code> is deprecated but works in every browser and will for years. Moving to <code>clip-path</code> is modernization for its own sake unless it fixes a real, observed bug. Our testing found no user-facing difference from that change.</li>
+  <li><strong>The architecture change is invisible to users.</strong> The shift from Drupal's reset model to a conditional-hiding model (<code>:not(:active):not(:focus-within)</code>) is cleaner to maintain, but that is a developer-experience argument, not an accessibility one &mdash; and DX changes to a base utility still carry regression risk.</li>
+  <li><strong>One pillar is currently unproven.</strong> The boundary-space mitigation showed no effect on VoiceOver. If it is also a no-op on NVDA and JAWS, a headline justification for the CSS change disappears. Until that is tested, part of the case rests on an assumption.</li>
+</ul>
+
+<h3>The case for the GOV.UK model</h3>
+<ul>
+  <li>Battle-tested at national scale and actively maintained.</li>
+  <li><code>user-select: none</code> prevents visually hidden text from being copied into the clipboard accidentally &mdash; a small but real behavior Drupal currently lacks.</li>
+  <li>Its <code>\00a0</code> boundary mitigation is grounded in documented real-world screen-reader bugs, which is arguably more evidence-based than assuming the boundary is always fine.</li>
+  <li><strong>Counter-argument:</strong> its reveal is designed for the focusable element <em>itself</em>, not a wrapper. We measured that the GOV.UK rule leaves a hidden wrapper clipped when a descendant link is focused &mdash; a keyboard user can focus a link that stays visually hidden. For Drupal's more general utility, that is a regression, not a win.</li>
+</ul>
+
+<h3>The case for The A11Y Project model</h3>
+<ul>
+  <li>The simplest and most widely referenced modern pattern, using <code>clip-path</code> and conditional hiding.</li>
+  <li>Easy to reason about and to teach.</li>
+  <li><strong>Counter-argument:</strong> it shares the same <code>:focus</code>-only limitation &mdash; the wrapper does not reveal on descendant focus (measured) &mdash; and it has no boundary-space handling. It is a good pattern for directly focusable elements, but insufficient for Drupal's wrapper use case.</li>
+</ul>
+
+<h3>Where that leaves the proposal</h3>
+<p>The proposed model's genuinely defensible advantage over both GOV.UK and The A11Y Project is the <code>:focus-within</code> wrapper reveal, which we confirmed is real and differential across two rendering engines. Its weakest justification is the boundary-space mitigation, which we could not show helps VoiceOver. An honest recommendation follows the evidence: keep <code>:focus-within</code>, adopt the skip-target simplification, and treat the boundary-space and <code>clip-path</code> changes as unproven until cross-screen-reader testing settles them.</p>
 </section>
 
 <section>
