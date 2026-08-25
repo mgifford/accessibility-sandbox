@@ -5,6 +5,50 @@ Use this when you need to get VoiceOver automation working reliably in this repo
 This repo is a static HTML/CSS test harness, not a running Drupal site.
 The `drupal` implementation name is a behavior variant label for comparison only.
 
+## Why Guidepup is in this repo
+
+Guidepup drives a real VoiceOver session and captures what it actually speaks.
+That is the only track here that can answer the questions the deterministic tests
+cannot: whether the proposal produces a genuinely different, better screen-reader
+result rather than just tidier CSS or markup. See "Deck chairs versus real
+improvement" in `TESTING.md`.
+
+Getting preflight to pass is a prerequisite, not the goal. The goal is a captured,
+comparable spoken log for current Drupal versus proposed, read as a *difference*.
+A green preflight only means VoiceOver can be driven; it is not evidence about the
+proposal.
+
+### VoiceOver captures run standalone, not under `@playwright/test`
+
+VoiceOver automation needs a browser window it can bring to the front. A direct
+`webkit.launch()` from a plain Node script surfaces a `Playwright` GUI process
+that AppleScript can front; the `@playwright/test` runner launches WebKit as a
+background process with no frontable window, so the VoiceOver cursor never enters
+web content and captures come back empty or wrong.
+
+The differential VoiceOver capture is therefore a standalone runner:
+
+```sh
+npm run test:boundary-speech
+```
+
+It launches a fresh browser per variant and verifies (via `ensureInWebContent` in
+`guidepup/at-helpers.js`) that the VoiceOver cursor actually reached the page's web
+content before trusting any spoken phrase; it errors rather than record a bad
+result if window fronting fails. On top of Accessibility and Automation, the
+controlling app also needs Full Disk Access for Guidepup to mount its VoiceOver
+preferences (otherwise start fails with an `EPERM` symlink error).
+
+The deterministic checks do not use VoiceOver and run normally under the test
+runner:
+
+```sh
+npm run test:skip-focus      # SFNSP focus resumption after the skip link
+npm run test:focus-within    # :focus-within wrapper reveal, differential
+```
+
+See `guidepup/logs/at-findings.md` for the observed results these encode.
+
 ## Goal
 
 Get this command passing:
