@@ -1,6 +1,6 @@
 # Hidden Content Testing Guide
 
-This folder has a repeatable test matrix for visually hidden CSS behavior across four implementations and nine scenarios.
+This folder has a repeatable test matrix for visually hidden behavior across four implementations and nine scenarios. Implementations differ in CSS and, for the proposed Drupal variant, in skip-target markup as well.
 
 ## Scope
 
@@ -13,7 +13,13 @@ Page under test:
 
 Matrix shape:
 
-- 4 CSS implementations x 9 test scenarios
+- 4 implementations x 9 test scenarios
+
+Each implementation is a combination of a visually-hidden CSS strategy and a
+skip-target markup pattern. The proposed Drupal variant differs from current
+Drupal in both CSS (`:focus-within` reveal) and skip-target markup (`id` on the
+`<main>` landmark rather than an empty `tabindex="-1"` destination anchor), so
+"implementation" here means more than CSS alone.
 
 ## Test tracks
 
@@ -66,7 +72,7 @@ Notes:
 Generated under `guidepup/logs/`:
 
 - `axe-*.json`: axe output per implementation
-- `comparison-report.json`: machine-readable 4x9 matrix report
+- `comparison-report.json`: machine-readable 4x9 implementation matrix report
 - `comparison-report.md`: human-readable matrix + ranking + scenario details
 - `voiceover-*.json`: VoiceOver phrase log and scenario checkpoint matches
 - `voiceover-*.md`: concise per-implementation VoiceOver summary

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proposed Drupal — id on &lt;main&gt; with tabindex, :focus-within reveal — skip-link variant</title>
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="../assets/proposed.css">
+</head>
+<body>
+<!-- GENERATED FILE — do not edit. Source: scripts/build-variants.mjs -->
+<!-- Variant: proposed-tabindex-focuswithin -->
+<!-- Skip target: <main id="main-content" tabindex="-1"> (id on landmark, focus shim kept) -->
+<!-- Reveal CSS: :focus-within reveal (proposed) -->
+<!-- Faithful to: Proposed D: id on <main>, tabindex kept, plus :focus-within reveal. -->
+<a class="visually-hidden focusable skip-link" href="#main-content">Skip to main content</a>
+
+<header>
+  <h1>Proposed Drupal — id on &lt;main&gt; with tabindex, :focus-within reveal</h1>
+  <nav aria-label="Site navigation">
+    <ul>
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="index.html">Variants index</a></li>
+    </ul>
+  </nav>
+  <p class="variant-meta">Skip target: &lt;main id="main-content" tabindex="-1"&gt; (id on landmark, focus shim kept). Reveal CSS: :focus-within reveal (proposed).</p>
+</header>
+
+<main id="main-content" tabindex="-1">
+<section>
+<h2>1. Keyboard-only: skip link</h2>
+<p><strong>Start here.</strong> Reload the page and press <kbd>Tab</kbd> once. “Skip to main content” should be the first focusable element and should become visible. Activate it, then press <kbd>Tab</kbd> again and confirm focus resumes inside the main content.</p>
+<p>Repeat at 100%, 200%, and 400% browser zoom.</p>
+</section>
+
+<section>
+<h2>2. Visible text followed by hidden text</h2>
+<p><a href="#suffix-target">Place block<span class="visually-hidden"> in the Header region</span></a></p>
+<p id="suffix-target">Compare whether the spoken phrase preserves the boundary between “block” and “in”.</p>
+</section>
+
+<section>
+<h2>3. Hidden text followed by visible text</h2>
+<p><a href="#prefix-target"><span class="visually-hidden">Search </span>all content</a></p>
+<p id="prefix-target">Compare whether the spoken phrase preserves the boundary between “Search” and “all”.</p>
+</section>
+
+<section>
+<h2>4. Heading navigation</h2>
+<h3>Account<span class="visually-hidden"> settings</span></h3>
+<p>Navigate directly by heading. Compare word boundaries, pauses, and whether generated whitespace is announced explicitly.</p>
+</section>
+
+<section>
+<h2>5. Different HTML contexts</h2>
+<p>Paragraph<span class="visually-hidden"> additional context</span></p>
+<button type="button">Save<span class="visually-hidden"> draft</span></button>
+<fieldset>
+  <legend>Delivery<span class="visually-hidden"> address</span></legend>
+  <label><input type="radio" name="delivery"> Home</label>
+</fieldset>
+<details>
+  <summary>More<span class="visually-hidden"> information</span></summary>
+  <p>Details content.</p>
+</details>
+<table>
+<caption>Table example</caption>
+<tbody><tr><th scope="row">Plan</th><td>Standard<span class="visually-hidden"> subscription</span></td></tr></tbody>
+</table>
+</section>
+
+<section>
+<h2>6. Direct focus versus focus-within</h2>
+<p>The wrapper below is visually hidden and carries Drupal's <code>focusable</code> class, but the wrapper itself is not focusable. Its child link is.</p>
+
+<div class="visually-hidden focusable focus-wrapper">
+  <p>Hidden wrapper context.</p>
+  <a href="#focus-target">Focusable descendant inside hidden wrapper</a>
+</div>
+
+<p id="focus-target">Compare whether the entire wrapper becomes visible when the child link receives focus.</p>
+
+<p><strong>Expected distinction:</strong> an implementation using only <code>:focus</code> on the wrapper cannot react when the child is focused. An implementation using <code>:focus-within</code> can.</p>
+</section>
+
+<section>
+<h2>7. Long hidden text</h2>
+<button type="button">Continue<span class="visually-hidden"> to the next step where you will review all configuration choices before saving the form</span></button>
+<p>Compare Drupal's current wrapping behavior with the explicit <code>white-space: nowrap</code> implementations.</p>
+</section>
+
+<section>
+<h2>8. Text selection</h2>
+<p>Copy this sentence<span class="visually-hidden"> including this hidden phrase</span> and compare clipboard behavior. GOV.UK applies <code>user-select: none</code>; the other implementations in this test do not.</p>
+</section>
+
+<section>
+<h2>9. High zoom and magnification</h2>
+<p>At 400% browser zoom, reload and start again from the skip link. Confirm revealed focusable content is not constrained by one-pixel dimensions, clipping, or hidden overflow.</p>
+</section>
+</main>
+</body>
+</html>

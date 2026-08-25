@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skip-link variant index</title>
+  <link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+<!-- GENERATED FILE — do not edit. Source: scripts/build-variants.mjs -->
+<header>
+  <h1>Skip-link and visually-hidden variants</h1>
+  <nav aria-label="Site navigation">
+    <ul>
+      <li><a href="../index.html">Overview</a></li>
+      <li><a href="../tests.html">Switcher test page</a></li>
+    </ul>
+  </nav>
+</header>
+<main id="main-content">
+<section>
+<h2>Faithful variant pages</h2>
+<p>Each page is static markup faithful to one real or proposed pattern. Skip-target
+markup and reveal CSS vary independently so each variable can be tested on its own.</p>
+<ul>
+      <li><a href="drupal-current.html">Current Drupal</a> — <span class="variant-meta">Current Drupal core: empty &lt;a id="main-content" tabindex="-1"&gt; inside &lt;main&gt;, :focus reveal.</span></li>
+      <li><a href="a11yproject.html">A11Y Project</a> — <span class="variant-meta">The A11Y Project: &lt;main id tabindex="-1"&gt;, :not(:focus):not(:active) hide rule (a11yproject.css).</span></li>
+      <li><a href="govuk.html">GOV.UK</a> — <span class="variant-meta">GOV.UK Frontend: &lt;main id tabindex="-1"&gt; plus a focus-managing JS module (not reproduced here), user-select:none, govuk.css.</span></li>
+      <li><a href="proposed-sfnsp-focus.html">Proposed Drupal — SFNSP target, :focus reveal</a> — <span class="variant-meta">Proposed A: skip target modernized (no tabindex, SFNSP) but current :focus reveal CSS retained.</span></li>
+      <li><a href="proposed-sfnsp-focuswithin.html">Proposed Drupal — SFNSP target, :focus-within reveal</a> — <span class="variant-meta">Proposed B: both changes together — SFNSP target and :focus-within reveal. The primary proposal.</span></li>
+      <li><a href="proposed-tabindex-focus.html">Proposed Drupal — id on &lt;main&gt; with tabindex, :focus reveal</a> — <span class="variant-meta">Proposed C: id moved onto &lt;main&gt; but tabindex="-1" kept; current :focus reveal CSS.</span></li>
+      <li><a href="proposed-tabindex-focuswithin.html">Proposed Drupal — id on &lt;main&gt; with tabindex, :focus-within reveal</a> — <span class="variant-meta">Proposed D: id on &lt;main&gt;, tabindex kept, plus :focus-within reveal.</span></li>
+      <li><a href="proposed-anchor-focuswithin.html">Proposed Drupal — empty anchor retained, :focus-within reveal</a> — <span class="variant-meta">Proposed E: current empty-anchor target held constant, only the reveal CSS changed to :focus-within.</span></li>
+    </ul>
+</section>
+<section>
+<h2>Matrix</h2>
+<div class="table-wrap">
+<table>
+<caption>Skip target x reveal CSS</caption>
+<thead><tr><th scope="col">Variant</th><th scope="col">Skip target</th><th scope="col">Reveal CSS</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a href="drupal-current.html">Current Drupal</a></th><td>empty destination anchor inside &lt;main&gt; (current Drupal)</td><td>:focus / :active reveal (current Drupal)</td></tr>
+<tr><th scope="row"><a href="a11yproject.html">A11Y Project</a></th><td>&lt;main id="main-content" tabindex="-1"&gt; (id on landmark, focus shim kept)</td><td>a11yproject.css (project stylesheet)</td></tr>
+<tr><th scope="row"><a href="govuk.html">GOV.UK</a></th><td>&lt;main id="main-content" tabindex="-1"&gt; (id on landmark, focus shim kept)</td><td>govuk.css (project stylesheet)</td></tr>
+<tr><th scope="row"><a href="proposed-sfnsp-focus.html">Proposed Drupal — SFNSP target, :focus reveal</a></th><td>&lt;main id="main-content"&gt; (SFNSP, no tabindex)</td><td>:focus / :active reveal (current Drupal)</td></tr>
+<tr><th scope="row"><a href="proposed-sfnsp-focuswithin.html">Proposed Drupal — SFNSP target, :focus-within reveal</a></th><td>&lt;main id="main-content"&gt; (SFNSP, no tabindex)</td><td>:focus-within reveal (proposed)</td></tr>
+<tr><th scope="row"><a href="proposed-tabindex-focus.html">Proposed Drupal — id on &lt;main&gt; with tabindex, :focus reveal</a></th><td>&lt;main id="main-content" tabindex="-1"&gt; (id on landmark, focus shim kept)</td><td>:focus / :active reveal (current Drupal)</td></tr>
+<tr><th scope="row"><a href="proposed-tabindex-focuswithin.html">Proposed Drupal — id on &lt;main&gt; with tabindex, :focus-within reveal</a></th><td>&lt;main id="main-content" tabindex="-1"&gt; (id on landmark, focus shim kept)</td><td>:focus-within reveal (proposed)</td></tr>
+<tr><th scope="row"><a href="proposed-anchor-focuswithin.html">Proposed Drupal — empty anchor retained, :focus-within reveal</a></th><td>empty destination anchor inside &lt;main&gt; (current Drupal)</td><td>:focus-within reveal (proposed)</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</body>
+</html>
