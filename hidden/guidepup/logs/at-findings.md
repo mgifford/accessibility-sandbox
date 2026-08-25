@@ -27,14 +27,16 @@ Chrome/Blink where that automation gate can be cleared.
 
 | Claim | Verdict | Basis |
 |---|---|---|
-| Generated boundary spaces (`::before`/`::after` `\00a0`) change screen-reader output | Not supported on this platform | VoiceOver speaks a clean boundary with and without the spaces |
+| Generated boundary spaces (`::before`/`::after` `\00a0`) change screen-reader output | Supported where it matters | No effect on VoiceOver/WebKit; fixes real concatenation on NVDA+Chrome (reported); neutral on NVDA+Firefox |
 | Skip target without `tabindex="-1"` still resumes keyboard focus in `<main>` | Supported | Next Tab after activating the skip link lands inside `<main>` for every target variant |
 | `:focus-within` reveals a hidden wrapper when a descendant is focused | Supported and differential | `:focus`-only implementations leave the wrapper hidden |
 
-## 1. Boundary spaces: no VoiceOver-observable effect
+## 1. Boundary spaces: no VoiceOver effect, but a REAL NVDA+Chrome improvement
 
 The proposed CSS adds `content: "\00a0"` on `::before`/`::after` so visible and
 hidden text are not concatenated in screen-reader output (the GOV.UK mitigation).
+
+### VoiceOver / WebKit / macOS 26 (this machine): no effect
 
 Observed VoiceOver output for the boundary link, captured by
 `npm run test:boundary-speech` (see `boundary-speech.json`):
@@ -42,15 +44,39 @@ Observed VoiceOver output for the boundary link, captured by
 - current Drupal (no generated spaces): `Place block in the Header region link`
 - proposed (generated `\00a0` spaces): `Place block in the Header region link`
 
-Identical. Further, a minimal probe with **no whitespace at all** in the DOM
+Identical. A minimal probe with **no whitespace at all** in the DOM
 (`textContent` was literally `Place blockin the Header region`) still produced
 `Place block in the Header region` from VoiceOver, with and without the generated
 spaces. VoiceOver inserts a word boundary at the element edge on its own here.
 
-Conclusion: on VoiceOver / WebKit / macOS 26 the generated-space mitigation is a
-no-op. It may still matter for other screen readers (JAWS, NVDA on Windows),
-which is where the mitigation originated, so this is a "verify elsewhere" result,
-not "remove it." What it is *not* is a demonstrated VoiceOver improvement.
+### NVDA 2026.1.1 / Chrome 151 (reported by ccwilcox, Drupal a11y review): REAL improvement
+
+This is the cross-screen-reader confirmation the testing plan flagged as the
+highest-value gap, and it **overturns the VoiceOver-only conclusion as a general
+claim**:
+
+- A11Y Project (no `\00a0`): NVDA+Chrome concatenated the link name to
+  `Place blockin the Header region` (and `Searchall content`), visible in the
+  Speech Viewer and in the Elements List pane.
+- Proposed (with `\00a0`): NVDA+Chrome spoke a clean boundary,
+  `Place block in the Header region`, no concatenation, in element-by-element,
+  Read All, and Elements List.
+
+- NVDA 2026.1.1 / Firefox 154: Gecko exposes the text node and hidden span as
+  separate elements, so no concatenation occurs either way; the mitigation is
+  neutral there.
+
+### Corrected conclusion
+
+The generated-space mitigation is **justified**: it fixes real concatenation on
+NVDA + Chrome (one of the most common real-world combinations) and is harmless on
+NVDA + Firefox and VoiceOver + WebKit. The earlier "no observable effect" result
+was correct only for VoiceOver/WebKit and should not be read as a general verdict.
+`white-space: nowrap` does not substitute for it: nowrap prevents tiny-box
+line-wrapping concatenation, a different mechanism; the `blockin` concatenation is
+the accessibility tree dropping whitespace between adjacent runs of an absolutely
+positioned element, and the proposed CSS still concatenated on NVDA+Chrome with
+`nowrap` present but `\00a0` absent.
 
 Why the old `textContent` assertions could not catch this: both the visible and
 hidden words are present in the DOM whether or not a boundary is spoken, so a

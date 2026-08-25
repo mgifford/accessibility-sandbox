@@ -38,7 +38,7 @@
 <tbody>
 <tr><th scope="row"><code>:focus-within</code> reveals hidden wrappers</th><td>Real and differential</td><td>High &mdash; measured on WebKit and Blink; purely CSS behavior</td></tr>
 <tr><th scope="row">Skip target without <code>tabindex="-1"</code> resumes focus in <code>&lt;main&gt;</code></th><td>Works</td><td>Medium-high &mdash; measured on WebKit and Blink; desktop only so far</td></tr>
-<tr><th scope="row">Boundary spaces change spoken output</th><td>No effect on VoiceOver</td><td>Low as a general claim &mdash; one screen reader only; the mitigation originated on others</td></tr>
+<tr><th scope="row">Boundary spaces change spoken output</th><td>Real on NVDA + Chrome; neutral on Firefox and VoiceOver</td><td>Medium &mdash; confirmed on the most common Windows combination (NVDA 2026.1.1 + Chrome 151, reported in review); JAWS still unverified</td></tr>
 </tbody>
 </table>
 </div>
@@ -56,9 +56,9 @@
 </thead>
 <tbody>
 <tr>
-  <th scope="row">NVDA + Firefox and Chrome (Windows)</th>
+  <th scope="row">NVDA + Firefox and Chrome (Windows) &mdash; partially done</th>
   <td>Whether the boundary-space mitigation actually helps on the most-used screen reader. NVDA and JAWS are where the <code>\00a0</code> pattern originated.</td>
-  <td><strong>Yes.</strong> If NVDA concatenates without the spaces and speaks a boundary with them, the mitigation is a real cross-platform improvement and VoiceOver simply does not need it.</td>
+  <td><strong>Answered for the boundary claim (reported in review).</strong> NVDA 2026.1.1 + Chrome 151 concatenated <q>Place blockin the Header region</q> without the spaces and spoke a clean boundary with them; Firefox 154 exposed separate nodes (neutral). This overturned the VoiceOver-only "no effect" reading. Re-running the other claims (skip target, <code>margin: 0</code> order) on NVDA is still open.</td>
 </tr>
 <tr>
   <th scope="row">JAWS (Windows)</th>
@@ -84,6 +84,11 @@
   <th scope="row">400% zoom and screen magnification</th>
   <td>Whether revealing the whole wrapper (rather than only the focused child) actually helps a magnification user locate context &mdash; the magnification argument for <code>:focus-within</code>.</td>
   <td>No, but it would confirm a benefit currently asserted rather than shown. Best done as manual review with screenshots at 100/200/400%.</td>
+</tr>
+<tr>
+  <th scope="row"><code>margin: 0</code> and VoiceOver announcement order</th>
+  <td>Whether a negative margin actually causes VoiceOver on macOS to announce visually hidden text in the wrong order &mdash; the GOV.UK 2019 rationale for keeping <code>margin: 0</code>. Automated by <code>npm run test:margin-order</code> (standalone VoiceOver runner), comparing <code>margin: 0</code> against a negative margin.</td>
+  <td>No, but it confirms or refutes a specific untested rationale in the proposed CSS. Ready to run when VoiceOver automation (Full Disk Access) is available.</td>
 </tr>
 <tr>
   <th scope="row">Clipboard behavior (<code>user-select</code>)</th>
