@@ -1,0 +1,15 @@
+{
+  "name": "disabled-inactive-controls-experiment",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:html && npm run test:browser",
+    "test:browser": "playwright test tests/disabled.spec.js --browser=chromium",
+    "test:html": "html-validate index.html"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.55.0",
+    "html-validate": "^11.12.0"
+  }
+}

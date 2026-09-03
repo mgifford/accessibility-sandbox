@@ -1,0 +1,44 @@
+name: Disabled controls experiment
+
+on:
+  pull_request:
+    paths:
+      - "disabled/**"
+      - ".github/workflows/disabled-experiment.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "disabled/**"
+      - ".github/workflows/disabled-experiment.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: disabled
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: disabled/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run checks
+        run: npm test

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" data-implementation="current" data-theme="system" data-resolved-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Disabled and inactive controls research</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="experiment.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="measure">
+    <p><a href="../">Accessibility sandbox</a></p>
+    <h1>Disabled and inactive controls research</h1>
+    <p class="lede">Compare how unavailable controls look and behave. The experiment separates visual styling from the more important question: should the control be disabled at all?</p>
+    <nav aria-label="On this page">
+      <ul>
+        <li><a href="#appearance">Appearance</a></li>
+        <li><a href="#controls">Control comparison</a></li>
+        <li><a href="#patterns">Interaction patterns</a></li>
+        <li><a href="#decision-guide">Decision guide</a></li>
+        <li><a href="#references">References</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="measure">
+  <section id="appearance" aria-labelledby="appearance-heading">
+    <h2 id="appearance-heading">Appearance settings</h2>
+    <p>These controls change presentation only. They do not change the semantics or focus behaviour of the examples.</p>
+
+    <div class="settings-grid">
+      <fieldset>
+        <legend>Drupal Default Admin treatment</legend>
+        <label><input type="radio" name="implementation" value="current" checked> Current <code>main</code></label>
+        <label><input type="radio" name="implementation" value="proposal"> Merge request !16905</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Colour scheme</legend>
+        <label><input type="radio" name="theme" value="system" checked> System preference</label>
+        <label><input type="radio" name="theme" value="light"> Light</label>
+        <label><input type="radio" name="theme" value="dark"> Dark</label>
+      </fieldset>
+    </div>
+
+    <p id="settings-status" class="status" role="status" aria-live="polite">Showing current Drupal styles using the system colour preference.</p>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Computed contrast ratios for the selected treatment</caption>
+        <thead>
+          <tr>
+            <th scope="col">Comparison</th>
+            <th scope="col">Ratio</th>
+            <th scope="col">Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Enabled input border to page</th>
+            <td data-metric="input-border">Calculating</td>
+            <td>Useful control-boundary check.</td>
+          </tr>
+          <tr>
+            <th scope="row">Disabled background to page</th>
+            <td data-metric="disabled-background">Calculating</td>
+            <td>Diagnostic only. Inactive controls are exempt from WCAG contrast requirements.</td>
+          </tr>
+          <tr>
+            <th scope="row">Disabled border to page</th>
+            <td data-metric="disabled-border">Calculating</td>
+            <td>Diagnostic only. A disabled control should still be perceivable.</td>
+          </tr>
+          <tr>
+            <th scope="row">Disabled text to disabled background</th>
+            <td data-metric="disabled-text">Calculating</td>
+            <td>Diagnostic only. The exemption is not a recommendation for low contrast.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="controls" aria-labelledby="controls-heading">
+    <h2 id="controls-heading">Control comparison</h2>
+    <p>Compare each enabled control with a disabled equivalent. The current treatment reproduces the relevant Default Admin tokens and the dark-mode unchecked-checkbox selector from Drupal <code>main</code>. The proposal reproduces the changes in merge request !16905.</p>
+
+    <div class="comparison-grid">
+      <article class="control-set">
+        <h3>Text input</h3>
+        <div class="form-item">
+          <label for="enabled-text">Enabled project name</label>
+          <input id="enabled-text" type="text" value="Public website">
+          <p class="description" id="enabled-text-description">You can edit this value.</p>
+        </div>
+        <div class="form-item is-disabled">
+          <label for="disabled-text">Disabled project name</label>
+          <input id="disabled-text" type="text" value="Archived website" disabled aria-describedby="disabled-text-description">
+          <p class="description" id="disabled-text-description">Unavailable while the project is archived.</p>
+        </div>
+      </article>
+
+      <article class="control-set">
+        <h3>Select and textarea</h3>
+        <div class="form-item">
+          <label for="enabled-select">Enabled visibility</label>
+          <select id="enabled-select"><option>Public</option><option>Private</option></select>
+        </div>
+        <div class="form-item is-disabled">
+          <label for="disabled-select">Disabled visibility</label>
+          <select id="disabled-select" disabled aria-describedby="disabled-select-description"><option>Private</option></select>
+          <p class="description" id="disabled-select-description">Only an administrator can change visibility.</p>
+        </div>
+        <div class="form-item is-disabled">
+          <label for="disabled-notes">Disabled notes</label>
+          <textarea id="disabled-notes" disabled>Import in progress</textarea>
+        </div>
+      </article>
+
+      <article class="control-set">
+        <h3>Checkboxes</h3>
+        <div class="boolean-item">
+          <input class="form-boolean form-boolean--type-checkbox" id="checkbox-enabled" type="checkbox">
+          <label for="checkbox-enabled">Enabled, unchecked</label>
+        </div>
+        <div class="boolean-item is-disabled">
+          <input class="form-boolean form-boolean--type-checkbox" id="checkbox-disabled" type="checkbox" disabled aria-describedby="checkbox-disabled-description">
+          <label for="checkbox-disabled">Disabled, unchecked</label>
+          <p class="description" id="checkbox-disabled-description">The dark-mode failure reported in issue #3617875.</p>
+        </div>
+        <div class="boolean-item is-disabled">
+          <input class="form-boolean form-boolean--type-checkbox" id="checkbox-checked-disabled" type="checkbox" checked disabled>
+          <label for="checkbox-checked-disabled">Disabled, checked</label>
+        </div>
+      </article>
+
+      <article class="control-set">
+        <h3>Radio buttons</h3>
+        <fieldset class="plain-fieldset">
+          <legend>Enabled option</legend>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="radio-enabled" name="radio-enabled" type="radio" checked>
+            <label for="radio-enabled">Weekly</label>
+          </div>
+        </fieldset>
+        <fieldset class="plain-fieldset" disabled>
+          <legend>Disabled option</legend>
+          <div class="boolean-item is-disabled">
+            <input class="form-boolean form-boolean--type-radio" id="radio-disabled" name="radio-disabled" type="radio" checked>
+            <label for="radio-disabled">Monthly</label>
+          </div>
+        </fieldset>
+      </article>
+
+      <article class="control-set">
+        <h3>Toggle checkboxes</h3>
+        <div class="toggle-item">
+          <input class="toggle" id="toggle-enabled" type="checkbox" checked>
+          <label for="toggle-enabled">Enabled notifications</label>
+        </div>
+        <div class="toggle-item is-disabled">
+          <input class="toggle" id="toggle-disabled" type="checkbox" disabled>
+          <label for="toggle-disabled">Disabled notifications</label>
+          <p class="description">The proposal also gives this label the disabled text colour.</p>
+        </div>
+      </article>
+
+      <article class="control-set">
+        <h3>Buttons</h3>
+        <p><button type="button">Enabled secondary action</button></p>
+        <p><button type="button" disabled>Disabled secondary action</button></p>
+        <p><button class="button-primary" type="button">Enabled primary action</button></p>
+        <p><button class="button-primary" type="button" disabled>Disabled primary action</button></p>
+      </article>
+    </div>
+
+    <aside class="note" aria-labelledby="description-note-heading">
+      <h3 id="description-note-heading">Description text is part of the state</h3>
+      <p>Issue #3200635 concerns description text that still looks enabled when its control is disabled. This experiment styles the label and description with the control. That treatment is exploratory and is not part of merge request !16905.</p>
+    </aside>
+  </section>
+
+  <section id="patterns" aria-labelledby="patterns-heading">
+    <h2 id="patterns-heading">Interaction patterns</h2>
+    <p>The same visual treatment does not make these patterns equivalent. Test each example with Tab, Shift+Tab, Enter, Space, a pointer, and a screen reader.</p>
+
+    <div class="pattern-list">
+      <article>
+        <h3>1. Native <code>disabled</code></h3>
+        <p id="native-reason">Publishing is unavailable until the editorial review is complete.</p>
+        <button type="button" disabled aria-describedby="native-reason">Publish</button>
+        <p class="observation">Expected: unavailable to pointer and keyboard activation, and omitted from the sequential keyboard focus order. The nearby reason remains readable, but a keyboard user cannot focus the button to discover its description.</p>
+      </article>
+
+      <article>
+        <h3>2. Focusable <code>aria-disabled</code></h3>
+        <p id="aria-reason">Publishing is unavailable until the editorial review is complete.</p>
+        <button id="aria-disabled-button" type="button" aria-disabled="true" aria-describedby="aria-reason" data-activation-count="0">Publish</button>
+        <p id="aria-disabled-status" class="status" role="status" aria-live="polite"></p>
+        <p class="observation">Expected: included in the focus order and announced as disabled. ARIA supplies no behaviour, so the script must block activation. Keeping it focusable can make the control and its reason discoverable, but adds a stop that cannot perform an action.</p>
+      </article>
+
+      <article>
+        <h3>3. Active action with validation</h3>
+        <form id="validation-form" novalidate>
+          <div id="error-summary" class="error-summary" hidden>
+            <h4 id="error-summary-heading" tabindex="-1">There is a problem</h4>
+            <a href="#reviewer-email">Enter a valid reviewer email address.</a>
+          </div>
+          <div class="form-item">
+            <label for="reviewer-email">Reviewer email</label>
+            <p class="field-error" id="reviewer-error" hidden>Enter a valid reviewer email address.</p>
+            <input id="reviewer-email" name="reviewer-email" type="email" required aria-describedby="reviewer-hint reviewer-error">
+            <p class="description" id="reviewer-hint">A reviewer is required before publishing.</p>
+          </div>
+          <button class="button-primary" type="submit">Publish</button>
+          <p id="validation-status" class="status" role="status" aria-live="polite"></p>
+        </form>
+        <p class="observation">Expected: the action remains available. An incomplete attempt produces a specific error and moves focus to the error summary. This is often more useful than making users infer why a button cannot be used.</p>
+      </article>
+
+      <article>
+        <h3>4. <code>readonly</code> value</h3>
+        <div class="form-item">
+          <label for="readonly-id">Project identifier</label>
+          <input id="readonly-id" name="project-id" type="text" value="A11Y-204" readonly aria-describedby="readonly-description">
+          <p class="description" id="readonly-description">Generated by the system. It can be focused, selected, copied, and submitted, but not edited.</p>
+        </div>
+        <p class="observation">Expected: focusable and announced as read only. Use this for an immutable value, not for an unavailable action.</p>
+      </article>
+
+      <article>
+        <h3>5. Temporarily <code>inert</code> region</h3>
+        <button id="inert-toggle" type="button" aria-pressed="false">Make preferences temporarily inactive</button>
+        <p id="inert-status" class="status" role="status" aria-live="polite" hidden></p>
+        <div id="inert-wrapper" class="inert-wrapper">
+          <div id="inert-region" class="inert-region">
+            <div class="form-item">
+              <label for="digest-frequency">Digest frequency</label>
+              <select id="digest-frequency"><option>Daily</option><option>Weekly</option></select>
+            </div>
+            <a href="#inert-note">Read notification policy</a>
+          </div>
+        </div>
+        <p id="inert-note" class="observation">Expected while inactive: the whole region is visibly obscured, its controls cannot be focused or activated, and its content is not exposed to assistive technology. The loading explanation remains outside the inert subtree.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="decision-guide" aria-labelledby="decision-heading">
+    <h2 id="decision-heading">Decision guide</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Situation</th>
+            <th scope="col">Starting point</th>
+            <th scope="col">Critical requirement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">One form control is temporarily unavailable</th>
+            <td>Native <code>disabled</code></td>
+            <td>Explain why nearby. Confirm that removing it from the focus order and form submission is intentional.</td>
+          </tr>
+          <tr>
+            <th scope="row">An unavailable control must remain discoverable in the keyboard order</th>
+            <td><code>aria-disabled="true"</code></td>
+            <td>Keep native semantics, block every activation path in script, style the state, and provide the reason.</td>
+          </tr>
+          <tr>
+            <th scope="row">A value can be read or copied but not changed</th>
+            <td><code>readonly</code></td>
+            <td>Do not substitute <code>disabled</code>; readonly values remain focusable and are submitted.</td>
+          </tr>
+          <tr>
+            <th scope="row">A whole visible region is temporarily unusable</th>
+            <td><code>inert</code></td>
+            <td>Visually obscure the region and keep the explanation outside the inert subtree.</td>
+          </tr>
+          <tr>
+            <th scope="row">The user can correct missing or invalid input</th>
+            <td>Keep the action enabled and validate</td>
+            <td>Give a specific, programmatically associated error and manage focus when appropriate.</td>
+          </tr>
+          <tr>
+            <th scope="row">The action can never be available to this user</th>
+            <td>Usually omit the control</td>
+            <td>Do not expose an unusable action unless knowing it exists serves a tested user need.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warning">
+      <h3>Do not use styling as behaviour</h3>
+      <p><code>pointer-events: none</code>, reduced opacity, grey text, and <code>cursor: not-allowed</code> do not disable a control for keyboard or assistive-technology users. Cursor changes are, at most, a supplementary pointer cue.</p>
+    </div>
+  </section>
+
+  <section id="references" aria-labelledby="references-heading">
+    <h2 id="references-heading">References and scope</h2>
+    <ul>
+      <li><a href="https://www.drupal.org/project/drupal/issues/3617875">Drupal issue #3617875: Better Dark Mode Support for Disabled Elements</a></li>
+      <li><a href="https://git.drupalcode.org/project/drupal/-/merge_requests/16905.diff">Drupal merge request !16905 plain diff</a></li>
+      <li><a href="https://www.drupal.org/project/drupal/issues/3049086">Drupal issue #3049086: Supporting disabled buttons leads to poor usability and accessibility</a></li>
+      <li><a href="https://www.drupal.org/project/drupal/issues/3200635">Drupal issue #3200635: Description text of disabled form elements</a></li>
+      <li><a href="https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#attr-fe-disabled">HTML Standard: disabled form controls</a></li>
+      <li><a href="https://w3c.github.io/aria/#aria-disabled">WAI-ARIA: <code>aria-disabled</code></a></li>
+      <li><a href="https://html.spec.whatwg.org/multipage/interaction.html#the-inert-attribute">HTML Standard: <code>inert</code></a></li>
+      <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html#inactive-user-interface-components">WCAG 2.2 Understanding 1.4.3: inactive controls</a></li>
+      <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html#inactive-controls">WCAG 2.2 Understanding 1.4.11: inactive controls</a></li>
+      <li><a href="https://design-system.service.gov.uk/components/button/#disabled-buttons">GOV.UK Design System: disabled buttons</a></li>
+    </ul>
+    <p>This is a focused browser experiment, not a pixel-for-pixel build of all Drupal form components. The token values and selectors under comparison are sourced from Drupal <code>main</code> and merge request !16905 as retrieved on 3 September 2026. See <a href="TESTING.md">the testing plan</a> for evidence limits.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="measure">
+    <p><a href="https://github.com/mgifford/accessibility-sandbox/tree/main/disabled">View the source on GitHub</a></p>
+  </div>
+</footer>
+</body>
+</html>
