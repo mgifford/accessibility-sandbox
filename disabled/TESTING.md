@@ -2,17 +2,60 @@
 
 Automated checks can confirm attributes, focusability, blocked events, colour values, and basic accessibility rules. They cannot decide whether disabling an action is understandable in context. That requires task-based testing with disabled people.
 
-## Keyboard pass
+## Browser matrix
 
-Use each colour scheme and both Drupal treatments.
+Run the deterministic tests in Chromium, Firefox, and WebKit:
 
-1. Reload the page and use only `Tab`, `Shift+Tab`, `Enter`, and `Space`.
-2. Confirm enabled controls receive a visible focus indicator.
-3. Confirm native disabled controls are skipped and cannot be activated.
-4. Confirm the `aria-disabled` Publish button receives focus, is announced as disabled, and cannot activate.
-5. Submit the validation example empty. Confirm focus moves to “There is a problem” and the error links to the email field.
-6. Confirm the readonly identifier is focusable and its value can be selected and copied.
-7. Make the preferences region inert. Confirm its select and link leave the focus order. Restore it and confirm both return.
+```sh
+npm run test:cross-browser
+```
+
+Manually spot-check the live page in at least Chrome, Firefox, and Safari, because
+native control rendering (date/time pickers, file buttons, range tracks) differs.
+
+## Keyboard procedures
+
+Use each colour scheme and both Drupal treatments. Use only `Tab`, `Shift+Tab`,
+`Enter`, `Space`, and the arrow keys.
+
+1. Confirm enabled controls receive a visible focus indicator.
+2. Confirm native disabled controls are skipped and cannot be activated.
+3. Confirm the `aria-disabled` Publish button receives focus, is announced as disabled, and cannot activate.
+4. Submit the validation example empty. Confirm focus moves to "There is a problem".
+5. Confirm the readonly identifier is focusable and its value can be selected and copied.
+6. **Radio arrow-key tests.** In the available "Digest frequency" group, Tab to the checked option, then use arrow keys to move the selection. Confirm one Tab enters the group and one Tab leaves it. In the "Delivery method" group, use arrow keys across the individually disabled "Same day" option and record whether the browser skips it or stops on it (browsers differ; the automated suite records this per browser rather than asserting one outcome). Confirm the disabled option can never become selected.
+7. Toggle the dynamically disabled fieldset. Confirm focus stays on the controller and does not jump into the newly enabled fields.
+8. Make the preferences region inert. Confirm its select and link leave the focus order and return when restored, and that focus stays on the toggle.
+
+## Pointer procedures
+
+1. Confirm disabled controls do not respond to clicks.
+2. Confirm `cursor: not-allowed` appears on disabled controls as a supplemental cue only.
+3. Confirm proposed disabled checkboxes and toggles do not gain a hover treatment.
+4. Operate the file input and confirm the `::file-selector-button` is styled in both enabled and disabled states.
+
+## File-input tests
+
+- Confirm the explicit label, the persistent format-and-size hint, and the disabled example.
+- Confirm the `multiple` example accepts more than one file.
+- Confirm the input text and the `::file-selector-button` are both styled, and that the disabled button is visibly distinct.
+
+## Date and time tests
+
+- Confirm `date`, `time`, and `datetime-local` inputs use the **native** browser control (no scripted picker).
+- Confirm each has an enabled and a disabled example and a real label.
+- Note rendering differences between browsers; native pickers vary.
+
+## Live-region tests
+
+- Confirm the availability status container and the inert status container are present and empty from page load, and are never `hidden` or created during an update.
+- Confirm each transition updates only the text content of the existing container.
+- Confirm each transition produces exactly one message, in both directions.
+
+## Form-data tests
+
+- Submit the consequences form. Confirm the displayed data includes `enabled-text`, `readonly-text`, `enabled-check`, and `fd-choice`.
+- Confirm it omits `disabled-text`, `disabled-check`, and the disabled fieldset's `fd-locked`.
 
 ## Visual pass
 
@@ -20,16 +63,22 @@ Test system, light, and dark modes at 100%, 200%, and 400% zoom.
 
 Check that:
 
-- every control remains visible;
+- every control remains visible and operable;
 - enabled and disabled states are distinguishable without relying on colour alone where practical;
-- labels and descriptions appear to belong to the correct controls;
-- disabled checkboxes do not gain an enabled hover treatment;
-- the disabled toggle label changes with the proposal;
-- content reflows without horizontal page scrolling at 320 CSS pixels;
-- forced-colour mode retains native control affordances and state distinctions;
-- the inert region is visibly obscured and the loading explanation remains visible.
+- disabled checked checkboxes and radios keep their checkmark or dot;
+- labels, descriptions, and unavailability reasons appear to belong to the correct controls and stay readable (the reason is not dimmed to match the control surface);
+- content reflows without horizontal page scrolling at 320 CSS pixels.
 
-The ratios shown on the page are diagnostic. WCAG 2.2 exempts inactive controls from the contrast requirements in Success Criteria 1.4.3 and 1.4.11. Record whether people can perceive the controls and distinguish the states instead of reporting an inactive-control contrast failure.
+## Forced-colours testing
+
+Enable a forced-colours (high-contrast) mode.
+
+- Confirm native control affordances and state distinctions remain.
+- Confirm the visual-treatment badges, reasons, and patterns stay perceivable.
+- Confirm the inert overlay and the file button remain distinguishable.
+
+The Playwright suite also emulates `forced-colors: active` for an axe pass, but
+emulation is not a substitute for a real high-contrast environment.
 
 ## Screen-reader matrix
 
@@ -40,16 +89,16 @@ Run at least:
 - VoiceOver with Safari on macOS and iOS;
 - TalkBack with Chrome on Android.
 
-For each, record:
+The `guidepup/` scenarios automate parts of this on VoiceOver (macOS) and NVDA
+(Windows). For each combination, record whether native `disabled`,
+`aria-disabled`, and `readonly` are announced; whether the reason referenced by
+`aria-describedby` is announced; whether radio legend, selected state, and position
+are announced; how an individually disabled option and an entirely disabled group
+are described; and whether the dynamic and inert transitions are announced once in
+each direction. Screen-reader terminology varies, so accept alternatives such as
+"disabled", "dimmed", and "unavailable".
 
-- whether native `disabled`, `aria-disabled`, and `readonly` are announced;
-- whether the reason referenced by `aria-describedby` is announced;
-- whether the native disabled control can be found in browse or virtual navigation even though it is absent from the Tab order;
-- whether the `aria-disabled` control remains in the Tab order and every activation path is blocked;
-- whether the error summary and linked error are understandable;
-- whether content in the inert region disappears from accessibility navigation and returns when restored.
-
-## Usability questions
+## Task-based testing with disabled people
 
 Do not ask only whether participants notice that a control is disabled. Give them a task and observe:
 
@@ -61,8 +110,12 @@ Do not ask only whether participants notice that a control is disabled. Give the
 
 ## Evidence limits
 
-- The page reproduces selected Drupal tokens and selectors, not the entire Default Admin cascade.
-- Browser and automated accessibility-tree results must be labelled with browser, operating system, screen reader, and version.
-- A result from one assistive-technology combination must not be generalized to all combinations.
-- Passing axe does not validate the product decision to disable a control.
+- Browser behaviour varies, including radio arrow-key navigation across a disabled option and native date/time and file rendering.
+- Screen-reader terminology varies; one transcript must not be treated as the universal wording.
+- Guidepup captures speech; it does not establish usability.
+- Automated contrast measurements do not establish that two states are sufficiently distinguishable. They are diagnostics.
+- The page reproduces selected Drupal tokens and selectors, not the complete Default Admin cascade.
+- WCAG 2.2 exempts inactive controls from the contrast requirements in Success Criteria 1.4.3 and 1.4.11. The exemption is not a recommendation for low contrast, and comparisons of corresponding enabled and disabled colours are state-difference research, not a pass or fail result.
 - The experiment does not support the rejected diagonal-strike treatment from issue #3617875.
+- A result from one assistive-technology combination must not be generalised to all combinations.
+- Passing axe does not validate the product decision to disable a control.

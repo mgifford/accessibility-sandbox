@@ -265,6 +265,87 @@ html[data-implementation="current"] .toggle:disabled:hover { box-shadow: inset 0
 .toggle:disabled::before { background: var(--disabled-text); }
 html[data-implementation="current"] .toggle-item.is-disabled label { color: var(--text); }
 
+/* Radio groups: real fieldsets with three or more options. */
+.radio-group { margin-block: var(--space-m); }
+.radio-group .description { margin-block-end: var(--space-s); }
+.option-reason { display: inline-block; margin-inline-start: var(--space-xs); color: var(--text); font-size: .9rem; }
+html[data-implementation="current"] .radio-group.is-disabled .description,
+html[data-implementation="current"] .radio-group .is-disabled .option-reason { color: var(--text-soft); }
+
+/* Native file, date, time, number, range inputs. */
+input[type="file"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="number"] {
+  width: min(100%, 32rem);
+  min-height: 2.75rem;
+  padding: var(--space-xs) var(--space-s);
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+  font: inherit;
+}
+
+input[type="range"] { width: min(100%, 32rem); accent-color: #003ecc; }
+
+/* Style the file-input text and its selector button. */
+input[type="file"] { padding: var(--space-2xs) var(--space-xs); }
+input[type="file"]::file-selector-button {
+  margin-inline-end: var(--space-s);
+  padding: var(--space-2xs) var(--space-s);
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+input[type="file"]:disabled::file-selector-button {
+  color: var(--disabled-text);
+  background: var(--disabled-background);
+  border-color: var(--disabled-border);
+  cursor: not-allowed;
+}
+
+/* Placeholder text: readable, and clearly not a label. */
+::placeholder { color: var(--text-soft); opacity: 1; }
+input:disabled::placeholder { color: var(--disabled-text); }
+
+/* Dynamic and disabled fieldset examples. */
+.dynamic-fieldset { margin-block: var(--space-m); }
+.controller-label { display: inline-flex; gap: var(--space-xs); align-items: center; }
+.controller-label input { width: 1.3125rem; height: 1.3125rem; }
+
+/* Submitted form-data output. */
+.submitted-data { margin-block: var(--space-m); padding: var(--space-m); background: var(--surface-nested); border: var(--border); border-radius: var(--radius); }
+.submitted-data pre { margin: 0; padding: var(--space-s); overflow-x: auto; background: var(--input-bg); border: var(--border); border-radius: var(--radius); white-space: pre-wrap; }
+
+/* Visual treatment alternatives. Each conveys state with more than grey text. */
+.treatment-card .reason { margin-block: var(--space-2xs) 0; color: var(--text); font-size: .95rem; }
+.state-badge {
+  display: inline-block;
+  margin-inline-start: var(--space-2xs);
+  padding: 0 var(--space-2xs);
+  color: var(--text);
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  border: 1px solid currentColor;
+  border-radius: var(--radius);
+}
+.state-icon { font-style: normal; }
+/* Border-and-pattern treatment: distinct border plus a subtle hatch, with text. No diagonal strike. */
+.boolean-item.patterned {
+  padding: var(--space-s);
+  border: .15rem solid var(--input-border);
+  border-radius: var(--radius);
+  background-image: repeating-linear-gradient(90deg, transparent 0 .5rem, color-mix(in srgb, var(--text) 8%, transparent) .5rem .55rem);
+}
+
 .note,
 .warning {
   margin-block-start: var(--space-l);
@@ -317,6 +398,13 @@ html[data-implementation="current"] .toggle-item.is-disabled label { color: var(
   .form-boolean, .toggle { appearance: auto; }
   .note, .warning { border-color: LinkText; }
   .inert-wrapper.is-inactive::after { background: Canvas; border-color: GrayText; opacity: .8; }
+  /* Keep the state text and treatments perceivable in forced-colours mode. */
+  .state-badge { color: CanvasText; border-color: CanvasText; }
+  .option-reason, .treatment-card .reason { color: CanvasText; }
+  .boolean-item.patterned { border-color: CanvasText; background-image: none; }
+  input[type="file"]::file-selector-button { color: ButtonText; border-color: ButtonText; }
+  input[type="file"]:disabled::file-selector-button { color: GrayText; border-color: GrayText; }
+  input[type="range"] { accent-color: Highlight; }
 }
 
 @media (max-width: 40rem) {

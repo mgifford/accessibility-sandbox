@@ -33,20 +33,60 @@ function resolvedTheme(theme) {
   return theme;
 }
 
+function firstColor(...values) {
+  // Return the first value that parses as an opaque colour, for cross-browser
+  // shorthand differences (e.g. border-color returning a multi-value string).
+  for (const value of values) {
+    if (!value) continue;
+    try {
+      parseColor(value);
+      return value;
+    } catch {
+      // try the next
+    }
+  }
+  return values[0];
+}
+
 function updateMetrics() {
   const page = getComputedStyle(document.body).backgroundColor;
   const enabledInput = getComputedStyle(document.querySelector('#enabled-text'));
   const disabledInput = getComputedStyle(document.querySelector('#disabled-text'));
+  const enabledCheckbox = getComputedStyle(document.querySelector('#checkbox-enabled'));
+  const disabledCheckbox = getComputedStyle(document.querySelector('#checkbox-disabled'));
+  const enabledRadio = getComputedStyle(document.querySelector('#digest-daily'));
+  const fileInput = document.querySelector('#file-enabled');
+  const fileText = getComputedStyle(fileInput);
+  const fileButton = getComputedStyle(fileInput, '::file-selector-button');
+  const treatmentReason = getComputedStyle(document.querySelector('#treat-text-reason'));
+  const treatmentSurface = getComputedStyle(document.querySelector('.treatment--text'));
+
   const metrics = {
-    'input-border': [enabledInput.borderColor, page],
+    // Control-boundary and state diagnostics.
+    'input-border': [firstColor(enabledInput.borderTopColor, enabledInput.borderColor), page],
     'disabled-background': [disabledInput.backgroundColor, page],
-    'disabled-border': [disabledInput.borderColor, page],
+    'disabled-border': [firstColor(disabledInput.borderTopColor, disabledInput.borderColor), page],
     'disabled-text': [disabledInput.color, disabledInput.backgroundColor],
+    // Checkbox and radio boundary against the page.
+    'checkbox-border': [firstColor(enabledCheckbox.borderTopColor, enabledCheckbox.borderColor), page],
+    'radio-border': [firstColor(enabledRadio.borderTopColor, enabledRadio.borderColor), page],
+    // File input text and selector button.
+    'file-text': [fileText.color, fileText.backgroundColor],
+    'file-button-text': [fileButton.color, fileButton.backgroundColor],
+    // Visual-treatment reason text against its surface.
+    'treatment-reason': [treatmentReason.color, treatmentSurface.backgroundColor],
+    // State-difference research (enabled vs disabled text), not a WCAG result.
+    'state-difference-text': [enabledInput.color, disabledInput.color],
   };
 
   Object.entries(metrics).forEach(([name, colors]) => {
     const cell = document.querySelector(`[data-metric="${name}"]`);
-    cell.textContent = `${contrastRatio(colors[0], colors[1]).toFixed(2)}:1`;
+    if (!cell) return;
+    try {
+      cell.textContent = `${contrastRatio(colors[0], colors[1]).toFixed(2)}:1`;
+    } catch {
+      cell.textContent = 'n/a';
+    }
   });
 }
 
@@ -146,16 +186,51 @@ const inertStatus = document.querySelector('#inert-status');
 
 inertToggle.addEventListener('click', () => {
   const makeInactive = !inertRegion.hasAttribute('inert');
+  // Move focus off the region before it becomes inert; keep it on the toggle.
   if (makeInactive && inertRegion.contains(document.activeElement)) {
     inertToggle.focus();
   }
   inertRegion.toggleAttribute('inert', makeInactive);
-  inertRegion.setAttribute('aria-busy', String(makeInactive));
+  // aria-busy lives on the wrapper, which stays in the accessibility tree even
+  // while the inner region is inert.
+  inertWrapper.setAttribute('aria-busy', String(makeInactive));
   inertWrapper.classList.toggle('is-inactive', makeInactive);
   inertToggle.setAttribute('aria-pressed', String(makeInactive));
   inertToggle.textContent = makeInactive ? 'Make preferences active' : 'Make preferences temporarily inactive';
-  inertStatus.hidden = !makeInactive;
+  // The status container is always present; only its text content changes.
   inertStatus.textContent = makeInactive
-    ? 'Preferences are loading. The controls below are temporarily unavailable.'
-    : '';
+    ? 'Preferences are now unavailable.'
+    : 'Preferences are now available again.';
+});
+
+// Dynamically disabled fieldset (section: availability toggle).
+const attachmentsToggle = document.querySelector('#attachments-toggle');
+const attachmentFields = document.querySelector('#attachment-fields');
+const availabilityStatus = document.querySelector('#availability-status');
+
+attachmentsToggle.addEventListener('change', () => {
+  const available = attachmentsToggle.checked;
+  // Toggle native disabled on the fieldset; do not move focus into it.
+  attachmentFields.disabled = !available;
+  // Only update the text of the always-present status container.
+  availabilityStatus.textContent = available
+    ? 'Attachment options are now available.'
+    : 'Attachment options are unavailable.';
+  // Focus stays on the controller (the change originated there); do not steal it.
+});
+
+// Form-submission consequences: show FormData, proving disabled omission.
+const consequencesForm = document.querySelector('#consequences-form');
+const submittedData = document.querySelector('.submitted-data');
+const submittedOutput = document.querySelector('#submitted-data-output');
+
+consequencesForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const data = new FormData(consequencesForm);
+  const lines = [];
+  for (const [key, value] of data.entries()) {
+    lines.push(`${key}: ${value}`);
+  }
+  submittedOutput.textContent = lines.length ? lines.join('\n') : '(no fields submitted)';
+  submittedData.hidden = false;
 });

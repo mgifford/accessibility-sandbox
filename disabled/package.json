@@ -4,11 +4,18 @@
   "type": "module",
   "scripts": {
     "test": "npm run test:html && npm run test:browser",
-    "test:browser": "playwright test tests/disabled.spec.js --browser=chromium",
-    "test:html": "html-validate index.html"
+    "test:browser": "playwright test --project=chromium",
+    "test:cross-browser": "playwright test",
+    "test:firefox": "playwright test --project=firefox",
+    "test:webkit": "playwright test --project=webkit",
+    "test:html": "html-validate index.html",
+    "test:voiceover": "node guidepup/run-voiceover.mjs",
+    "test:voiceover:diagnose": "node guidepup/diagnose-voiceover.mjs",
+    "test:nvda": "node guidepup/run-nvda.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
+    "@guidepup/guidepup": "^0.33.1",
     "@playwright/test": "^1.55.0",
     "html-validate": "^11.12.0"
   }

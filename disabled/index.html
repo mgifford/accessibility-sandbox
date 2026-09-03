@@ -20,6 +20,7 @@
       <ul>
         <li><a href="#appearance">Appearance</a></li>
         <li><a href="#controls">Control comparison</a></li>
+        <li><a href="#treatments">Visual treatments</a></li>
         <li><a href="#patterns">Interaction patterns</a></li>
         <li><a href="#decision-guide">Decision guide</a></li>
         <li><a href="#references">References</a></li>
@@ -81,6 +82,36 @@
             <td data-metric="disabled-text">Calculating</td>
             <td>Diagnostic only. The exemption is not a recommendation for low contrast.</td>
           </tr>
+          <tr>
+            <th scope="row">Enabled checkbox boundary to page</th>
+            <td data-metric="checkbox-border">Calculating</td>
+            <td>Diagnostic only. Checkbox boundary perceivability.</td>
+          </tr>
+          <tr>
+            <th scope="row">Enabled radio boundary to page</th>
+            <td data-metric="radio-border">Calculating</td>
+            <td>Diagnostic only. Radio boundary perceivability.</td>
+          </tr>
+          <tr>
+            <th scope="row">File-input text to its background</th>
+            <td data-metric="file-text">Calculating</td>
+            <td>Diagnostic only.</td>
+          </tr>
+          <tr>
+            <th scope="row"><code>::file-selector-button</code> text to its background</th>
+            <td data-metric="file-button-text">Calculating</td>
+            <td>Diagnostic only.</td>
+          </tr>
+          <tr>
+            <th scope="row">Treatment reason text to its surface</th>
+            <td data-metric="treatment-reason">Calculating</td>
+            <td>Diagnostic only. The reason should stay readable, not dimmed to the control surface.</td>
+          </tr>
+          <tr>
+            <th scope="row">Enabled text to disabled text (state difference)</th>
+            <td data-metric="state-difference-text">Calculating</td>
+            <td>State-difference research, not a WCAG pass or fail. WCAG exempts inactive controls from contrast requirements.</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -140,19 +171,57 @@
       </article>
 
       <article class="control-set">
-        <h3>Radio buttons</h3>
-        <fieldset class="plain-fieldset">
-          <legend>Enabled option</legend>
+        <h3>Radio groups</h3>
+        <p class="description">Each group is a real multi-option choice. Compare a fully available group, a group with one unavailable option, and a group that is entirely unavailable.</p>
+
+        <fieldset class="radio-group" data-radio-group="enabled">
+          <legend>Digest frequency (available)</legend>
           <div class="boolean-item">
-            <input class="form-boolean form-boolean--type-radio" id="radio-enabled" name="radio-enabled" type="radio" checked>
-            <label for="radio-enabled">Weekly</label>
+            <input class="form-boolean form-boolean--type-radio" id="digest-daily" name="digest-frequency" type="radio" value="daily">
+            <label for="digest-daily">Daily</label>
+          </div>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="digest-weekly" name="digest-frequency" type="radio" value="weekly" checked>
+            <label for="digest-weekly">Weekly</label>
+          </div>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="digest-monthly" name="digest-frequency" type="radio" value="monthly">
+            <label for="digest-monthly">Monthly</label>
           </div>
         </fieldset>
-        <fieldset class="plain-fieldset" disabled>
-          <legend>Disabled option</legend>
+
+        <fieldset class="radio-group" data-radio-group="partial" aria-describedby="delivery-partial-note">
+          <legend>Delivery method (one option unavailable)</legend>
+          <p class="description" id="delivery-partial-note">Same-day delivery is unavailable for this address. It stays visible so the option is discoverable.</p>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="delivery-standard" name="delivery-method" type="radio" value="standard" checked>
+            <label for="delivery-standard">Standard</label>
+          </div>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="delivery-express" name="delivery-method" type="radio" value="express">
+            <label for="delivery-express">Express</label>
+          </div>
           <div class="boolean-item is-disabled">
-            <input class="form-boolean form-boolean--type-radio" id="radio-disabled" name="radio-disabled" type="radio" checked>
-            <label for="radio-disabled">Monthly</label>
+            <input class="form-boolean form-boolean--type-radio" id="delivery-same-day" name="delivery-method" type="radio" value="same-day" disabled aria-describedby="delivery-same-day-reason">
+            <label for="delivery-same-day">Same day</label>
+            <span class="option-reason" id="delivery-same-day-reason">Unavailable for this address</span>
+          </div>
+        </fieldset>
+
+        <fieldset class="radio-group is-disabled" data-radio-group="whole" disabled aria-describedby="billing-whole-note">
+          <legend>Billing cycle (entire group unavailable)</legend>
+          <p class="description" id="billing-whole-note">Billing options are managed by your account administrator. The selected value stays visible while the group is unavailable.</p>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="billing-monthly" name="billing-cycle" type="radio" value="monthly" checked>
+            <label for="billing-monthly">Monthly</label>
+          </div>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="billing-quarterly" name="billing-cycle" type="radio" value="quarterly">
+            <label for="billing-quarterly">Quarterly</label>
+          </div>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="billing-annual" name="billing-cycle" type="radio" value="annual">
+            <label for="billing-annual">Annual</label>
           </div>
         </fieldset>
       </article>
@@ -177,11 +246,177 @@
         <p><button class="button-primary" type="button">Enabled primary action</button></p>
         <p><button class="button-primary" type="button" disabled>Disabled primary action</button></p>
       </article>
+
+      <article class="control-set">
+        <h3>File input</h3>
+        <div class="form-item">
+          <label for="file-enabled">Enabled attachment</label>
+          <input id="file-enabled" type="file" aria-describedby="file-enabled-hint">
+          <p class="description" id="file-enabled-hint">PDF or PNG, up to 5&nbsp;MB.</p>
+        </div>
+        <div class="form-item">
+          <label for="file-multiple">Enabled, multiple files</label>
+          <input id="file-multiple" type="file" multiple aria-describedby="file-multiple-hint">
+          <p class="description" id="file-multiple-hint">PDF or PNG, up to 5&nbsp;MB each.</p>
+        </div>
+        <div class="form-item is-disabled">
+          <label for="file-disabled">Disabled attachment</label>
+          <input id="file-disabled" type="file" disabled aria-describedby="file-disabled-hint">
+          <p class="description" id="file-disabled-hint">Uploads are unavailable until the record is saved. PDF or PNG, up to 5&nbsp;MB.</p>
+        </div>
+      </article>
+
+      <article class="control-set">
+        <h3>Date and time inputs</h3>
+        <p class="description">Native browser controls are kept. No scripted date or time picker replaces them.</p>
+        <div class="form-item">
+          <label for="date-enabled">Enabled date</label>
+          <input id="date-enabled" type="date" value="2026-09-03">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="date-disabled">Disabled date</label>
+          <input id="date-disabled" type="date" value="2026-09-03" disabled>
+        </div>
+        <div class="form-item">
+          <label for="time-enabled">Enabled time</label>
+          <input id="time-enabled" type="time" value="09:30">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="time-disabled">Disabled time</label>
+          <input id="time-disabled" type="time" value="09:30" disabled>
+        </div>
+        <div class="form-item">
+          <label for="datetime-enabled">Enabled date and time</label>
+          <input id="datetime-enabled" type="datetime-local" value="2026-09-03T09:30">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="datetime-disabled">Disabled date and time</label>
+          <input id="datetime-disabled" type="datetime-local" value="2026-09-03T09:30" disabled>
+        </div>
+      </article>
+
+      <article class="control-set">
+        <h3>Number and range inputs</h3>
+        <div class="form-item">
+          <label for="number-enabled">Enabled quantity</label>
+          <input id="number-enabled" type="number" min="0" max="20" step="1" value="4">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="number-disabled">Disabled quantity</label>
+          <input id="number-disabled" type="number" min="0" max="20" step="1" value="4" disabled>
+        </div>
+        <div class="form-item">
+          <label for="range-enabled">Enabled volume</label>
+          <input id="range-enabled" type="range" min="0" max="100" step="5" value="40">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="range-disabled">Disabled volume</label>
+          <input id="range-disabled" type="range" min="0" max="100" step="5" value="40" disabled>
+        </div>
+      </article>
+
+      <article class="control-set" id="placeholder-matrix">
+        <h3>Placeholder matrix</h3>
+        <p class="description">This tests how browsers render placeholder text in enabled and disabled states. It is not a recommended form design: every input keeps a real visible label, and placeholder text is never the label, the reason a control is unavailable, or the only format instruction.</p>
+        <div class="form-item">
+          <label for="ph-enabled-empty">Enabled, empty, with placeholder</label>
+          <input id="ph-enabled-empty" type="text" placeholder="e.g. Public website">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="ph-disabled-empty">Disabled, empty, with placeholder</label>
+          <input id="ph-disabled-empty" type="text" placeholder="e.g. Public website" disabled>
+        </div>
+        <div class="form-item">
+          <label for="ph-enabled-nople">Enabled, empty, no placeholder</label>
+          <input id="ph-enabled-nople" type="text">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="ph-disabled-nople">Disabled, empty, no placeholder</label>
+          <input id="ph-disabled-nople" type="text" disabled>
+        </div>
+        <div class="form-item">
+          <label for="ph-enabled-filled">Enabled, populated</label>
+          <input id="ph-enabled-filled" type="text" value="Public website">
+        </div>
+        <div class="form-item is-disabled">
+          <label for="ph-disabled-filled">Disabled, populated</label>
+          <input id="ph-disabled-filled" type="text" value="Public website" disabled>
+        </div>
+      </article>
     </div>
 
     <aside class="note" aria-labelledby="description-note-heading">
       <h3 id="description-note-heading">Description text is part of the state</h3>
       <p>Issue #3200635 concerns description text that still looks enabled when its control is disabled. This experiment styles the label and description with the control. That treatment is exploratory and is not part of merge request !16905.</p>
+    </aside>
+  </section>
+
+  <section id="treatments" aria-labelledby="treatments-heading">
+    <h2 id="treatments-heading">Visual treatment alternatives</h2>
+    <p>Every treatment below uses the same native disabled control and the same content, so only the presentation differs. None of these is presented as WCAG-required or proven better. They are options to compare, not recommendations. The point is that state can be conveyed by more than grey text.</p>
+
+    <div class="comparison-grid">
+      <article class="treatment-card treatment--token">
+        <h3>1. Token-only treatment</h3>
+        <p class="description">Drupal's current approach: the disabled state is carried by colour tokens alone.</p>
+        <div class="boolean-item is-disabled">
+          <input class="form-boolean form-boolean--type-checkbox" id="treat-token" type="checkbox" checked disabled>
+          <label for="treat-token">Email notifications</label>
+        </div>
+        <p class="description">No extra text or icon. This is the baseline the other treatments are compared against.</p>
+      </article>
+
+      <article class="treatment-card treatment--text">
+        <h3>2. Text-first treatment</h3>
+        <p class="description">A visible “Unavailable” label plus a plain-language reason.</p>
+        <div class="boolean-item is-disabled">
+          <input class="form-boolean form-boolean--type-checkbox" id="treat-text" type="checkbox" checked disabled aria-describedby="treat-text-reason">
+          <label for="treat-text">Email notifications <span class="state-badge">Unavailable</span></label>
+          <p class="reason" id="treat-text-reason">Turned off by your administrator.</p>
+        </div>
+      </article>
+
+      <article class="treatment-card treatment--icon">
+        <h3>3. Icon-and-text treatment</h3>
+        <p class="description">An icon paired with text. The icon never carries meaning on its own.</p>
+        <div class="boolean-item is-disabled">
+          <input class="form-boolean form-boolean--type-checkbox" id="treat-icon" type="checkbox" checked disabled aria-describedby="treat-icon-reason">
+          <label for="treat-icon"><span class="state-icon" aria-hidden="true">&#9432;</span> Email notifications <span class="state-badge">Unavailable</span></label>
+          <p class="reason" id="treat-icon-reason">Turned off by your administrator.</p>
+        </div>
+      </article>
+
+      <article class="treatment-card treatment--group">
+        <h3>4. Group-level treatment</h3>
+        <p class="description">An availability message in the group heading area, so the state is announced once for the whole group.</p>
+        <fieldset class="radio-group is-disabled" disabled aria-describedby="treat-group-note">
+          <legend>Email notifications <span class="state-badge">Unavailable</span></legend>
+          <p class="reason" id="treat-group-note">Turned off by your administrator.</p>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="treat-group-on" name="treat-group" type="radio" value="on" checked>
+            <label for="treat-group-on">On</label>
+          </div>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-radio" id="treat-group-off" name="treat-group" type="radio" value="off">
+            <label for="treat-group-off">Off</label>
+          </div>
+        </fieldset>
+      </article>
+
+      <article class="treatment-card treatment--pattern">
+        <h3>5. Border and pattern treatment</h3>
+        <p class="description">A distinct border and a subtle hatch, combined with visible text. No diagonal strike, and never a pattern alone.</p>
+        <div class="boolean-item is-disabled patterned">
+          <input class="form-boolean form-boolean--type-checkbox" id="treat-pattern" type="checkbox" checked disabled aria-describedby="treat-pattern-reason">
+          <label for="treat-pattern">Email notifications <span class="state-badge">Unavailable</span></label>
+          <p class="reason" id="treat-pattern-reason">Turned off by your administrator.</p>
+        </div>
+      </article>
+    </div>
+
+    <aside class="note" aria-labelledby="treatment-note-heading">
+      <h3 id="treatment-note-heading">Reading the treatments</h3>
+      <p>The checkmark and radio dot are preserved in every treatment, so a disabled checked control never looks unchecked. The reason text stays at readable contrast rather than being dimmed to match the control surface. A lock icon is deliberately not used here because none of these is a permission or security restriction.</p>
     </aside>
   </section>
 
@@ -236,18 +471,96 @@
 
       <article>
         <h3>5. Temporarily <code>inert</code> region</h3>
-        <button id="inert-toggle" type="button" aria-pressed="false">Make preferences temporarily inactive</button>
-        <p id="inert-status" class="status" role="status" aria-live="polite" hidden></p>
+        <button id="inert-toggle" type="button" aria-pressed="false" aria-controls="inert-region">Make preferences temporarily inactive</button>
+        <p id="inert-status" class="status" role="status" aria-atomic="true"></p>
         <div id="inert-wrapper" class="inert-wrapper">
           <div id="inert-region" class="inert-region">
             <div class="form-item">
-              <label for="digest-frequency">Digest frequency</label>
-              <select id="digest-frequency"><option>Daily</option><option>Weekly</option></select>
+              <label for="inert-digest">Digest frequency</label>
+              <select id="inert-digest"><option>Daily</option><option>Weekly</option></select>
             </div>
             <a href="#inert-note">Read notification policy</a>
           </div>
         </div>
-        <p id="inert-note" class="observation">Expected while inactive: the whole region is visibly obscured, its controls cannot be focused or activated, and its content is not exposed to assistive technology. The loading explanation remains outside the inert subtree.</p>
+        <p id="inert-note" class="observation">Expected while inactive: the whole region is visibly obscured, its controls cannot be focused or activated, and its content is not exposed to assistive technology. The status message and explanation stay outside the inert subtree, and <code>aria-busy</code> is carried on the wrapper that remains in the accessibility tree.</p>
+      </article>
+
+      <article>
+        <h3>6. Dynamically disabled fieldset</h3>
+        <div class="form-item">
+          <label class="controller-label">
+            <input id="attachments-toggle" type="checkbox" aria-controls="attachment-fields">
+            Add attachments to this request
+          </label>
+        </div>
+        <p id="availability-status" role="status" aria-atomic="true"></p>
+        <fieldset id="attachment-fields" class="dynamic-fieldset" disabled>
+          <legend>Attachment options</legend>
+          <div class="form-item">
+            <label for="attachment-file">File</label>
+            <input id="attachment-file" name="attachment-file" type="file">
+          </div>
+          <div class="form-item">
+            <label for="attachment-note">Note for reviewer</label>
+            <input id="attachment-note" name="attachment-note" type="text">
+          </div>
+        </fieldset>
+        <p class="observation">Expected: the controller stays outside the disabled fieldset and keeps focus when toggled. Enabling the fieldset does not move focus into it. Each transition produces one status message. The status container is present and empty from page load; only its text content changes.</p>
+      </article>
+
+      <article>
+        <h3>7. Form-submission consequences</h3>
+        <form id="consequences-form">
+          <div class="form-item">
+            <label for="fd-enabled-text">Enabled text</label>
+            <input id="fd-enabled-text" name="enabled-text" type="text" value="included">
+          </div>
+          <div class="form-item is-disabled">
+            <label for="fd-disabled-text">Disabled text</label>
+            <input id="fd-disabled-text" name="disabled-text" type="text" value="omitted" disabled>
+          </div>
+          <div class="form-item">
+            <label for="fd-readonly-text">Readonly text</label>
+            <input id="fd-readonly-text" name="readonly-text" type="text" value="submitted" readonly>
+          </div>
+          <div class="boolean-item">
+            <input class="form-boolean form-boolean--type-checkbox" id="fd-enabled-check" name="enabled-check" type="checkbox" value="yes" checked>
+            <label for="fd-enabled-check">Enabled checked checkbox</label>
+          </div>
+          <div class="boolean-item is-disabled">
+            <input class="form-boolean form-boolean--type-checkbox" id="fd-disabled-check" name="disabled-check" type="checkbox" value="yes" checked disabled>
+            <label for="fd-disabled-check">Disabled checked checkbox</label>
+          </div>
+          <fieldset class="radio-group">
+            <legend>Enabled radio group</legend>
+            <div class="boolean-item">
+              <input class="form-boolean form-boolean--type-radio" id="fd-radio-a" name="fd-choice" type="radio" value="a" checked>
+              <label for="fd-radio-a">Choice A</label>
+            </div>
+            <div class="boolean-item">
+              <input class="form-boolean form-boolean--type-radio" id="fd-radio-b" name="fd-choice" type="radio" value="b">
+              <label for="fd-radio-b">Choice B</label>
+            </div>
+          </fieldset>
+          <fieldset class="radio-group is-disabled" disabled>
+            <legend>Disabled fieldset</legend>
+            <div class="boolean-item">
+              <input class="form-boolean form-boolean--type-radio" id="fd-radio-x" name="fd-locked" type="radio" value="x" checked>
+              <label for="fd-radio-x">Locked X</label>
+            </div>
+            <div class="boolean-item">
+              <input class="form-boolean form-boolean--type-radio" id="fd-radio-y" name="fd-locked" type="radio" value="y">
+              <label for="fd-radio-y">Locked Y</label>
+            </div>
+          </fieldset>
+          <button type="submit">Show submitted data</button>
+        </form>
+        <div class="submitted-data" hidden>
+          <h4 id="submitted-data-heading">Submitted form data</h4>
+          <pre id="submitted-data-output"></pre>
+          <p class="description">Disabled controls (<code>disabled-text</code>, <code>disabled-check</code>, and everything inside the disabled fieldset) are omitted. The <code>readonly-text</code> value is submitted.</p>
+        </div>
+        <p class="observation">Expected: disabled controls are absent from the submitted data; the readonly value is present. Submission is intercepted; nothing is sent anywhere.</p>
       </article>
     </div>
   </section>

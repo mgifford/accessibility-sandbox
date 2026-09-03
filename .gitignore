@@ -25,3 +25,4 @@ test-results/
 hidden/guidepup/logs/*.json
 hidden/guidepup/logs/manual-scenarios-[0-9]*.md
 hidden/guidepup/logs/comparison-report.md
+disabled/guidepup/logs/*.json
