@@ -7,6 +7,20 @@
   <link rel="stylesheet" href="assets/site.css">
   <link id="implementation-css" rel="stylesheet" href="assets/proposed.css">
   <script src="assets/switcher.js" defer></script>
+<script>
+  // SkipTo.js configuration: surface the section headings and page landmarks so
+  // readers can jump straight to the part they are working on.
+  var SkipToConfig = {
+    settings: {
+      skipTo: {
+        displayOption: 'popup',
+        landmarks: 'main, [role="main"], nav',
+        headings: 'main h2, main h3',
+      },
+    },
+  };
+</script>
+<script src="https://paypal.github.io/skipto/downloads/js/skipto.min.js"></script>
 </head>
 <body>
 <a class="visually-hidden focusable skip-link" href="#main">Skip to main content</a>
