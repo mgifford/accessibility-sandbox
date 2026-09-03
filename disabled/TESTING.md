@@ -43,8 +43,30 @@ Use each colour scheme and both Drupal treatments. Use only `Tab`, `Shift+Tab`,
 ## Date and time tests
 
 - Confirm `date`, `time`, and `datetime-local` inputs use the **native** browser control (no scripted picker).
-- Confirm each has an enabled and a disabled example and a real label.
+- Confirm each is a direct available / unavailable pair using the same field name, with an "Unavailable" badge and a visible reason on the disabled example.
+- Confirm the disabled input differs from the enabled input in text, background, and border colour (not only the label), in both Drupal treatments.
+- Confirm the state cue is on the label and field, not on the native calendar or clock icon; those icons are not hidden or restyled with browser-specific pseudo-elements.
 - Note rendering differences between browsers; native pickers vary.
+
+## Colour-distinction and reason tests
+
+The deterministic suite asserts, for file/date/time/datetime/number, that the
+disabled input differs from the enabled input in computed colour, and that each
+disabled file/date/time control has an "Unavailable" badge and a visible reason
+whose `aria-describedby` references both the reason and (for file) the format hint.
+The reason stays at full readable contrast; only the ordinary help text is muted.
+
+Native-control cards also have per-browser visual snapshots for the file and
+date/time cards. These baselines are captured on the developer's operating system
+and native-control rendering is OS-specific, so the snapshots are skipped on CI and
+are for local cross-browser review. Regenerate them with:
+
+```sh
+npm run test:cross-browser -- --update-snapshots
+```
+
+Still check forced-colours mode manually in a real high-contrast environment as
+well as through the automated emulation.
 
 ## Live-region tests
 

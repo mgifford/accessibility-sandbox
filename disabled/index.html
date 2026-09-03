@@ -249,49 +249,57 @@
 
       <article class="control-set">
         <h3>File input</h3>
+        <p class="description">Available and unavailable use the same field name. The badge communicates availability; the reason is kept separate from the format hint.</p>
         <div class="form-item">
-          <label for="file-enabled">Enabled attachment</label>
+          <label for="file-enabled">Attachment</label>
           <input id="file-enabled" type="file" aria-describedby="file-enabled-hint">
           <p class="description" id="file-enabled-hint">PDF or PNG, up to 5&nbsp;MB.</p>
         </div>
-        <div class="form-item">
-          <label for="file-multiple">Enabled, multiple files</label>
-          <input id="file-multiple" type="file" multiple aria-describedby="file-multiple-hint">
-          <p class="description" id="file-multiple-hint">PDF or PNG, up to 5&nbsp;MB each.</p>
-        </div>
         <div class="form-item is-disabled">
-          <label for="file-disabled">Disabled attachment</label>
-          <input id="file-disabled" type="file" disabled aria-describedby="file-disabled-hint">
-          <p class="description" id="file-disabled-hint">Uploads are unavailable until the record is saved. PDF or PNG, up to 5&nbsp;MB.</p>
+          <label for="file-disabled">Attachment <span class="state-badge">Unavailable</span></label>
+          <input id="file-disabled" type="file" disabled aria-describedby="file-disabled-reason file-disabled-hint">
+          <p class="reason" id="file-disabled-reason">File uploads become available after the record is saved.</p>
+          <p class="description" id="file-disabled-hint">PDF or PNG, up to 5&nbsp;MB.</p>
+        </div>
+        <div class="form-item">
+          <label for="file-multiple">Attachments, multiple files</label>
+          <input id="file-multiple" type="file" multiple aria-describedby="file-multiple-hint">
+          <p class="description" id="file-multiple-hint">A separate secondary example. PDF or PNG, up to 5&nbsp;MB each.</p>
         </div>
       </article>
 
       <article class="control-set">
         <h3>Date and time inputs</h3>
-        <p class="description">Native browser controls are kept. No scripted date or time picker replaces them.</p>
+        <p class="description">Native browser controls are kept; no scripted picker replaces them. Each type is a direct available / unavailable pair with the same field name. The reliable state cue is on the label and surrounding field, not on the browser-rendered calendar or clock icon, whose appearance varies between browsers.</p>
+
         <div class="form-item">
-          <label for="date-enabled">Enabled date</label>
+          <label for="date-enabled">Publication date</label>
           <input id="date-enabled" type="date" value="2026-09-03">
         </div>
         <div class="form-item is-disabled">
-          <label for="date-disabled">Disabled date</label>
-          <input id="date-disabled" type="date" value="2026-09-03" disabled>
+          <label for="date-disabled">Publication date <span class="state-badge">Unavailable</span></label>
+          <input id="date-disabled" type="date" value="2026-09-03" disabled aria-describedby="date-disabled-reason">
+          <p class="reason" id="date-disabled-reason">Set automatically when the content is published.</p>
         </div>
+
         <div class="form-item">
-          <label for="time-enabled">Enabled time</label>
+          <label for="time-enabled">Reminder time</label>
           <input id="time-enabled" type="time" value="09:30">
         </div>
         <div class="form-item is-disabled">
-          <label for="time-disabled">Disabled time</label>
-          <input id="time-disabled" type="time" value="09:30" disabled>
+          <label for="time-disabled">Reminder time <span class="state-badge">Unavailable</span></label>
+          <input id="time-disabled" type="time" value="09:30" disabled aria-describedby="time-disabled-reason">
+          <p class="reason" id="time-disabled-reason">Reminders follow the site default until you enable custom timing.</p>
         </div>
+
         <div class="form-item">
-          <label for="datetime-enabled">Enabled date and time</label>
+          <label for="datetime-enabled">Event start</label>
           <input id="datetime-enabled" type="datetime-local" value="2026-09-03T09:30">
         </div>
         <div class="form-item is-disabled">
-          <label for="datetime-disabled">Disabled date and time</label>
-          <input id="datetime-disabled" type="datetime-local" value="2026-09-03T09:30" disabled>
+          <label for="datetime-disabled">Event start <span class="state-badge">Unavailable</span></label>
+          <input id="datetime-disabled" type="datetime-local" value="2026-09-03T09:30" disabled aria-describedby="datetime-disabled-reason">
+          <p class="reason" id="datetime-disabled-reason">Locked while the event is in the published calendar.</p>
         </div>
       </article>
 

@@ -163,6 +163,13 @@ button:disabled,
 .is-disabled label,
 .is-disabled .description { color: var(--disabled-text); }
 
+/* The reason a control is unavailable stays at full readable contrast; it must not
+   inherit the muted disabled-description colour. This applies inside .is-disabled
+   in both Drupal treatments. */
+.reason { margin-block: var(--space-2xs) 0; color: var(--text); font-size: .95rem; }
+.is-disabled .reason,
+html[data-implementation="current"] .is-disabled .reason { color: var(--text); }
+
 html[data-implementation="current"] .is-disabled .description { color: var(--text-soft); }
 .description, .observation { color: var(--text-soft); }
 .description { margin-block: var(--space-2xs) 0; font-size: .925rem; }
@@ -289,6 +296,22 @@ input[type="number"] {
 }
 
 input[type="range"] { width: min(100%, 32rem); accent-color: #003ecc; }
+
+/* The type-specific base rules above reset color/background/border at the same
+   specificity as the generic input:disabled rule, so without these explicit
+   type-specific disabled rules the disabled date/time/file inputs would keep the
+   enabled appearance. Colour is not the only state cue here: the label carries an
+   "Unavailable" badge and a visible reason as well. */
+input[type="file"]:disabled,
+input[type="date"]:disabled,
+input[type="time"]:disabled,
+input[type="datetime-local"]:disabled,
+input[type="number"]:disabled {
+  color: var(--disabled-text);
+  background-color: var(--disabled-background);
+  border-color: var(--disabled-border);
+  cursor: not-allowed;
+}
 
 /* Style the file-input text and its selector button. */
 input[type="file"] { padding: var(--space-2xs) var(--space-xs); }

@@ -143,6 +143,74 @@ test('file input has a label, hint, multiple example, and disabled example', asy
   await expect(page.locator('#file-disabled')).toBeDisabled();
 });
 
+// Read the resolved colour triple for a control.
+async function controlColours(page, selector) {
+  return page.locator(selector).evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { color: s.color, background: s.backgroundColor, border: s.borderTopColor };
+  });
+}
+
+for (const type of [
+  { name: 'file', enabled: '#file-enabled', disabled: '#file-disabled' },
+  { name: 'date', enabled: '#date-enabled', disabled: '#date-disabled' },
+  { name: 'time', enabled: '#time-enabled', disabled: '#time-disabled' },
+  { name: 'datetime', enabled: '#datetime-enabled', disabled: '#datetime-disabled' },
+  { name: 'number', enabled: '#number-enabled', disabled: '#number-disabled' },
+]) {
+  test(`${type.name}: disabled input differs from enabled in colour (both Drupal treatments)`, async ({ page }) => {
+    for (const impl of ['Current main', 'Merge request !16905']) {
+      await page.getByLabel(impl).check();
+      const enabled = await controlColours(page, type.enabled);
+      const disabled = await controlColours(page, type.disabled);
+      const differs =
+        enabled.color !== disabled.color ||
+        enabled.background !== disabled.background ||
+        enabled.border !== disabled.border;
+      expect(differs, `${type.name} disabled must differ from enabled under ${impl}`).toBe(true);
+    }
+  });
+}
+
+test('the file-selector button differs between enabled and disabled', async ({ page }) => {
+  const enabledButton = await page.locator('#file-enabled').evaluate(
+    (el) => getComputedStyle(el, '::file-selector-button').backgroundColor,
+  );
+  const disabledButton = await page.locator('#file-disabled').evaluate(
+    (el) => getComputedStyle(el, '::file-selector-button').backgroundColor,
+  );
+  expect(enabledButton).not.toBe(disabledButton);
+});
+
+for (const control of [
+  { name: 'file', id: 'file-disabled', reason: 'file-disabled-reason', hint: 'file-disabled-hint' },
+  { name: 'date', id: 'date-disabled', reason: 'date-disabled-reason' },
+  { name: 'time', id: 'time-disabled', reason: 'time-disabled-reason' },
+  { name: 'datetime', id: 'datetime-disabled', reason: 'datetime-disabled-reason' },
+]) {
+  test(`${control.name}: disabled control has an Unavailable badge and a visible reason`, async ({ page }) => {
+    const item = page.locator(`#${control.id}`).locator('xpath=ancestor::div[contains(@class,"form-item")]');
+    await expect(item.locator('.state-badge')).toHaveText('Unavailable');
+    await expect(page.locator(`#${control.reason}`)).toBeVisible();
+
+    // aria-describedby references the reason (and the format hint where present).
+    const describedBy = (await page.locator(`#${control.id}`).getAttribute('aria-describedby')) || '';
+    expect(describedBy.split(/\s+/)).toContain(control.reason);
+    if (control.hint) {
+      expect(describedBy.split(/\s+/)).toContain(control.hint);
+    }
+  });
+}
+
+test('the disabled reason stays at full readable contrast, not the muted hint colour', async ({ page }) => {
+  const reasonColour = await page.locator('#file-disabled-reason').evaluate((el) => getComputedStyle(el).color);
+  const hintColour = await page.locator('#file-disabled-hint').evaluate((el) => getComputedStyle(el).color);
+  const bodyText = await page.locator('body').evaluate((el) => getComputedStyle(el).color);
+  // The reason matches body text; the hint is muted and therefore different.
+  expect(reasonColour).toBe(bodyText);
+  expect(reasonColour).not.toBe(hintColour);
+});
+
 test('number and range inputs carry meaningful min, max, and step', async ({ page }) => {
   await expect(page.locator('#number-enabled')).toHaveAttribute('min', '0');
   await expect(page.locator('#number-enabled')).toHaveAttribute('max', '20');
@@ -160,6 +228,32 @@ test('file input and its selector button are styled', async ({ page }) => {
     (el) => getComputedStyle(el, '::file-selector-button').cursor,
   );
   expect(disabledButtonCursor).toBe('not-allowed');
+});
+
+// Focused visual snapshots of the native-control cards, which use
+// browser-rendered internals (calendar, clock, file button) that differ between
+// engines. Snapshots are per-card, not full-page, and are per-browser baselines.
+//
+// These baselines are captured on the developer's OS (macOS here). Native control
+// rendering is OS-specific, so the baselines will not match a Linux CI runner;
+// these tests are skipped on CI and are for local cross-browser visual review.
+// Update baselines with: npm run test:cross-browser -- --update-snapshots
+test.describe('native control snapshots (local only)', () => {
+  test.skip(!!process.env.CI, 'Native-control snapshots are OS-specific; run locally.');
+
+  test('date and time card matches its visual snapshot', async ({ page }, testInfo) => {
+    const card = page.locator('#controls .control-set', { hasText: 'Date and time inputs' });
+    await expect(card).toHaveScreenshot(`date-time-card-${testInfo.project.name}.png`, {
+      maxDiffPixelRatio: 0.02,
+    });
+  });
+
+  test('file input card matches its visual snapshot', async ({ page }, testInfo) => {
+    const card = page.locator('#controls .control-set', { hasText: 'File input' });
+    await expect(card).toHaveScreenshot(`file-card-${testInfo.project.name}.png`, {
+      maxDiffPixelRatio: 0.02,
+    });
+  });
 });
 
 // --- Placeholder matrix (section 3) ----------------------------------------
