@@ -2,11 +2,17 @@
 
 ## Port of Rotterdam
 
-I want to know if this meets EU Accessibility Regulations. What are the barriers and what can be done to improve it?
-https://www.portofrotterdam.com/
+1. I want to know if this meets EU Accessibility Regulations. What are the barriers and what can be done to improve it? https://www.portofrotterdam.com/
+1. Can you flesh this out and give me examples and a roadmap so that I can meet this timeline?
+1. I need a full report with context and responsibilities. Something I might want to submit to the Port of Rotterdam.
 
-Can you flesh this out and give me examples and a roadmap so that I can meet this timeline?
+[Draft report for the Port of Rotterdam](./port-of-rotterdam-report.htm).
 
-I need a full report with context and responsibilities. Something I might want to submit to the Port of Rotterdam.
+## DrupalCon Rotterdam
 
-[Draft report for the Port of Rotterdam](/accessibility-sandbox/ai-report/port-of-rotterdam-report.htm).
+1. Give me an accessibility assessment of https://events.drupal.org/rotterdam2026 I want to know how well it meets WCAG 2.2 or for that matter the latest EN 301 549
+1. Can you flesh this out and give me examples and a roadmap to make it accessible?
+1. I need a full report with context and responsibilities. Something I might want to submit to the Drupal Association.
+1. https://www.etsi.org/deliver/etsi_en/301500_301599/301549/04.01.01_60/en_301549v040101p.pdf Right, this is the latest EN 301 549. Does that change anything? What about user preferences? Can you update the report?
+
+[Draft report for DrupalCon Rotterdam Event Site](./DrupalCon_Rotterdam_2026_Accessibility_Assess.html).
