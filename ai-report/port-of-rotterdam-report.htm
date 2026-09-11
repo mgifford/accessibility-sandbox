@@ -1,195 +1,169 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Times; -webkit-text-stroke: #000000; min-height: 14.0px}
-    span.s1 {font-kerning: none}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Port of Rotterdam Accessibility Remediation Report</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: #222;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    h1 { color: #003366; border-bottom: 2px solid #003366; padding-bottom: 0.5rem; }
+    h2 { color: #003366; margin-top: 2rem; }
+    h3 { color: #004488; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+    th, td { border: 1px solid #ccc; padding: 0.75rem; text-align: left; vertical-align: top; }
+    th { background-color: #f4f7f9; }
+    ul { padding-left: 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { background: #f4f4f4; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
   </style>
 </head>
 <body>
-<p class="p1"><span class="s1">---</span></p>
-<p class="p1"><span class="s1">layout: null</span></p>
-<p class="p1"><span class="s1">---</span></p>
-<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html lang="en"&gt;</span></p>
-<p class="p1"><span class="s1">&lt;head&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta charset="UTF-8"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;title&gt;Port of Rotterdam Accessibility Remediation Report&lt;/title&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;style&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>body {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>line-height: 1.6;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>color: #222;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>max-width: 900px;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>margin: 0 auto;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding: 2rem 1rem;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>h1 { color: #003366; border-bottom: 2px solid #003366; padding-bottom: 0.5rem; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>h2 { color: #003366; margin-top: 2rem; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>h3 { color: #004488; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>table {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>width: 100%;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border-collapse: collapse;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>margin: 1.5rem 0;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>th, td {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>border: 1px solid #ccc;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>padding: 0.75rem;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>text-align: left;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>vertical-align: top;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>th { background-color: #f4f7f9; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>ul { padding-left: 1.5rem; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>li { margin-bottom: 0.5rem; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>code { background: #f4f4f4; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Digital Accessibility Remediation Report: Port of Rotterdam&lt;/h1&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;p&gt;&lt;strong&gt;Prepared for:&lt;/strong&gt; The Port of Rotterdam Authority&lt;br&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;strong&gt;Date:&lt;/strong&gt; September 2026&lt;br&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;strong&gt;Subject:&lt;/strong&gt; Web Accessibility Compliance, Barrier Analysis, and Strategic Remediation Roadmap&lt;/p&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h2&gt;1. Executive Summary&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;p&gt;The Port of Rotterdam Authority is committed to ensuring its digital platforms are accessible to all users, in alignment with the European Union Web Accessibility Directive (Directive 2016/2102) and the Dutch Government Digital Accessibility Decree. Based on the independent audit conducted on January 16, 2026, the primary domain (portofrotterdam.com) and associated subdomains currently hold a &lt;strong&gt;Status B: Partially Compliant&lt;/strong&gt; rating against the EN 301 549 / WCAG 2.1 Level AA standards.&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;p&gt;While the Port Authority is transparent about its current barriers and has provided alternatives (phone and email support), significant remediation is required across both technical infrastructure and content management. This report outlines the specific barriers identified, delineates responsibilities between internal content teams and external development partners, and provides a structured roadmap to achieve full compliance (Status A) by the stated deadline of &lt;strong&gt;December 31, 2027&lt;/strong&gt;.&lt;/p&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h2&gt;2. Regulatory Context&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;p&gt;Under the Government Digital Accessibility Decree, public sector bodies must ensure their websites and mobile applications meet digital accessibility standards. The framework is defined as follows:&lt;/p&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Standard:&lt;/strong&gt; EN 301 549 (equivalent to WCAG 2.1 Level A and AA).&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Current Status:&lt;/strong&gt; Partially Compliant. The Port maintains a valid accessibility statement, possesses a recent audit, and has a plan, but technical deviations remain.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Enforcement Target:&lt;/strong&gt; Attain Status A (Fully Compliant) by the December 31, 2027 deadline documented in the Port's official accessibility statement.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/ul&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h2&gt;3. Current State Analysis: Identified Barriers&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;p&gt;The independent audit identified numerous deviations across the four pillars of WCAG 2.1: Perceivable, Operable, Understandable, and Robust.&lt;/p&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;table&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;thead&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;th&gt;WCAG Category&lt;/th&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;th&gt;Specific Failures (Level A &amp; AA)&lt;/th&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;th&gt;Impact on Users&lt;/th&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/thead&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;tbody&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Visual &amp; Non-Text Content&lt;/strong&gt;&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;SC 1.1.1 (Non-text content), SC 1.4.1 (Use of colour), SC 1.4.3 &amp; 1.4.11 (Contrast), SC 1.4.5 (Images of text)&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Visually impaired and colorblind users cannot perceive essential information, UI elements, or meaningful images. Screen readers cannot describe missing alt text.&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Media &amp; Video&lt;/strong&gt;&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;SC 1.2.2 (Subtitles), SC 1.2.3 &amp; 1.2.5 (Audio description)&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Deaf and hard-of-hearing users miss spoken content; blind users miss essential on-screen visual information.&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Keyboard &amp; Navigation&lt;/strong&gt;&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;SC 2.1.1 (Keyboard), SC 2.4.1 (Bypass blocks), SC 2.4.3 (Focus order), SC 2.4.7 (Focus visible)&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Motor-impaired users utilizing keyboards or switch devices cannot navigate the site, locate their focus indicator, or skip repetitive menus.&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Structure &amp; Semantics&lt;/strong&gt;&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;SC 1.3.1 (Info and relationships), SC 1.3.2 (Meaningful sequence), SC 2.4.6 (Headings and labels), SC 4.1.2 (Name, role, value)&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Assistive technologies cannot accurately interpret page structures, custom interactive elements, or form labels.&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Usability &amp; Layout&lt;/strong&gt;&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;SC 1.3.5 (Identify input purpose), SC 1.4.10 (Reflow), SC 2.2.2 (Pause, stop, hide)&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Users with cognitive disabilities cannot use auto-fill for forms; users who zoom in experience broken layouts; users with ADHD cannot pause moving elements.&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/tbody&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/table&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h2&gt;4. Division of Responsibilities&lt;/h2&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h3&gt;4.1. Internal Port Authority Team (Content Remediation)&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Alternative Text (SC 1.1.1):&lt;/strong&gt; Write accurate, descriptive &lt;code&gt;alt&lt;/code&gt; text for all informative images and nullify (&lt;code&gt;alt=""&lt;/code&gt;) decorative images.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Multimedia (SC 1.2.2, 1.2.3, 1.2.5):&lt;/strong&gt; Audit existing pre-recorded video assets. Outsource or generate closed captions (.vtt/.srt) and text transcripts/audio descriptions.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Heading Structure (SC 2.4.6):&lt;/strong&gt; Ensure all rich-text content follows a strict hierarchical heading structure (H1, H2, H3) without skipping levels.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Link Phrasing (SC 2.4.4):&lt;/strong&gt; Eliminate ambiguous links ("Click Here", "Read More"). Ensure link text accurately describes its destination.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Language Attributes (SC 3.1.2):&lt;/strong&gt; Ensure multi-language text within a page is tagged with language attributes.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/ul&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h3&gt;4.2. External Development Partner (Technical Infrastructure)&lt;/h3&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Keyboard Operability &amp; Focus (SC 2.1.1, 2.4.3, 2.4.7):&lt;/strong&gt; Ensure all interactive UI elements are operable via the &lt;code&gt;Tab&lt;/code&gt; key and possess a visible CSS focus ring.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Semantic HTML &amp; ARIA (SC 1.3.1, 4.1.2):&lt;/strong&gt; Ensure custom widgets broadcast Name, Role, and Value to assistive technologies.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Responsive Design (SC 1.4.10, 1.4.12):&lt;/strong&gt; Refactor CSS to allow zooming up to 400% without two-dimensional scrolling.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Color &amp; Contrast (SC 1.4.1, 1.4.3, 1.4.11):&lt;/strong&gt; Update CSS variables to ensure text meets minimum 4.5:1 contrast ratios.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;li&gt;&lt;strong&gt;Motion Control (SC 2.2.2, 1.4.13):&lt;/strong&gt; Implement global pause/play controls for auto-advancing carousels.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/ul&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h2&gt;5. Strategic Remediation Roadmap (Target: Dec 31, 2027)&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;table&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;thead&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;th&gt;Phase / Timeline&lt;/th&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;th&gt;Focus Area&lt;/th&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;th&gt;Key Deliverables&lt;/th&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/thead&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;tbody&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Phase 1: Triage&lt;/strong&gt;&lt;br&gt;Q4 2026 - Q1 2027&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;High-Impact Blockers&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Deploy "Skip to Main Content" links globally.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Fix CSS focus rings for keyboard users.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Address ARIA errors on critical navigation menus.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Phase 2: Structural Fixes&lt;/strong&gt;&lt;br&gt;Q2 2027 - Q3 2027&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Visual, Semantics &amp; Media&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Deploy contrast and CSS reflow fixes.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Update form structures (labels and autocomplete).&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Upload closed captions/transcripts for top 20% of videos.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Phase 3: Deep Remediation&lt;/strong&gt;&lt;br&gt;Early Q4 2027&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Content Cleanup &amp; Edge Cases&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Clean up ambiguous link text and heading structures.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Provide WCAG training for internal content editors.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Implement automated testing (axe) in CI/CD pipeline.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;&lt;strong&gt;Phase 4: Validation&lt;/strong&gt;&lt;br&gt;Late Q4 2027&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;Re-Audit &amp; Certification&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Engage independent third-party auditor for WCAG 2.1 AA review.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>&lt;li&gt;Update Accessibility Statement to &lt;strong&gt;Status A (Fully Compliant)&lt;/strong&gt;.&lt;/li&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">          </span>&lt;/ul&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>&lt;/td&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">      </span>&lt;/tr&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/tbody&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;/table&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;h2&gt;6. Conclusion &amp; Next Steps&lt;/h2&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">  </span>&lt;p&gt;Achieving full compliance by the end of 2027 requires immediate, synchronized action between the Port of Rotterdam's content managers and external technical partners. Prioritizing high-impact operability blockers first will significantly reduce user exclusion early in the remediation process.&lt;/p&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+
+  <h1>Digital Accessibility Remediation Report: Port of Rotterdam</h1>
+  <p><strong>Prepared for:</strong> The Port of Rotterdam Authority<br>
+  <strong>Date:</strong> September 2026<br>
+  <strong>Subject:</strong> Web Accessibility Compliance, Barrier Analysis, and Strategic Remediation Roadmap</p>
+
+  <h2>1. Executive Summary</h2>
+  <p>The Port of Rotterdam Authority is committed to ensuring its digital platforms are accessible to all users, in alignment with the European Union Web Accessibility Directive (Directive 2016/2102) and the Dutch Government Digital Accessibility Decree. Based on the independent audit conducted on January 16, 2026, the primary domain (portofrotterdam.com) and associated subdomains currently hold a <strong>Status B: Partially Compliant</strong> rating against the EN 301 549 / WCAG 2.1 Level AA standards.</p>
+  <p>While the Port Authority is transparent about its current barriers and has provided alternatives (phone and email support), significant remediation is required across both technical infrastructure and content management. This report outlines the specific barriers identified, delineates responsibilities between internal content teams and external development partners, and provides a structured roadmap to achieve full compliance (Status A) by the stated deadline of <strong>December 31, 2027</strong>.</p>
+
+  <h2>2. Regulatory Context</h2>
+  <p>Under the Government Digital Accessibility Decree, public sector bodies must ensure their websites and mobile applications meet digital accessibility standards. The framework is defined as follows:</p>
+  <ul>
+    <li><strong>Standard:</strong> EN 301 549 (equivalent to WCAG 2.1 Level A and AA).</li>
+    <li><strong>Current Status:</strong> Partially Compliant. The Port maintains a valid accessibility statement, possesses a recent audit, and has a plan, but technical deviations remain.</li>
+    <li><strong>Enforcement Target:</strong> Attain Status A (Fully Compliant) by the December 31, 2027 deadline documented in the Port's official accessibility statement.</li>
+  </ul>
+
+  <h2>3. Current State Analysis: Identified Barriers</h2>
+  <p>The independent audit identified numerous deviations across the four pillars of WCAG 2.1: Perceivable, Operable, Understandable, and Robust.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>WCAG Category</th>
+        <th>Specific Failures (Level A & AA)</th>
+        <th>Impact on Users</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Visual & Non-Text Content</strong></td>
+        <td>SC 1.1.1 (Non-text content), SC 1.4.1 (Use of colour), SC 1.4.3 & 1.4.11 (Contrast), SC 1.4.5 (Images of text)</td>
+        <td>Visually impaired and colorblind users cannot perceive essential information, UI elements, or meaningful images. Screen readers cannot describe missing alt text.</td>
+      </tr>
+      <tr>
+        <td><strong>Media & Video</strong></td>
+        <td>SC 1.2.2 (Subtitles), SC 1.2.3 & 1.2.5 (Audio description)</td>
+        <td>Deaf and hard-of-hearing users miss spoken content; blind users miss essential on-screen visual information.</td>
+      </tr>
+      <tr>
+        <td><strong>Keyboard & Navigation</strong></td>
+        <td>SC 2.1.1 (Keyboard), SC 2.4.1 (Bypass blocks), SC 2.4.3 (Focus order), SC 2.4.7 (Focus visible)</td>
+        <td>Motor-impaired users utilizing keyboards or switch devices cannot navigate the site, locate their focus indicator, or skip repetitive menus.</td>
+      </tr>
+      <tr>
+        <td><strong>Structure & Semantics</strong></td>
+        <td>SC 1.3.1 (Info and relationships), SC 1.3.2 (Meaningful sequence), SC 2.4.6 (Headings and labels), SC 4.1.2 (Name, role, value)</td>
+        <td>Assistive technologies cannot accurately interpret page structures, custom interactive elements, or form labels.</td>
+      </tr>
+      <tr>
+        <td><strong>Usability & Layout</strong></td>
+        <td>SC 1.3.5 (Identify input purpose), SC 1.4.10 (Reflow), SC 2.2.2 (Pause, stop, hide)</td>
+        <td>Users with cognitive disabilities cannot use auto-fill for forms; users who zoom in experience broken layouts; users with ADHD cannot pause moving elements.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Division of Responsibilities</h2>
+
+  <h3>4.1. Internal Port Authority Team (Content Remediation)</h3>
+  <ul>
+    <li><strong>Alternative Text (SC 1.1.1):</strong> Write accurate, descriptive <code>alt</code> text for all informative images and nullify (<code>alt=""</code>) decorative images.</li>
+    <li><strong>Multimedia (SC 1.2.2, 1.2.3, 1.2.5):</strong> Audit existing pre-recorded video assets. Outsource or generate closed captions (.vtt/.srt) and text transcripts/audio descriptions.</li>
+    <li><strong>Heading Structure (SC 2.4.6):</strong> Ensure all rich-text content follows a strict hierarchical heading structure (H1, H2, H3) without skipping levels.</li>
+    <li><strong>Link Phrasing (SC 2.4.4):</strong> Eliminate ambiguous links ("Click Here", "Read More"). Ensure link text accurately describes its destination.</li>
+    <li><strong>Language Attributes (SC 3.1.2):</strong> Ensure multi-language text within a page is tagged with language attributes.</li>
+  </ul>
+
+  <h3>4.2. External Development Partner (Technical Infrastructure)</h3>
+  <ul>
+    <li><strong>Keyboard Operability & Focus (SC 2.1.1, 2.4.3, 2.4.7):</strong> Ensure all interactive UI elements are operable via the <code>Tab</code> key and possess a visible CSS focus ring.</li>
+    <li><strong>Semantic HTML & ARIA (SC 1.3.1, 4.1.2):</strong> Ensure custom widgets broadcast Name, Role, and Value to assistive technologies.</li>
+    <li><strong>Responsive Design (SC 1.4.10, 1.4.12):</strong> Refactor CSS to allow zooming up to 400% without two-dimensional scrolling.</li>
+    <li><strong>Color & Contrast (SC 1.4.1, 1.4.3, 1.4.11):</strong> Update CSS variables to ensure text meets minimum 4.5:1 contrast ratios.</li>
+    <li><strong>Motion Control (SC 2.2.2, 1.4.13):</strong> Implement global pause/play controls for auto-advancing carousels.</li>
+  </ul>
+
+  <h2>5. Strategic Remediation Roadmap (Target: Dec 31, 2027)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Phase / Timeline</th>
+        <th>Focus Area</th>
+        <th>Key Deliverables</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Phase 1: Triage</strong><br>Q4 2026 - Q1 2027</td>
+        <td>High-Impact Blockers</td>
+        <td>
+          <ul>
+            <li>Deploy "Skip to Main Content" links globally.</li>
+            <li>Fix CSS focus rings for keyboard users.</li>
+            <li>Address ARIA errors on critical navigation menus.</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Phase 2: Structural Fixes</strong><br>Q2 2027 - Q3 2027</td>
+        <td>Visual, Semantics & Media</td>
+        <td>
+          <ul>
+            <li>Deploy contrast and CSS reflow fixes.</li>
+            <li>Update form structures (labels and autocomplete).</li>
+            <li>Upload closed captions/transcripts for top 20% of videos.</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Phase 3: Deep Remediation</strong><br>Early Q4 2027</td>
+        <td>Content Cleanup & Edge Cases</td>
+        <td>
+          <ul>
+            <li>Clean up ambiguous link text and heading structures.</li>
+            <li>Provide WCAG training for internal content editors.</li>
+            <li>Implement automated testing (axe) in CI/CD pipeline.</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Phase 4: Validation</strong><br>Late Q4 2027</td>
+        <td>Re-Audit & Certification</td>
+        <td>
+          <ul>
+            <li>Engage independent third-party auditor for WCAG 2.1 AA review.</li>
+            <li>Update Accessibility Statement to <strong>Status A (Fully Compliant)</strong>.</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>6. Conclusion & Next Steps</h2>
+  <p>Achieving full compliance by the end of 2027 requires immediate, synchronized action between the Port of Rotterdam's content managers and external technical partners. Prioritizing high-impact operability blockers first will significantly reduce user exclusion early in the remediation process.</p>
+
 </body>
 </html>
