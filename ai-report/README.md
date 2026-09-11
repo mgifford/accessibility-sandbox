@@ -9,4 +9,4 @@ Can you flesh this out and give me examples and a roadmap so that I can meet thi
 
 I need a full report with context and responsibilities. Something I might want to submit to the Port of Rotterdam.
 
-[Draft report for the Port of Rotterdam].
+[Draft report for the Port of Rotterdam](/accessibility-sandbox/blob/main/ai-report/Port%20of%20Rotterdam%20Accessibility%20Remediation%20Report.html).
