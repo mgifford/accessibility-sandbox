@@ -12,27 +12,54 @@ layout: null
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.6;
       color: #222;
-      max-width: 900px;
+      max-width: 950px;
       margin: 0 auto;
       padding: 2rem 1rem;
     }
     h1 { color: #003366; border-bottom: 2px solid #003366; padding-bottom: 0.5rem; }
-    h2 { color: #003366; margin-top: 2rem; }
-    h3 { color: #004488; }
-    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
-    th, td { border: 1px solid #ccc; padding: 0.75rem; text-align: left; vertical-align: top; }
+    h2 { color: #003366; margin-top: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 0.3rem; }
+    h3 { color: #004488; margin-top: 1.5rem; }
+    h4 { color: #222; margin-top: 1rem; margin-bottom: 0.5rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.75rem;
+      text-align: left;
+      vertical-align: top;
+    }
     th { background-color: #f4f7f9; }
     ul { padding-left: 1.5rem; }
     li { margin-bottom: 0.5rem; }
     code { background: #f4f4f4; padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.9em; }
+    .meta-block {
+      background-color: #f8f9fa;
+      border-left: 4px solid #003366;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    .meta-block p { margin: 0.2rem 0; }
+    .phase-card {
+      background-color: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
   </style>
 </head>
 <body>
 
   <h1>Digital Accessibility Remediation Report: Port of Rotterdam</h1>
-  <p><strong>Prepared for:</strong> The Port of Rotterdam Authority<br>
-  <strong>Date:</strong> September 2026<br>
-  <strong>Subject:</strong> Web Accessibility Compliance, Barrier Analysis, and Strategic Remediation Roadmap</p>
+  
+  <div class="meta-block">
+    <p><strong>Prepared for:</strong> The Port of Rotterdam Authority</p>
+    <p><strong>Date:</strong> September 2026</p>
+    <p><strong>Subject:</strong> Web Accessibility Compliance, Barrier Analysis, and Strategic Remediation Roadmap</p>
+  </div>
 
   <h2>1. Executive Summary</h2>
   <p>The Port of Rotterdam Authority is committed to ensuring its digital platforms are accessible to all users, in alignment with the European Union Web Accessibility Directive (Directive 2016/2102) and the Dutch Government Digital Accessibility Decree. Based on the independent audit conducted on January 16, 2026, the primary domain (portofrotterdam.com) and associated subdomains currently hold a <strong>Status B: Partially Compliant</strong> rating against the EN 301 549 / WCAG 2.1 Level AA standards.</p>
@@ -46,124 +73,143 @@ layout: null
     <li><strong>Enforcement Target:</strong> Attain Status A (Fully Compliant) by the December 31, 2027 deadline documented in the Port's official accessibility statement.</li>
   </ul>
 
-  <h2>3. Current State Analysis: Identified Barriers</h2>
-  <p>The independent audit identified numerous deviations across the four pillars of WCAG 2.1: Perceivable, Operable, Understandable, and Robust.</p>
+  <h2>3. Breakdown of the Port of Rotterdam's Accessibility Barriers</h2>
+  <p>The audit statement notes failures across Level A and AA of the WCAG 2.1 standard. Here are detailed examples of what these failures look like in practice, divided by the team responsible:</p>
 
-  <table>
-    <thead>
-      <tr>
-        <th>WCAG Category</th>
-        <th>Specific Failures (Level A & AA)</th>
-        <th>Impact on Users</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Visual & Non-Text Content</strong></td>
-        <td>SC 1.1.1 (Non-text content), SC 1.4.1 (Use of colour), SC 1.4.3 & 1.4.11 (Contrast), SC 1.4.5 (Images of text)</td>
-        <td>Visually impaired and colorblind users cannot perceive essential information, UI elements, or meaningful images. Screen readers cannot describe missing alt text.</td>
-      </tr>
-      <tr>
-        <td><strong>Media & Video</strong></td>
-        <td>SC 1.2.2 (Subtitles), SC 1.2.3 & 1.2.5 (Audio description)</td>
-        <td>Deaf and hard-of-hearing users miss spoken content; blind users miss essential on-screen visual information.</td>
-      </tr>
-      <tr>
-        <td><strong>Keyboard & Navigation</strong></td>
-        <td>SC 2.1.1 (Keyboard), SC 2.4.1 (Bypass blocks), SC 2.4.3 (Focus order), SC 2.4.7 (Focus visible)</td>
-        <td>Motor-impaired users utilizing keyboards or switch devices cannot navigate the site, locate their focus indicator, or skip repetitive menus.</td>
-      </tr>
-      <tr>
-        <td><strong>Structure & Semantics</strong></td>
-        <td>SC 1.3.1 (Info and relationships), SC 1.3.2 (Meaningful sequence), SC 2.4.6 (Headings and labels), SC 4.1.2 (Name, role, value)</td>
-        <td>Assistive technologies cannot accurately interpret page structures, custom interactive elements, or form labels.</td>
-      </tr>
-      <tr>
-        <td><strong>Usability & Layout</strong></td>
-        <td>SC 1.3.5 (Identify input purpose), SC 1.4.10 (Reflow), SC 2.2.2 (Pause, stop, hide)</td>
-        <td>Users with cognitive disabilities cannot use auto-fill for forms; users who zoom in experience broken layouts; users with ADHD cannot pause moving elements.</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2>4. Division of Responsibilities</h2>
-
-  <h3>4.1. Internal Port Authority Team (Content Remediation)</h3>
+  <h3>3.1. Content Team Responsibilities (Currently Addressed Internally)</h3>
+  <p>These are failures based on how information is uploaded or written on the site.</p>
   <ul>
-    <li><strong>Alternative Text (SC 1.1.1):</strong> Write accurate, descriptive <code>alt</code> text for all informative images and nullify (<code>alt=""</code>) decorative images.</li>
-    <li><strong>Multimedia (SC 1.2.2, 1.2.3, 1.2.5):</strong> Audit existing pre-recorded video assets. Outsource or generate closed captions (.vtt/.srt) and text transcripts/audio descriptions.</li>
-    <li><strong>Heading Structure (SC 2.4.6):</strong> Ensure all rich-text content follows a strict hierarchical heading structure (H1, H2, H3) without skipping levels.</li>
-    <li><strong>Link Phrasing (SC 2.4.4):</strong> Eliminate ambiguous links ("Click Here", "Read More"). Ensure link text accurately describes its destination.</li>
-    <li><strong>Language Attributes (SC 3.1.2):</strong> Ensure multi-language text within a page is tagged with language attributes.</li>
+    <li><strong>SC 1.1.1 Non-textual content [Level A]:</strong> Images are missing alt text. For example, a photo of a new terminal might have a filename like <code>terminal-project-03.jpg</code> reading out to a blind user, or a decorative image might be lacking an empty <code>alt=""</code> tag causing screen readers to read useless clutter.</li>
+    <li><strong>SC 1.2.2 Subtitles (pre-recorded) [Level A]:</strong> Videos uploaded to the site (e.g., promotional videos or event recordings) do not have accurate closed captions.</li>
+    <li><strong>SC 1.2.3 Audio description or alternative media [Level A] & SC 1.2.5 [Level AA]:</strong> Videos lack a secondary audio track describing important visual information (e.g., on-screen text or action that isn't spoken aloud) for blind users.</li>
+    <li><strong>SC 1.4.5 Images of text [Level AA]:</strong> The team is uploading graphics that contain text (like an infographic or a promotional banner) instead of using real HTML text over an image.</li>
+    <li><strong>SC 2.4.2 Page title [Level A]:</strong> Webpage titles (the text in the browser tab) are not unique or descriptive, making it hard for users with multiple tabs open to know where they are.</li>
+    <li><strong>SC 2.4.4 Link target (in context) [Level A]:</strong> Using ambiguous link text like "Click Here" or "Read More" instead of descriptive text like "Read the 2026 Annual Report."</li>
+    <li><strong>SC 2.4.6 Headings and labels [Level AA]:</strong> Content headers (<code>&lt;h1&gt;</code>, <code>&lt;h2&gt;</code>) are being used out of order, or forms are missing clear instructions.</li>
+    <li><strong>SC 3.1.1 Language of the page [Level A] & SC 3.1.2 [Level AA]:</strong> The <code>&lt;html&gt;</code> language attribute isn't set, or if an English page suddenly quotes a Dutch phrase, the Dutch text isn't marked up with a language tag so screen readers pronounce it correctly.</li>
   </ul>
 
-  <h3>4.2. External Development Partner (Technical Infrastructure)</h3>
+  <h3>3.2. Technical / Development Team Responsibilities (Addressed by External Partner)</h3>
+  <p>These are failures in the code, structure, and CSS of the website.</p>
   <ul>
-    <li><strong>Keyboard Operability & Focus (SC 2.1.1, 2.4.3, 2.4.7):</strong> Ensure all interactive UI elements are operable via the <code>Tab</code> key and possess a visible CSS focus ring.</li>
-    <li><strong>Semantic HTML & ARIA (SC 1.3.1, 4.1.2):</strong> Ensure custom widgets broadcast Name, Role, and Value to assistive technologies.</li>
-    <li><strong>Responsive Design (SC 1.4.10, 1.4.12):</strong> Refactor CSS to allow zooming up to 400% without two-dimensional scrolling.</li>
-    <li><strong>Color & Contrast (SC 1.4.1, 1.4.3, 1.4.11):</strong> Update CSS variables to ensure text meets minimum 4.5:1 contrast ratios.</li>
-    <li><strong>Motion Control (SC 2.2.2, 1.4.13):</strong> Implement global pause/play controls for auto-advancing carousels.</li>
+    <li><strong>SC 1.3.1 Information and relationships [Level A]:</strong> Visual relationships (like a form field and its label, or a group of checkboxes) are not programmatically linked in the HTML.</li>
+    <li><strong>SC 1.3.2 Meaningful sequence [Level A]:</strong> The visual reading order of the site does not match the code order, meaning a screen reader reads content out of order.</li>
+    <li><strong>SC 1.3.5 Identify the purpose of the input [Level AA]:</strong> Form fields (like Name or Email) are missing autocomplete attributes, preventing browsers from automatically filling them in for users with cognitive or motor disabilities.</li>
+    <li><strong>SC 1.4.1 Use of colour [Level A] & SC 1.4.3 / 1.4.11 Contrast [Level AA]:</strong> Text or essential UI components (like buttons or icons) do not have high enough color contrast against their backgrounds. Links might only be identified by a color change rather than an underline.</li>
+    <li><strong>SC 1.4.10 Reflow [Level AA] & SC 1.4.12 Text spacing [Level AA]:</strong> When users zoom into the site at 400%, the layout breaks, overlaps, or forces horizontal scrolling. When custom text spacing is applied, text is cut off.</li>
+    <li><strong>SC 1.4.13 Content on hover or focus [Level AA]:</strong> Dropdown menus or tooltips that appear when hovered over cannot be dismissed with the Escape key or disappear when a user tries to move their mouse to them.</li>
+    <li><strong>SC 2.1.1 Keyboard [Level A] & SC 2.1.4 Keyboard shortcuts [Level A]:</strong> Menus, buttons, or custom widgets cannot be operated using only the Tab, Enter, and Spacebar keys.</li>
+    <li><strong>SC 2.2.2 Pause, stop, hide [Level A]:</strong> Carousels, animated backgrounds, or scrolling tickers start automatically and do not have a visible "Pause" button.</li>
+    <li><strong>SC 2.4.1 Navigating around blocks [Level A]:</strong> The site is missing a "Skip to Main Content" link, forcing keyboard users to tab through the entire navigation menu on every single page.</li>
+    <li><strong>SC 2.4.3 Focus order [Level A] & SC 2.4.7 Focus visible [Level AA]:</strong> The keyboard focus jumps around the page illogically, or there is no visible outline showing the user which button/link they are currently focused on.</li>
+    <li><strong>SC 4.1.2 Name, role, value [Level A]:</strong> Custom UI elements (like expanding accordions or custom dropdowns) do not use ARIA attributes to tell screen readers what the element is or if it is expanded/collapsed.</li>
   </ul>
 
-  <h2>5. Strategic Remediation Roadmap (Target: Dec 31, 2027)</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Phase / Timeline</th>
-        <th>Focus Area</th>
-        <th>Key Deliverables</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Phase 1: Triage</strong><br>Q4 2026 - Q1 2027</td>
-        <td>High-Impact Blockers</td>
-        <td>
-          <ul>
-            <li>Deploy "Skip to Main Content" links globally.</li>
-            <li>Fix CSS focus rings for keyboard users.</li>
-            <li>Address ARIA errors on critical navigation menus.</li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Phase 2: Structural Fixes</strong><br>Q2 2027 - Q3 2027</td>
-        <td>Visual, Semantics & Media</td>
-        <td>
-          <ul>
-            <li>Deploy contrast and CSS reflow fixes.</li>
-            <li>Update form structures (labels and autocomplete).</li>
-            <li>Upload closed captions/transcripts for top 20% of videos.</li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Phase 3: Deep Remediation</strong><br>Early Q4 2027</td>
-        <td>Content Cleanup & Edge Cases</td>
-        <td>
-          <ul>
-            <li>Clean up ambiguous link text and heading structures.</li>
-            <li>Provide WCAG training for internal content editors.</li>
-            <li>Implement automated testing (axe) in CI/CD pipeline.</li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Phase 4: Validation</strong><br>Late Q4 2027</td>
-        <td>Re-Audit & Certification</td>
-        <td>
-          <ul>
-            <li>Engage independent third-party auditor for WCAG 2.1 AA review.</li>
-            <li>Update Accessibility Statement to <strong>Status A (Fully Compliant)</strong>.</li>
-          </ul>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <h2>4. Remediation Roadmap Plan</h2>
+  <div class="meta-block">
+    <p><strong>Project:</strong> Port of Rotterdam Accessibility Remediation</p>
+    <p><strong>Goal:</strong> Achieve WCAG 2.1 Level AA Compliance (Status A)</p>
+    <p><strong>Deadline:</strong> December 31, 2027</p>
+  </div>
 
-  <h2>6. Conclusion & Next Steps</h2>
-  <p>Achieving full compliance by the end of 2027 requires immediate, synchronized action between the Port of Rotterdam's content managers and external technical partners. Prioritizing high-impact operability blockers first will significantly reduce user exclusion early in the remediation process.</p>
+  <div class="phase-card">
+    <h3>Phase 1: Triage and High-Impact Technical Fixes (Months 1–4)</h3>
+    <p><strong>Focus:</strong> Resolving critical Level A barriers that physically prevent users from navigating the site or completing primary tasks.</p>
+    
+    <h4>Task 1.1: Keyboard Accessibility & Navigation (Dev Team)</h4>
+    <ul>
+      <li>Implement a "Skip to Main Content" link (SC 2.4.1).</li>
+      <li>Fix Focus Visible issues by implementing a CSS focus ring (<code>outline: 2px solid #000;</code>) on all interactive elements (SC 2.4.7).</li>
+      <li>Ensure all menus, custom widgets, and modals can be navigated with Tab/Enter and closed with the Escape key (SC 2.1.1, SC 2.4.3).</li>
+    </ul>
+
+    <h4>Task 1.2: Form and Input Fixes (Dev Team)</h4>
+    <ul>
+      <li>Programmatically link all form labels to inputs (SC 1.3.1).</li>
+      <li>Add autocomplete attributes to user data fields (SC 1.3.5).</li>
+      <li>Ensure all custom form controls report their Name, Role, and Value (SC 4.1.2).</li>
+    </ul>
+
+    <h4>Task 1.3: Content Triage (Content Team)</h4>
+    <ul>
+      <li>Run a crawler to identify all empty or redundant alt text on primary pages (SC 1.1.1).</li>
+      <li>Identify all non-descriptive links ("Click here") on primary landing pages and rewrite them (SC 2.4.4).</li>
+    </ul>
+  </div>
+
+  <div class="phase-card">
+    <h3>Phase 2: Design, Media, and Structural Adjustments (Months 5–10)</h3>
+    <p><strong>Focus:</strong> Addressing visual barriers, media barriers, and secondary technical issues.</p>
+    
+    <h4>Task 2.1: Visual and Contrast Fixes (Dev/Design Team)</h4>
+    <ul>
+      <li>Adjust CSS hex codes to ensure all text meets 4.5:1 contrast and UI elements meet 3.1:1 contrast (SC 1.4.3, 1.4.11).</li>
+      <li>Add underlines or icons to links that currently rely only on color (SC 1.4.1).</li>
+    </ul>
+
+    <h4>Task 2.2: Reflow and Spacing (Dev Team)</h4>
+    <ul>
+      <li>Test and fix CSS layouts to ensure the site can be zoomed to 400% without horizontal scrolling or overlapping (SC 1.4.10, 1.4.12).</li>
+    </ul>
+
+    <h4>Task 2.3: Media Remediation (Content Team)</h4>
+    <ul>
+      <li>Audit all pre-recorded videos on the site.</li>
+      <li>Send priority videos out for professional closed captioning (.srt or .vtt files) (SC 1.2.2).</li>
+      <li>Draft text transcripts or source audio descriptions for videos conveying visual-only information (SC 1.2.3, 1.2.5).</li>
+    </ul>
+
+    <h4>Task 2.4: Animation Control (Dev Team)</h4>
+    <ul>
+      <li>Add pause/play toggles to all auto-advancing carousels and animated elements (SC 2.2.2).</li>
+    </ul>
+  </div>
+
+  <div class="phase-card">
+    <h3>Phase 3: Content Cleanup and Policy Implementation (Months 11–16)</h3>
+    <p><strong>Focus:</strong> Fixing the remaining Level AA content issues and changing internal processes so bugs aren't reintroduced.</p>
+    
+    <h4>Task 3.1: Structural Content Fixes (Content Team)</h4>
+    <ul>
+      <li>Review all page titles to ensure they are unique and descriptive (SC 2.4.2).</li>
+      <li>Ensure all heading structures (H1, H2, H3) are logical and not skipping levels (SC 2.4.6).</li>
+      <li>Replace any images of text with actual HTML text and CSS styling (SC 1.4.5).</li>
+    </ul>
+
+    <h4>Task 3.2: Language Attributes (Dev/Content Team)</h4>
+    <ul>
+      <li>Ensure base language tags are set and implement a system for content authors to tag foreign phrases (SC 3.1.1, 3.1.2).</li>
+    </ul>
+
+    <h4>Task 3.3: Internal Process Updates</h4>
+    <ul>
+      <li>Integrate an automated accessibility checker (like axe DevTools) into the Dev Team's deployment pipeline.</li>
+      <li>Provide mandatory WCAG training for all content uploaders to prevent future bad alt text and bad link text.</li>
+    </ul>
+  </div>
+
+  <div class="phase-card">
+    <h3>Phase 4: Validation and Re-Audit (Months 17–20 / Late 2027)</h3>
+    <p><strong>Focus:</strong> Proving compliance before the December 2027 deadline.</p>
+    
+    <h4>Task 4.1: Internal QA</h4>
+    <ul>
+      <li>Conduct manual screen reader testing (JAWS/NVDA) and keyboard-only testing on all key user journeys.</li>
+    </ul>
+
+    <h4>Task 4.2: Third-Party Re-Audit</h4>
+    <ul>
+      <li>Bring the independent third-party auditor back to re-test the site against the WCAG 2.1 AA standard.</li>
+    </ul>
+
+    <h4>Task 4.3: Update Accessibility Statement</h4>
+    <ul>
+      <li>Upon a clean audit, update the site's Accessibility Statement from "Partially Compliant" (Status B) to "Fully Compliant" (Status A) by December 31, 2027.</li>
+    </ul>
+  </div>
+
+  <h2>5. Conclusion & Next Steps</h2>
+  <p>Achieving full compliance by the end of 2027 requires immediate, synchronized action between the Port of Rotterdam's content managers and external technical partners. By prioritizing high-impact operability blockers first (such as keyboard navigation and critical forms), the Port can significantly reduce the risk of user exclusion early in the remediation process. It is recommended that this roadmap be integrated into ongoing agile development sprints, with quarterly check-ins to measure progress against the WCAG standard.</p>
 
 </body>
 </html>
