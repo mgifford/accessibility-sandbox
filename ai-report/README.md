@@ -1,6 +1,6 @@
 # What people hope AI will provide
 
-## Port of Rotterdam
+## Port of Rotterdam (Gemini 3.6)
 
 1. I want to know if this meets EU Accessibility Regulations. What are the barriers and what can be done to improve it? https://www.portofrotterdam.com/
 1. Can you flesh this out and give me examples and a roadmap so that I can meet this timeline?
