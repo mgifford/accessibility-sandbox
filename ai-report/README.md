@@ -24,4 +24,4 @@
 
 ## Ditto (DeepSeek-V4-Flash-High)
 1. Look at https://www.dittocare.com and its sub pages. I want to prepare an exhaustive accessibility audit for this company. I want to see how well it complies with the European Accessibility Act. I would like it to focus on patterns that can be addressed and user journeys.
-[Draft report for the City of Rotterdam](./ditto.html).
+[Draft Ditto report](./ditto.html).
