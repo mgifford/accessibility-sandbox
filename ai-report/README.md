@@ -8,7 +8,7 @@
 
 [Draft report for the Port of Rotterdam](./port-of-rotterdam-report.htm).
 
-## DrupalCon Rotterdam
+## DrupalCon Rotterdam (GPT-5.6 Sol Light)
 
 1. Give me an accessibility assessment of https://events.drupal.org/rotterdam2026 I want to know how well it meets WCAG 2.2 or for that matter the latest EN 301 549
 1. Can you flesh this out and give me examples and a roadmap to make it accessible?
