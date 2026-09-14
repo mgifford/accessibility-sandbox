@@ -1,0 +1,323 @@
+<h1>Ditto Care — Accessibility Audit &amp; European Accessibility Act Assessment</h1>
+<p><strong>Target:</strong> <code>https://www.dittocare.com</code> and all discoverable sub-pages (EN + <code>nl-NL</code>)<br>
+<strong>Prepared for:</strong> Ditto Care<br>
+<strong>Audit date:</strong> 14 September 2026<br>
+<strong>Benchmark:</strong> WCAG 2.1 Level AA (also tested against WCAG 2.2 AA) — the technical baseline referenced by EN 301 549 and therefore by Directive (EU) 2019/882 (the European Accessibility Act, "EAA")<br>
+<strong>Method:</strong> Automated + manual, rendered-DOM testing (not source-only)</p>
+<hr>
+<h2>1. Executive summary</h2>
+<p>Ditto's public website is a well-built, fast Framer site with several accessibility fundamentals already right. Automated testing across <strong>58 URLs / 116 rendered page loads (desktop + mobile)</strong> found <strong>no page that is wholly unusable</strong>, and a number of areas pass cleanly:</p>
+<ul>
+<li>Every page declares a correct <code>lang</code> on <strong>first load</strong> (<code>en</code> / <code>nl-NL</code>).</li>
+<li>Every page renders a <code>main</code> landmark and a <code>nav</code> landmark.</li>
+<li><strong>Keyboard focus is visible on every interactive element</strong> tested (no missing focus indicators found across 45-stop keyboard walks).</li>
+<li><strong>WCAG 1.4.10 Reflow passes</strong> — no horizontal scrolling at 320 CSS px, and no loss of content at 200% zoom, on any page tested.</li>
+<li><code>prefers-reduced-motion: reduce</code> <strong>is</strong> honoured for decorative animations.</li>
+<li>Both real forms use correctly <strong>wrapped <code>&lt;label&gt;</code> elements</strong>, and the spam-honeypot fields are correctly excluded from tab order <em>and</em> the accessibility tree (<code>tabindex="-1"</code> + <code>aria-hidden="true"</code>) — a genuinely careful implementation.</li>
+<li>Cookiebot's own tab widget is correctly marked up (<code>tablist</code> / <code>tab</code> / <code>aria-selected</code> / <code>tabpanel</code>).</li>
+</ul>
+<p>Against that, the audit found <strong>14 distinct WCAG violations, 1,679 failing element instances</strong>, and — more importantly — <strong>four patterns that break real user journeys</strong> for disabled users. The most consequential are:</p>
+<div class="table-wrapper"><table><thead><tr><th>#</th><th>Pattern</th><th>Severity</th><th>WCAG</th><th>User impact</th></tr></thead><tbody><tr><td><strong>B1</strong></td><td>Language switcher changes content but <strong>not</strong> <code>&lt;html lang&gt;</code></td><td><strong>Blocker</strong></td><td>3.1.1 (A)</td><td>A Dutch screen-reader user who switches language hears Dutch read by an English voice — effectively unintelligible. Only a full page reload fixes it.</td></tr><tr><td><strong>B2</strong></td><td>Cookie consent banner <strong>traps keyboard focus</strong> while page content stays mouse-reachable</td><td><strong>Blocker</strong></td><td>2.1.1 (A), 2.4.3 (A)</td><td>A keyboard-only user cannot reach any page content until they dismiss the banner — mouse users can.</td></tr><tr><td><strong>B3</strong></td><td>Mobile menu button is a <code>&lt;div&gt;</code> with <strong>no role, no accessible name, no expanded state</strong></td><td><strong>Blocker</strong></td><td>4.1.2 (A)</td><td>Screen-reader users hear an unnamed "group" and cannot tell it is a menu or whether it is open. (It <em>is</em> keyboard-operable once the cookie banner is dismissed — verified.)</td></tr><tr><td><strong>B4</strong></td><td><code>/support</code> category tabs use <code>role="tab"</code> with <code>aria-pressed</code> and <strong>no <code>tablist</code> parent</strong></td><td><strong>Blocker</strong></td><td>1.3.1, 4.1.2 (A)</td><td>Six FAQ categories announce incorrectly; selected state is not conveyed.</td></tr></tbody></table></div>
+<p>Plus one <strong>high-volume, low-effort</strong> cluster: <strong>9 distinct colour-contrast pairs</strong> fail across 27 of 58 URLs, and <strong>41 of 58 URLs</strong> have touch targets below the 24×24 px WCAG 2.2 minimum. These are palette/design-token fixes with outsized return.</p>
+<p><strong>Overall conformance position:</strong> the site does <strong>not</strong> currently conform to WCAG 2.1 AA. It is close in structure and far in detail — the failures are concentrated in a small number of repeated component patterns rather than being systemic to every page.</p>
+<hr>
+<h2>2. Scope and method</h2>
+<h3>2.1 What was tested</h3>
+<p>All 58 URLs discovered from <code>sitemap.xml</code> (EN and <code>nl-NL</code> sitemaps), plus 4 pages linked from the homepage but <strong>absent from the sitemap</strong> — <code>/legal/eu-ai-act</code>, <code>/legal/privacy-policy</code>, <code>/legal/terms-conditions</code>, <code>/news</code>, and the <code>/legal/*</code> family. All 58 returned HTTP 200 and all 58 had distinct content (no duplicate-page inflation).</p>
+<p>Page families: homepage, product/feature pages, <code>/professionals</code> + <code>/hcp</code> + <code>/hcp-tobi-test</code> (clinician journey), <code>/about</code>, <code>/press</code>, <code>/news</code>, <code>/support</code>, <code>/together</code>, <code>/download-the-app</code>, <code>/app-download</code>, <code>/ylvc</code>, <code>/cclg</code>, 5 waitlist/thank-you pages, 5 articles, 3 legal pages, <code>/master-components</code>, and <code>/dach</code>.</p>
+<p><strong>Out of scope (flagged, not tested):</strong> the Ditto iOS/Android app itself (linked via <code>dittocare.go.link</code>), and third-party destinations (<code>ditto.homerun.co</code>, Typeform, Google Drive, PubMed, app stores). The app is in scope for the EAA as a "mobile device-based service" in its own right and should be audited separately (§7.3).</p>
+<h3>2.2 How it was tested</h3>
+<p>Automated scanning alone is insufficient for a compliance audit, so three layers were used:</p>
+<ol>
+<li><strong>Rendered-DOM sweep</strong> — Chromium (headless, 1440×900 desktop / 390×844 mobile) with <strong>axe-core</strong> at <code>wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa</code> + best-practice, after scrolling each page fully to force Framer's lazy-loaded content into the DOM. <strong>116 page loads, 0 errors.</strong> Raw results: <code>axe-raw.json</code>.</li>
+<li><strong>Source-HTML analysis</strong> — a second pass over the static HTML (<code>static-report.json</code>) to catch things a rendered scan can miss and to cross-check rendered counts against build output.</li>
+<li><strong>Behavioural journey testing</strong> — scripted keyboard traversal, focus-trap detection, live-region and <code>aria-invalid</code> inspection, form submission, language switching, 320 px reflow, 200% zoom, WCAG 1.4.12 text-spacing, and reduced-motion emulation (<code>journeys.json</code>).</li>
+</ol>
+<p>Reproducibility: the harness, wrapper and raw outputs are retained alongside this report (<code>axe-audit.mjs</code>, <code>analyze.mjs</code>, <code>journeys.mjs</code>, <code>rollup.mjs</code>, <code>detail.mjs</code>, plus <code>shots/</code>).</p>
+<p><strong>A note on false positives.</strong> Two findings were investigated and <em>withdrawn</em> after deeper testing, and are recorded here for transparency:</p>
+<ul>
+<li>An initial read suggested the mobile menu was keyboard-inoperable. On retest with the cookie banner dismissed, <strong>Enter and Space both open it correctly.</strong> The original failure was the banner intercepting, not the menu.</li>
+<li>Static analysis suggested 31 pages lacked a <code>main</code> landmark; the rendered DOM showed Framer injects <code>role="main"</code> on some templates, so the rendered figure (<strong>31 of 58 URLs</strong>, measured on the rendered accessibility tree) is the one reported.</li>
+<li>High counts of "content outside landmarks" at 320 px were traced to intentionally-clipped carousel slides, not content loss — so <strong>1.4.10 is reported as passing</strong>.</li>
+</ul>
+<h3>2.3 Confirmed environment limitation</h3>
+<p>Testing ran on a Linux container without root. Chromium and its font stack were provisioned manually; <strong>all findings were produced by a real browser with real layout, real computed styles and real focus behaviour.</strong> One caveat: no licensed screen reader (NVDA/JAWS/VoiceOver) was available, so screen-reader findings are derived from the accessibility tree (roles, names, states, <code>aria-*</code>) rather than from listening to output. Findings B1, B3 and B4 are accessibility-tree defects that do not depend on screen-reader nuance; a scripted NVDA pass is nonetheless recommended to confirm wording and announcement order (§8).</p>
+<hr>
+<h2>3. Does the EAA apply to Ditto?</h2>
+<p>This determines <em>what</em> the findings below mean commercially, so it is worth stating precisely.</p>
+<h3>3.1 The legal mechanics</h3>
+<p>The EAA requires in-scope products and services to meet the accessibility requirements in <strong>Annex I</strong>. For services, the operative requirement is <strong>Annex I, Section III</strong>:</p>
+<blockquote>
+<p>"(c) making <strong>websites, including the related online applications, and mobile device-based services, including mobile applications, accessible in a consistent and adequate way by making them perceivable, operable, understandable and robust</strong>"</p>
+</blockquote>
+<p>"Perceivable, operable, understandable and robust" is the WCAG POUR framework; EN 301 549 is the harmonised standard that gives this presumption of conformity, and it points at <strong>WCAG 2.1 Level AA</strong>. Article 4(1) requires economic operators to only <em>provide</em> conforming services. The deadline was <strong>28 June 2025</strong>, implemented in the Netherlands by the <em>Implementatiewet toegankelijkheidsvoorschriften producten en diensten</em>.</p>
+<h3>3.2 Healthcare is not listed — but e-commerce catches it</h3>
+<p>Healthcare is not a separate category in EAA Article 2. However, the EAA covers <strong>"e-commerce services"</strong>, defined as services provided <em>"at a distance, through websites and mobile device-based services by electronic means and at the individual request of a consumer with a view to concluding a consumer contract."</em> Legal analysis of the EAA's application to medical devices is explicit that:</p>
+<blockquote>
+<p>"<strong>Commercial web or app-based health services which are medical devices provided directly to consumers must be EAA-compliant</strong>" and "Features and functionality of web or app-based health services provided to consumers <strong>on a subscription or other payment basis</strong> on a device may also be captured by the EAA as an 'e-commerce service'."</p>
+</blockquote>
+<p>Ditto is a <strong>consumer health app distributed directly to consumers</strong>, marketed on a public website, with app-store download funnels and an in-app subscription model. On that basis the website and app are, in our assessment, <strong>within the EAA's e-commerce scope</strong>, and Annex I Section III(c) applies to this website.</p>
+<p>E-commerce services also attract a specific requirement (<strong>Annex I, Section IV(g)</strong>): identification, security and payment functionality must be perceivable, operable, understandable and robust.</p>
+<h3>3.3 The exemption that could change this — and the one question Ditto must answer</h3>
+<p><strong>EAA Article 4(5)</strong> states:</p>
+<blockquote>
+<p>"<strong>Microenterprises providing services shall be exempt from complying with the accessibility requirements referred to in paragraph 3 of this Article</strong> and any obligations relating to the compliance with those requirements."</p>
+</blockquote>
+<p>A microenterprise is <strong>fewer than 10 employees AND</strong> (annual turnover ≤ €2 million <strong>or</strong> balance sheet total ≤ €2 million). This exemption applies to <strong>services</strong> (not to products).</p>
+<p><strong>This audit cannot resolve whether Ditto qualifies</strong>, and it is the single most important scoping question for the company:</p>
+<ul>
+<li>Ditto launched its app in <strong>August 2025</strong> and publicly reports <strong>100,000+ active users</strong> — a user count that is not evidence of headcount either way.</li>
+<li>Employee count and turnover are not disclosed on the site. <strong>Ditto's own HR/finance data must settle this.</strong></li>
+</ul>
+<p>Three further points materially limit the value of the exemption even if it applies:</p>
+<ol>
+<li><strong>It is provider- and service-specific.</strong> If Ditto supplies its service to hospitals, insurers or public bodies — or provides it on behalf of another economic operator — the <em>other</em> operator's obligations are unaffected, and accessibility will be imposed contractually (via EN 301 549 in procurement) regardless of Ditto's size.</li>
+<li><strong>It is a floor, not a ceiling.</strong> National disability-discrimination law, sector procurement rules and app-store policies apply independently.</li>
+<li><strong>The site already publishes an EU AI Act Article 50 transparency page</strong>, indicating the company is deliberately positioning as an EU-regulated digital-health provider. Accessibility commitments sit in the same regulatory neighbourhood and are increasingly asked for in hospital/insurer due diligence.</li>
+</ol>
+<p><strong>Recommendation:</strong> confirm headcount and turnover against the microenterprise threshold before treating this as a legal question. Treat the findings below as product requirements either way — they are ordinary usability defects for a patient-facing health product whose users skew older, are unwell, or are temporarily impaired.</p>
+<hr>
+<h2>4. Conformance summary</h2>
+<p><strong>WCAG 2.1 Level AA: does not conform.</strong><br>
+**WCAG 2.2 Level AA: does not conform.</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th>Count</th></tr></thead><tbody><tr><td>URLs audited</td><td>58 (29 paths × EN + nl-NL)</td></tr><tr><td>Rendered page loads</td><td>116 (desktop + mobile)</td></tr><tr><td>Distinct axe rules violated</td><td><strong>14</strong></td></tr><tr><td>Total failing element instances</td><td><strong>1,679</strong></td></tr><tr><td>Items flagged "incomplete" needing manual review</td><td>3,123 nodes across 5 rules</td></tr><tr><td>Pages with <strong>no</strong> skip link</td><td>58 / 58</td></tr><tr><td>Pages with a non-semantic clickable element</td><td>58 / 58</td></tr></tbody></table></div>
+<h3>Violations by rule</h3>
+<div class="table-wrapper"><table><thead><tr><th>Rule</th><th>WCAG SC</th><th>Level</th><th>URLs /58</th><th>Instances</th></tr></thead><tbody><tr><td><code>target-size</code></td><td>2.5.8</td><td>AA (2.2)</td><td>41</td><td>90</td></tr><tr><td><code>region</code> (content outside landmarks)</td><td>1.3.6 / best practice</td><td>—</td><td>33</td><td>1,056</td></tr><tr><td><code>page-has-heading-one</code></td><td>1.3.1</td><td>A</td><td>32</td><td>62</td></tr><tr><td><code>heading-order</code></td><td>1.3.1</td><td>A</td><td>32</td><td>68</td></tr><tr><td><code>landmark-one-main</code></td><td>1.3.1</td><td>A</td><td>31</td><td>62</td></tr><tr><td><code>color-contrast</code></td><td>1.4.3</td><td>AA</td><td>27</td><td>125</td></tr><tr><td><code>aria-hidden-focus</code></td><td>4.1.2</td><td>A</td><td>26</td><td>88</td></tr><tr><td><code>link-name</code></td><td>2.4.4 / 4.1.2</td><td>A</td><td>14</td><td>22</td></tr><tr><td><code>link-in-text-block</code></td><td>1.4.1</td><td>A</td><td>12</td><td>50</td></tr><tr><td><code>aria-command-name</code></td><td>4.1.2</td><td>A</td><td>8</td><td>20</td></tr><tr><td><code>label</code></td><td>4.1.2 / 3.3.2</td><td>A</td><td>4</td><td>8</td></tr><tr><td><code>aria-allowed-attr</code></td><td>4.1.2</td><td>A</td><td>2</td><td>12</td></tr><tr><td><code>aria-required-parent</code></td><td>1.3.1</td><td>A</td><td>2</td><td>12</td></tr><tr><td><code>image-alt</code></td><td>1.1.1</td><td>A</td><td>2</td><td>4</td></tr></tbody></table></div>
+<p>Counts are in <strong>distinct URLs</strong> (each URL counted once even if it failed on both desktop and mobile). The 58 URLs comprise 31 English and 27 Dutch pages.</p>
+<h3>Manual findings not detectable by automation</h3>
+<div class="table-wrapper"><table><thead><tr><th>Finding</th><th>WCAG SC</th><th>Level</th></tr></thead><tbody><tr><td>Language switch does not update <code>&lt;html lang&gt;</code></td><td>3.1.1</td><td>A</td></tr><tr><td>Cookie banner traps keyboard focus while content is mouse-reachable</td><td>2.1.1, 2.4.3</td><td>A</td></tr><tr><td>No <code>autocomplete</code> on any form field (<code>Name</code>, <code>Email</code>)</td><td>1.3.5</td><td><strong>AA</strong></td></tr><tr><td>Auto-playing looping video with no pause mechanism, not stopped by reduced-motion</td><td>2.2.2</td><td>A</td></tr><tr><td>No skip-to-content link on any page</td><td>2.4.1</td><td>A</td></tr><tr><td>Form errors rely solely on native browser bubbles — no <code>aria-invalid</code>, no live region</td><td>3.3.1</td><td>A</td></tr></tbody></table></div>
+<hr>
+<h2>5. Findings — patterns and fixes</h2>
+<p>Ordered by user impact. Each is a <strong>repeatable pattern</strong>, so one fix resolves many instances.</p>
+<hr>
+<h3>B1 — Language switcher does not update the page language <code>[Blocker]</code></h3>
+<p><strong>WCAG 3.1.1 Language of Page (Level A) · EAA Annex I §III(c)</strong></p>
+<p>The in-page language <code>&lt;select&gt;</code> performs a client-side route change. The URL, <code>&lt;title&gt;</code>, and all visible content switch to Dutch — but <code>document.documentElement.lang</code> <strong>remains <code>en</code></strong>. Verified reproducibly:</p>
+<pre><code>1. loaded EN /            lang=en     path=/      title="Ditto | Care. Clarified"
+2. +2s after switch       lang=en     path=/nl/   title="Ditto | Heldere zorg voor jou en je dierbaren"
+3. +8s after switch       lang=en     path=/nl/   title="Ditto | Heldere zorg voor jou en je dierbaren"   &lt;-- still en
+4. after hard reload      lang=nl-NL  path=/nl/   title="Ditto | Heldere zorg voor jou en je dierbaren"
+5. switched back to EN    lang=nl-NL  path=/      title="Ditto | Care. Clarified"                        &lt;-- still nl
+</code></pre>
+<p>Only a hard reload corrects it — and the fault is symmetric (NL→EN leaves <code>nl-NL</code>).</p>
+<p><strong>Why this matters:</strong> a Dutch screen-reader user takes exactly this journey. Their screen reader applies an English pronunciation profile to Dutch text, which makes the content unintelligible — the worst possible outcome for a product whose entire purpose is making medical information understandable. This is invisible to single-page automated scans (each page is correct in isolation), and it is the highest-severity finding in the audit.</p>
+<p><strong>Fix:</strong> update <code>document.documentElement.lang</code> on every client-side locale navigation (a <code>useEffect</code> on locale change, or set it in the router's navigation handler). Ditto already emits correct <code>&lt;link rel="alternate" hreflang&gt;</code> tags, so the correct value is available. Add a regression test that switches language and asserts <code>lang</code>.</p>
+<hr>
+<h3>B2 — Cookie consent banner traps keyboard focus <code>[Blocker]</code></h3>
+<p><strong>WCAG 2.1.1 Keyboard (A), 2.4.3 Focus Order (A) · EAA Annex I §III(c)</strong></p>
+<p>The Cookiebot consent banner (<code>#CybotCookiebotDialog</code>) cycles keyboard focus through four controls indefinitely:</p>
+<pre><code>Tab 0: A     "Show details"
+Tab 1: BUTTON "Allow all"
+Tab 2: BUTTON "Customize"
+Tab 3: BUTTON "Deny"
+Tab 4: A     "Show details"   &lt;-- wraps; page content never reachable
+...repeats forever
+</code></pre>
+<p>Critically, the banner is <strong>not visually modal</strong>: <code>elementFromPoint(720,300)</code> returns a normal page paragraph, the page remains scrollable, and <strong>mouse users can scroll and interact with the page behind it</strong>. So keyboard-only users are locked out of content that mouse users can freely use — an inconsistent, unequal experience.</p>
+<p>Compounding this, the banner is exposed as <code>role="region"</code>, <strong>not</strong> <code>role="dialog"</code>, and has no <code>aria-modal</code>. It does carry a correct <code>aria-labelledby</code> pointing at <code>#CybotCookiebotDialogBodyContentTitle</code>.</p>
+<p><strong>Fix:</strong> the correct treatment is to make it a genuine modal dialog — <code>role="dialog"</code> + <code>aria-modal="true"</code> — so the focus trap is legitimate and announced, and then ensure the trap releases and returns focus on dismissal. Alternatively, if it is meant to be non-modal, remove the focus trap. Either is acceptable; the current hybrid is not. This is Cookiebot-supplied markup, configurable via its CMP settings, but <strong>it is Ditto's compliance obligation regardless of who authored the component</strong> — third-party embeds are part of the delivered service under Annex I §III.</p>
+<hr>
+<h3>B3 — Mobile menu button has no role, name or state <code>[Blocker]</code></h3>
+<p><strong>WCAG 4.1.2 Name, Role, Value (Level A) · EAA Annex I §III(c)</strong></p>
+<p>On viewports ≤ ~768 px the primary navigation is behind a control that is:</p>
+<pre><code class="language-html">&lt;div class="framer-9dxb01" data-framer-name="Menu button" tabindex="0" style="..."&gt;
+  &lt;div&gt;&lt;svg focusable="false" ...&gt;&lt;path d="M224,128a8,8,0,0,1-8,8H40a8..." /&gt;&lt;/svg&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<ul>
+<li><strong>No <code>role="button"</code></strong> — announced as a generic group, not a control.</li>
+<li><strong>No accessible name</strong> — <code>aria-label</code> is absent, the inner <code>&lt;svg&gt;</code> has no <code>&lt;title&gt;</code>, and the only visible content is a hamburger glyph.</li>
+<li><strong>No <code>aria-expanded</code></strong> — open/closed state is not programmatically determinable.</li>
+<li><strong>No <code>aria-controls</code></strong> — no relationship to the panel it toggles.</li>
+</ul>
+<p>The equivalent desktop logo link does carry <code>aria-label="Home button"</code>, so the pattern is understood in the codebase but was not applied here.</p>
+<p><strong>Corrected behaviour (verified — important):</strong> with the cookie banner dismissed, <strong>Enter and Space both open the menu correctly</strong>, focus moves sensibly through the menu items, and <strong>Escape closes the menu and returns focus to the button</strong>. Keyboard operability is therefore fine; only the semantics are broken.</p>
+<p><strong>Fix:</strong> use a real <code>&lt;button type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-menu"&gt;</code> and toggle <code>aria-expanded</code> on open/close. This is approximately a five-line change in the Framer component and removes a Level A failure from every mobile page.</p>
+<hr>
+<h3>B4 — Support-page category tabs use an invalid ARIA pattern <code>[Blocker]</code></h3>
+<p><strong>WCAG 1.3.1 (A), 4.1.2 (A) · EAA Annex I §III(c)</strong></p>
+<p>On <code>/support</code> and <code>/nl/support</code>, six FAQ category controls ("Features", "Account and log-in", "About Ditto", "Professionals", "Privacy", "Support") are marked up as:</p>
+<pre><code class="language-html">&lt;button role="tab" aria-pressed="true" tabindex="0"&gt;Features&lt;/button&gt;
+</code></pre>
+<p>with <code>role="presentation"</code> on the parent <code>&lt;li&gt;</code> and <strong>no <code>role="tablist"</code> ancestor</strong> anywhere, and no <code>role="tabpanel"</code> for the content they reveal. Axe flags this as two <strong>critical</strong> failures: <code>aria-required-parent</code> (required ARIA parent role <code>tablist</code> not present) and <code>aria-allowed-attr</code> (<code>aria-pressed</code> is not allowed on <code>role="tab"</code>).</p>
+<p>Additionally, <strong>all six tabs have <code>tabindex="0"</code></strong>. The ARIA tab pattern requires <em>roving tabindex</em> — only the selected tab is in the tab order and arrow keys move between tabs. As built, a keyboard user must Tab through all six to leave the group, and a screen-reader user gets no announcement of which panel is active because <code>aria-selected</code> is never set.</p>
+<p><strong>Fix:</strong> either (a) complete the tab pattern — add <code>role="tablist"</code>, use <code>aria-selected</code> instead of <code>aria-pressed</code>, add <code>aria-controls</code> + <code>role="tabpanel"</code> + <code>aria-labelledby</code>, and implement roving tabindex with arrow-key navigation; or (b) far simpler and recommended here, drop the ARIA entirely and use plain disclosure <code>&lt;button aria-expanded&gt;</code> elements. A disclosure pattern is semantically honest for FAQ categories and much harder to get wrong.</p>
+<p>Note: the Cookiebot tabs on the same page are correctly built — the defect is in Ditto's own component.</p>
+<hr>
+<h3>S1 — Colour contrast: 9 distinct failing pairs across 27 of 58 URLs <code>[Serious]</code></h3>
+<p><strong>WCAG 1.4.3 Contrast (Minimum), Level AA · EAA Annex I §III(b)(v)</strong></p>
+<p>Every failure reduces to a small palette problem. Fixing these nine token pairs clears all 125 failing instances:</p>
+<div class="table-wrapper"><table><thead><tr><th>Ratio</th><th>Foreground</th><th>Background</th><th>Size</th><th>Weight</th><th>Nodes</th><th>Pages</th></tr></thead><tbody><tr><td><strong>2.46</strong></td><td><code>#7aa8c9</code></td><td><code>#fffbf7</code></td><td>18px</td><td>normal</td><td>2</td><td>2</td></tr><tr><td><strong>2.91</strong></td><td><code>#0099ff</code></td><td><code>#fffbf7</code></td><td>18px / 14px</td><td>bold</td><td>6</td><td>2</td></tr><tr><td><strong>3.18</strong></td><td><code>#688da6</code></td><td><code>#faf2eb</code></td><td>12px</td><td>normal</td><td>8</td><td>4</td></tr><tr><td><strong>3.48</strong></td><td><code>#748a9a</code></td><td><code>#fffbf7</code></td><td>16px</td><td>bold</td><td>30</td><td>15</td></tr><tr><td><strong>3.51</strong></td><td><code>#748c9d</code></td><td><code>#ffffff</code></td><td>16px</td><td>bold</td><td>15</td><td>15</td></tr><tr><td><strong>4.02</strong></td><td><code>#bfcdd6</code></td><td><code>#2a6289</code></td><td>12px</td><td>normal</td><td>6</td><td>2</td></tr><tr><td><strong>4.14</strong></td><td><code>#52728a</code></td><td><code>#dceaf4</code></td><td>12px</td><td>normal</td><td>6</td><td>2</td></tr><tr><td><strong>4.37</strong></td><td><code>#5b7587</code></td><td><code>#faf2eb</code></td><td>12px</td><td>normal</td><td>4</td><td>2</td></tr></tbody></table></div>
+<p>The worst offenders are <strong>brand-adjacent</strong>: <code>#748a9a</code> / <code>#748c9d</code> (a muted slate used for 16px bold body copy on <code>/download-the-app</code>, <code>/app-download</code>, <code>/ylvc</code>, <code>/cclg</code>) and <code>#0099ff</code> (bright blue links on <code>/privacy</code>). All require 4.5:1 at these sizes; none reach it.</p>
+<p><strong>Fix:</strong> darken the slate to ≈<code>#5a6b78</code> and the link blue to ≈<code>#0b6ba8</code>, then re-verify. Because these are Framer design tokens, the change propagates site-wide from a handful of edits.</p>
+<hr>
+<h3>S2 — Links inside body text are indistinguishable from surrounding text <code>[Serious]</code></h3>
+<p><strong>WCAG 1.4.1 Use of Color (Level A) · EAA Annex I §III(b)</strong></p>
+<p>On 12 paths, inline links have <strong>no underline</strong> and insufficient contrast against the surrounding paragraph:</p>
+<ul>
+<li><code>#2a6289</code> on <code>#173f5c</code> = <strong>1.68:1</strong> (required ≥3:1) — on <code>/articles/recording-uk</code>, <code>/articles/ai-validation</code>, <code>/articles/ai-validation-en</code>, <code>/cclg</code>. On these dark-navy sections the links are <strong>effectively invisible</strong>.</li>
+<li><code>#2a6289</code> on <code>#0d164f</code> = <strong>2.57:1</strong> — on <code>/privacy</code>.</li>
+</ul>
+<p>Because colour alone carries the link affordance and the colour contrast is below 3:1, users with low vision or colour-vision deficiency cannot identify these as links — including the "complete privacy policy" and "file a vulnerability disclosure report here" links, which are legally significant destinations.</p>
+<p><strong>Fix:</strong> add a persistent underline to the inline link style preset (<code>HWptGYMjj</code>), or provide a ≥3:1 contrast difference plus a non-colour cue. An underline is a one-property change in the preset and fixes every instance at once.</p>
+<hr>
+<h3>S3 — Touch targets below the 24×24 px minimum <code>[Serious]</code></h3>
+<p><strong>WCAG 2.5.8 Target Size (Minimum), Level AA (WCAG 2.2) · 41 of 58 URLs, 90 instances</strong></p>
+<p>The most common offenders are the <strong>carousel pagination dots</strong> ("Scroll to page 1"…"Scroll to page 6"), measured at <strong>14×24 px and 19×24 px</strong> with only ~3 px between neighbours, so the "sufficient spacing" exception does not apply either. Example axe output:</p>
+<blockquote>
+<p>Target has insufficient size (49.1px by 16.8px, should be at least 24px by 24px) | Safe clickable space has a diameter of 18px instead of at least 24px.</p>
+</blockquote>
+<p>Also affected: footer navigation links (49×16.8 px, 59×16.8 px) and the <code>Instagram</code> / <code>support</code> text links in the footer.</p>
+<p><strong>Fix:</strong> wrap the carousel dots in ≥24×24 px hit areas with visible padding (a pure CSS change that leaves the visual design untouched), and add vertical padding to footer link hit areas. Note WCAG 2.5.8 is an AA criterion in WCAG 2.2; if the target is WCAG 2.1 AA only, this is best-practice — but it is exactly the kind of defect that harms older and motor-impaired users of a health app.</p>
+<hr>
+<h3>S4 — Focusable elements inside <code>aria-hidden</code> containers <code>[Serious]</code></h3>
+<p><strong>WCAG 4.1.2 Name, Role, Value (A) · 26 of 58 URLs, 88 instances</strong></p>
+<p>Carousel slides that are visually hidden carry <code>aria-hidden="true"</code> but still contain focusable links, so <strong>keyboard focus lands on elements that are invisible to screen readers</strong> — the user's focus disappears with no announcement:</p>
+<pre><code class="language-html">&lt;li aria-hidden="true"&gt;&lt;div class="framer-dyz763-container" data-framer-name="2"&gt;
+   ... &lt;a href="..."&gt;  &lt;-- focusable, inside aria-hidden
+</code></pre>
+<p><strong>Fix:</strong> when marking off-screen carousel slides <code>aria-hidden</code>, also set <code>tabindex="-1"</code> on their focusable descendants (or use the <code>inert</code> attribute, which does this and more). One change in the carousel component.</p>
+<hr>
+<h3>S5 — Unlabelled interactive controls <code>[Serious]</code></h3>
+<p><strong>WCAG 4.1.2 (A), 3.3.2 (A) · two distinct widgets</strong></p>
+<p><strong>(a) An unlabelled range slider on <code>/hcp</code>, <code>/nl/hcp</code>, <code>/hcp-tobi-test</code>, <code>/nl/hcp-tobi-test</code></strong> — a visible 392 px slider inside the clinician messaging section ("Make sure your patient has the right answer…") has <strong>no <code>&lt;label&gt;</code>, no <code>aria-label</code>, no <code>aria-labelledby</code>, no <code>id</code></strong> and <code>labels.length === 0</code>. Critically, this appears on the <strong>healthcare-professional</strong> page. A screen-reader user encounters "slider, 50" with no indication of what it controls.</p>
+<blockquote>
+<p><code>&lt;input type="range" min="0" max="100" class="css-or5vhe"&gt;</code></p>
+</blockquote>
+<p><strong>(b) A search field on <code>/support</code> and <code>/nl/support</code></strong> with only a placeholder (<code>"Search..."</code> / <code>"Zoeken..."</code>) and no accessible name.</p>
+<p><strong>Fix:</strong> add <code>aria-label</code> / a <code>&lt;label&gt;</code> to the slider, and a persistent (visually-hidden if necessary) <code>&lt;label&gt;</code> to the search input. Placeholders are not labels — they vanish on input and are inconsistently announced.</p>
+<hr>
+<h3>S6 — Links with no accessible name <code>[Serious]</code></h3>
+<p><strong>WCAG 2.4.4 / 4.1.2 (A) · 14 of 58 URLs, 22 instances</strong></p>
+<p>Two recurring unnamed-link patterns:</p>
+<p><strong>(a) A <code>/press</code> link with no text</strong> — present on 24 pages including the homepage:</p>
+<pre><code class="language-html">&lt;a class="framer-l8Pg5 framer-todmyg" data-framer-name="Default" href="./press" style="width:100%"&gt;
+</code></pre>
+<p>axe: <em>"Element is in tab order and does not have accessible text."</em> A keyboard or screen-reader user hits a stop that announces only "link".</p>
+<p><strong>(b) A <code>&lt;span&gt;</code> carrying <code>href</code> and <code>role="link"</code> inside the press-logo carousel</strong> (8 paths) — the pattern is a span, not an anchor, so it is announced as a link with no name:</p>
+<pre><code class="language-html">&lt;span as="span" class="framer-194une4" href="https://www.parool.nl/..." role="link" data-nested-link="true"&gt;
+</code></pre>
+<p><strong>Fix:</strong> add visible text or an <code>aria-label</code> (e.g. <code>aria-label="Read Ditto in the press"</code>) to the <code>/press</code> link; replace the span-as-link with a real <code>&lt;a&gt;</code> carrying the publication name as text.</p>
+<hr>
+<h3>S7 — Images without <code>alt</code> <code>[Serious]</code></h3>
+<p><strong>WCAG 1.1.1 Non-text Content (Level A) · 2 paths, 4 instances</strong></p>
+<p>The YouTube poster thumbnails on <code>/new-in-ditto/new-in-ditto-calendar-sync-ditto</code> (and its NL twin) have <strong>no <code>alt</code> attribute at all</strong>:</p>
+<pre><code class="language-html">&lt;img decoding="async" src="https://i.ytimg.com/vi_webp/VtNtt1OIeac/sddefault.webp" style="..."&gt;
+</code></pre>
+<p>This is a regression relative to the rest of the site — <strong>180 of 180 images on the homepage carry <code>alt</code></strong> (the large majority correctly empty/decorative), which shows the practice is normally followed.</p>
+<p><strong>Fix:</strong> add <code>alt=""</code> for decorative poster frames, or a descriptive <code>alt</code> naming the video.</p>
+<hr>
+<h3>M1 — Heading structure and landmarks <code>[Moderate, high volume]</code></h3>
+<p><strong>WCAG 1.3.1 Info and Relationships (A) · affects most pages</strong></p>
+<ul>
+<li><strong>No <code>&lt;h1&gt;</code> on 32 of 58 URLs.</strong> <code>/about</code>, <code>/dach</code>, <code>/press</code>, <code>/app-download</code> and others begin at <code>&lt;h2&gt;</code>.</li>
+<li><strong>Heading-level skips on 32 URLs.</strong> The homepage runs <code>h1 → h2 → h4 → h2 → h3 → h2 → h4</code>, skipping <code>h3</code>. The EU AI Act page jumps <code>h1 → h4</code>.</li>
+<li><strong><code>main</code> landmark missing on 31 URLs</strong>, and <strong>1,056 elements site-wide sit outside any landmark</strong> (<code>region</code> rule).</li>
+<li><strong>No skip-to-content link on any of the 58 pages.</strong> With 56 focusable elements on the homepage and a large repeating header/footer on every page, keyboard and switch users must Tab through the entire chrome on every navigation.</li>
+</ul>
+<p><strong>Aggravating detail:</strong> the cookie banner's <code>&lt;h2&gt;This website uses cookies&lt;/h2&gt;</code> is the <strong>first heading in the DOM on every page</strong>, so screen-reader users navigating by heading hear the consent notice as the page's top-level heading — on <code>/about</code>, which has no <code>h1</code>, it is effectively the page's primary heading.</p>
+<p><strong>Fix:</strong> one <code>h1</code> per page matching the page's main title; correct the level sequence in the Framer text styles; wrap page content in <code>&lt;main&gt;</code>; add a visually-hidden-until-focused "Skip to content" link as the first focusable element. These are template-level fixes in the Framer master components and will resolve across all 58 pages at once.</p>
+<hr>
+<h3>M2 — Auto-playing video with no pause mechanism <code>[Moderate]</code></h3>
+<p><strong>WCAG 2.2.2 Pause, Stop, Hide (Level A) · 44 of 116 loads</strong></p>
+<p>Nine looping <code>&lt;video&gt;</code> elements render on <code>/download-the-app</code> alone; one plays automatically and continuously. Verified properties: <code>muted: true</code>, <code>autoplay: true</code>, <code>loop: true</code>, <code>controls: false</code>, <code>hasAudio: false</code>, <code>captions: false</code>, <strong>and no pause/stop control anywhere on the page</strong>.</p>
+<p>Because the videos are muted and carry no audio track, <strong>WCAG 1.2.2 Captions does not apply</strong> and <strong>1.4.2 Audio Control does not apply</strong> — correctly reported here rather than over-called. However 2.2.2 applies to any motion that starts automatically and runs longer than five seconds in parallel with other content.</p>
+<p>We also confirmed this specifically: <strong><code>prefers-reduced-motion: reduce</code> does not stop the video</strong> (1 visible video still playing), even though Ditto's Framer setup <em>does</em> correctly reduce other decorative animation. The reduced-motion handling is therefore partial.</p>
+<p><strong>Fix:</strong> stop auto-playing decorative video when <code>prefers-reduced-motion: reduce</code> is set (usually a one-line CSS/JS guard), and/or provide a visible pause control. Because the videos are decorative and audio-free, respecting the reduced-motion preference is the proportionate fix.</p>
+<hr>
+<h3>M3 — Forms: no <code>autocomplete</code>, and error feedback relies entirely on the browser <code>[Moderate–Serious]</code></h3>
+<p><strong>WCAG 1.3.5 Identify Input Purpose (AA), 3.3.1 Error Identification (A) · <code>/dach</code>, <code>/nl/dach</code>, <code>/support</code>, <code>/nl/support</code></strong></p>
+<p>Only four pages carry forms; the five "waitlist" pages (<code>/waitlist-ireland</code>, <code>/lista-oczekujacych-polska</code>, <code>/lista-de-espera-espana</code> and their thank-you pages) contain <strong>no form elements at all</strong> — see journey §6.4.</p>
+<p><strong>(a) <code>autocomplete</code> is absent on every field.</strong> Verified on all four form pages:</p>
+<pre><code>&lt;input type=text  name=Name  required aria-label="" autocomplete=- ph="Anna"            wrapped=YES&gt;
+&lt;input type=email name=Email required aria-label="" autocomplete=- ph="kontakt@mail.com" wrapped=YES&gt;
+&lt;input type=checkbox name=Consent required ...&gt;
+</code></pre>
+<p><code>Name</code> and <code>Email</code> are explicitly listed input purposes in WCAG 1.3.5, so this is a <strong>Level AA failure</strong>. It matters in a health context: without <code>autocomplete</code>, users with cognitive disabilities, memory impairments, or motor impairments cannot use browser autofill on the fields that matter most — and the <code>/dach</code> form is the German-market acquisition funnel.</p>
+<p><strong>Fix:</strong> add <code>autocomplete="name"</code> and <code>autocomplete="email"</code> to the corresponding fields.</p>
+<p><strong>(b) Error feedback is browser-native only.</strong> Submitting <code>/support</code> empty produces:</p>
+<pre><code>novalidate              : false        (native validation is active — good)
+submit event fired      : false        (browser correctly blocks submission)
+validationMessage Name  : "Please fill out this field."
+aria-invalid count      : 0            &lt;-- not set
+live regions on page    : []           &lt;-- none
+visible error text      : none inside the form
+focus after submit      : moves to Name (correct)
+</code></pre>
+<p>So the user does get a browser validation bubble and focus is moved to the first invalid field — which is reasonable behaviour and why this is <strong>not</strong> reported as a flat 3.3.1 failure. But there is <strong>no persistent error text, no <code>aria-invalid</code>, no <code>aria-describedby</code> association, and no live region</strong>. Two consequences: the error state disappears with the transient bubble, and the message is rendered in the <strong>browser's</strong> language rather than the page's — so an English-configured browser shows <em>"Please fill out this field."</em> on the Dutch <code>/nl/support</code> page, which is a language-of-parts mismatch on a Dutch-language form.</p>
+<p><strong>Fix:</strong> implement explicit inline error text with <code>aria-invalid="true"</code> and <code>aria-describedby</code> pointing at the message, wrapped in an <code>aria-live="polite"</code> region, using the page's own language. Retain <code>required</code> for native validation as a progressive enhancement.</p>
+<p><strong>Credit where due:</strong> the honeypot spam fields are handled well — 11 hidden inputs are correctly given <code>tabindex="-1"</code> <strong>and</strong> <code>aria-hidden="true"</code>, so they are neither tabbable nor exposed to assistive technology. This is often botched; here it is right.</p>
+<hr>
+<h2>6. User-journey analysis</h2>
+<p>Automated rules find defects; journeys reveal whether people can actually complete tasks. Six end-to-end journeys were walked.</p>
+<h3>6.1 Journey A — "Dutch patient arrives and switches language" → <strong>FAILS (Blocker B1)</strong></h3>
+<p><code>Land on dittocare.com</code> → <code>open language selector</code> → <code>choose Nederlands</code> → <code>read the site</code>.</p>
+<p>Every step works visually. The URL becomes <code>/nl/</code>, the title and copy become Dutch, navigation becomes "Over ons / Nieuws / Ondersteuning". <strong>But <code>&lt;html lang&gt;</code> stays <code>en</code>.</strong> A screen-reader user is now listening to Dutch medical information pronounced by an English synthesizer. Reloading fixes it — which no user would know to do. <strong>This is the single most damaging finding, and it hits Ditto's core Dutch market on Ditto's core value proposition: comprehension.</strong></p>
+<h3>6.2 Journey B — "Keyboard-only user reaches the content" → <strong>BLOCKED (Blocker B2)</strong></h3>
+<p><code>Load any page</code> → <code>press Tab</code>.</p>
+<p>Focus lands in the cookie banner and cycles: Show details → Allow all → Customize → Deny → Show details → … The user cannot reach navigation, headline, or content. Meanwhile a mouse user at the same moment can scroll and click page content freely (confirmed via <code>elementFromPoint</code>). <strong>The journey is completable only after dismissing the banner — but the blocker is invisible to mouse users, so it will never be reported by the people who build the site.</strong> Once dismissed, the remainder of the keyboard journey is good: visible focus indicators throughout, and the mobile menu is fully keyboard-operable (Enter, Space, Escape all correct).</p>
+<h3>6.3 Journey C — "Mobile user opens the menu" → <strong>PASSES for keyboard, FAILS for screen readers (Blocker B3)</strong></h3>
+<p><code>Load on a 390px viewport</code> → <code>Tab to the menu control</code> → <code>activate</code> → <code>choose About</code>.</p>
+<p>Enter and Space open the menu; focus order through the menu is logical (Home → Professionals → Privacy → About → News → Support → email → phone → language selector → social → Download App); Escape closes it and returns focus to the trigger. <strong>Keyboard-wise this journey is sound.</strong></p>
+<p>But the control is an unnamed <code>&lt;div&gt;</code> with no role and no <code>aria-expanded</code>. A screen-reader user hears an unlabelled group, cannot tell what it does, and cannot tell whether it is open. <strong>Same task, same outcome for sighted keyboard users, but a dead end for screen-reader users</strong> — precisely the kind of gap automated tools under-report.</p>
+<h3>6.4 Journey D — "Join the waitlist (Ireland / Poland / Spain)" → <strong>NO FORM EXISTS</strong></h3>
+<p><code>/waitlist-ireland</code>, <code>/lista-oczekujacych-polska</code>, <code>/lista-de-espera-espana</code> and their localized twins are large, fully-built landing pages (657–690 KB) — but they contain <strong>zero <code>&lt;input&gt;</code>, zero <code>&lt;form&gt;</code>, zero email capture</strong>:</p>
+<pre><code>waitlist-ireland:          inputs=0  forms=0
+lista-oczekujacych-polska: inputs=0  forms=0
+waitlist-ireland-thankyou: inputs=0  forms=0
+</code></pre>
+<p>Meanwhile <code>/waitlist-ireland-thankyou</code> exists and says <em>"Thank you! You are on the waitlist for Ditto in Ireland."</em></p>
+<p><strong>This is a conversion/QA issue with accessibility consequences, not primarily an accessibility defect.</strong> Either the waitlist capture lives on an untested third-party surface, or a form was removed and its landing/thank-you pages were left orphaned. It is worth resolving because a third-party embedded form would need its own accessibility assessment, and because the thank-you pages are reachable only by direct URL — meaning users of a broken funnel land on a "thank you" with no accessible path back into the site beyond the shared footer.</p>
+<p>The only genuine data-capture journeys are <code>/dach</code> (DACH market) and <code>/support</code>.</p>
+<h3>6.5 Journey E — "Ask for help via the support form" → <strong>COMPLETABLE, with friction</strong></h3>
+<p><code>/support</code> → <code>fill Name, Email, Message</code> → <code>submit</code>.</p>
+<p>Labels are correctly wrapped, fields are <code>required</code>, native validation blocks empty submission, and focus moves to the first invalid field. <strong>The journey completes.</strong> Friction points: no <code>autocomplete</code> on Name/Email (1.3.5 AA failure); no <code>aria-invalid</code> or live region, so a screen-reader user gets no persistent indication of what failed; the FAQ categories above the form use the broken <code>role="tab"</code> pattern (B4), making it harder to find help <em>before</em> the form; and the unlabelled search field (S5b) sits in the same journey.</p>
+<h3>6.6 Journey F — "Clinician evaluates Ditto on /hcp" → <strong>FAILS for screen-reader users (S5a)</strong></h3>
+<p><code>/hcp</code> → <code>read evidence and interactive demo</code> → <code>contact</code>.</p>
+<p>The page carries an interactive <strong>392 px slider with no accessible name</strong>. For the healthcare-professional audience — the audience most likely to be running an assistive-technology assessment or a procurement accessibility review — an unlabelled interactive control on the primary professional landing page is a visible quality signal, independent of direct user harm. The same page also has heading-order violations and content outside landmarks.</p>
+<h3>6.7 Journey G — "Zoom / large-text user reads the site" → <strong>PASSES</strong></h3>
+<p><strong>This is the strongest area of the audit.</strong> At <strong>320 CSS px</strong> there is no horizontal scrolling on any page tested (<code>docW === vw</code>, <code>overflowX: false</code>); at <strong>200% zoom</strong> there is likewise no horizontal overflow and no content clipping; and under the <strong>WCAG 1.4.12 text-spacing</strong> override (line-height 1.5, letter-spacing 0.12em, word-spacing 0.16em, paragraph spacing 2em) content still reflows without loss. This is a meaningful achievement on a highly designed Framer site and should be preserved as changes are made.</p>
+<hr>
+<h2>7. EAA-specific obligations beyond WCAG</h2>
+<p>WCAG conformance covers most of Annex I Section III, but the EAA adds obligations that a WCAG audit alone will not surface. These are genuine gaps in Ditto's current position.</p>
+<h3>7.1 Accessibility information and support services — Annex I §III(b) and §III(d)</h3>
+<p>The EAA requires, for services, that information about <strong>the service's accessibility characteristics and its interoperability with assistive devices</strong> be provided through more than one sensory channel, and that <strong>support services</strong> (help desks, technical support, training) provide information on accessibility <strong>in accessible modes of communication</strong>.</p>
+<p>Ditto's site has <code>/support</code> (email + phone + form) but <strong>no accessibility statement, no accessibility conformance documentation, and no published information about assistive-technology compatibility</strong>. There is no way for a disabled user to learn, before committing, whether Ditto works with their screen reader, whether transcripts are screen-reader accessible, or how to get help in an accessible format.</p>
+<p><strong>Recommendation:</strong> publish an accessibility statement covering the site <em>and</em> the app — conformance status against WCAG 2.1 AA, known limitations, the assistive technologies tested, a feedback route, and an enforcement/complaints route. This is the highest-value non-code deliverable, it is expected under the EAA's information requirements, and it is the document a hospital or insurer will request first.</p>
+<h3>7.2 Feedback and enforcement route — Annex I §III(d), Article 13</h3>
+<p>The EAA requires Member States to provide a mechanism for users to report non-compliance. Ditto should name its own accessible feedback channel on the accessibility statement. Currently the only route is the generic <code>/support</code> form — which itself has the accessibility defects in M3.</p>
+<h3>7.3 The Ditto mobile app — Annex I §III(c) — <strong>out of scope of this audit</strong></h3>
+<p>Annex I §III(c) explicitly covers "<strong>mobile device-based services, including mobile applications</strong>". The Ditto app is the actual product and is squarely in scope. <strong>It has not been tested here</strong> and must be audited separately: mobile screen-reader support (VoiceOver/TalkBack), text scaling/Dynamic Type, minimum touch targets, colour contrast, and — given the product records and transcribes consultations — <strong>captions/transcripts and audio-alternative handling</strong>, which under the EAA's functional performance criteria must work for users who are deaf or hard of hearing.</p>
+<h3>7.4 Functional performance criteria — Annex I Section VII</h3>
+<p>Where specific technical requirements don't cover a function, Section VII criteria apply directly. Two are worth flagging on the basis of what was found:</p>
+<ul>
+<li><strong>(g) Usage with limited manipulation or strength</strong> — the sub-24 px carousel dots and footer links (S3) fail this directly.</li>
+<li><strong>(i) Minimising the risk of triggering photosensitive seizures</strong> — the un-pausable auto-playing looping video (M2) should be confirmed as safe (no flashing), and reduced-motion should be respected.</li>
+</ul>
+<h3>7.5 E-commerce specifics — Annex I §IV(g)</h3>
+<p>If Ditto concludes consumer subscriptions through the website or app, §IV(g) requires identification, security and payment functionality to be perceivable, operable, understandable and robust. <strong>The checkout/subscription flow was not reachable from the public website</strong> for testing (app-store mediated). It should be assessed directly, including whether payment can be completed without a mouse and whether identification methods are compatible with assistive technology.</p>
+<h3>7.6 Microenterprise exemption — Article 4(5)</h3>
+<p>Restated from §3.3 because it is decisive: <strong>if Ditto employs fewer than 10 people and has turnover or a balance sheet total ≤ €2m, it is exempt from the EAA's service accessibility requirements.</strong> This can only be resolved with Ditto's own headcount and financial data. Even if exempt, the findings here are ordinary usability defects in a patient-facing health product used by people who are unwell, older, or temporarily impaired — and procurement-driven EN 301 549 requirements would reintroduce them.</p>
+<hr>
+<h2>8. Remediation roadmap</h2>
+<p>Sequenced by (impact ÷ effort). Items 1–4 are days of work and clear the four blockers.</p>
+<h3>Phase 1 — Blockers (recommended: within 1 sprint)</h3>
+<div class="table-wrapper"><table><thead><tr><th>#</th><th>Fix</th><th>Where</th><th>Effort</th></tr></thead><tbody><tr><td>1</td><td>Set <code>document.documentElement.lang</code> on client-side locale change</td><td>Router/locale handler</td><td><strong>Hours</strong></td></tr><tr><td>2</td><td>Make the consent banner a real modal (<code>role="dialog"</code> + <code>aria-modal="true"</code>) or remove its focus trap</td><td>Cookiebot CMP config</td><td><strong>Hours</strong></td></tr><tr><td>3</td><td>Rebuild the mobile menu control as <code>&lt;button aria-label aria-expanded aria-controls&gt;</code></td><td>Framer master component</td><td><strong>Hours</strong></td></tr><tr><td>4</td><td>Fix <code>/support</code> categories — prefer plain <code>aria-expanded</code> disclosure buttons over the tab pattern</td><td>Support page component</td><td><strong>~1 day</strong></td></tr></tbody></table></div>
+<h3>Phase 2 — High-volume, template-level (1–2 sprints)</h3>
+<div class="table-wrapper"><table><thead><tr><th>#</th><th>Fix</th><th>Covers</th></tr></thead><tbody><tr><td>5</td><td>Darken 9 colour-token pairs (§S1)</td><td>125 instances / 27 paths</td></tr><tr><td>6</td><td>Underline the inline link style preset <code>HWptGYMjj</code> (§S2)</td><td>50 instances / 12 paths</td></tr><tr><td>7</td><td>Enlarge carousel dots and footer link hit areas to ≥24×24 px (§S3)</td><td>90 instances / 41 paths</td></tr><tr><td>8</td><td>Add <code>tabindex="-1"</code> / <code>inert</code> to focusables inside <code>aria-hidden</code> carousel slides (§S4)</td><td>88 instances / 26 paths</td></tr><tr><td>9</td><td>Label the <code>/hcp</code> slider and the <code>/support</code> search field (§S5)</td><td>4 + 2 paths</td></tr><tr><td>10</td><td>Name the unnamed <code>/press</code> link and the span-as-link in the press carousel (§S6)</td><td>22 instances / 14 paths</td></tr><tr><td>11</td><td>Add <code>alt</code> to the YouTube poster images (§S7)</td><td>4 instances / 2 paths</td></tr></tbody></table></div>
+<h3>Phase 3 — Structure and content (parallel, 1–2 sprints)</h3>
+<div class="table-wrapper"><table><thead><tr><th>#</th><th>Fix</th></tr></thead><tbody><tr><td>12</td><td>One <code>h1</code> per page; fix heading level sequences; wrap content in <code>&lt;main&gt;</code> (§M1)</td></tr><tr><td>13</td><td>Add a "Skip to content" link as the first focusable element of every page (§M1)</td></tr><tr><td>14</td><td>Stop auto-playing video under <code>prefers-reduced-motion: reduce</code>; add a pause control (§M2)</td></tr><tr><td>15</td><td>Add <code>autocomplete="name"</code> / <code>autocomplete="email"</code>; implement inline errors with <code>aria-invalid</code> + <code>aria-describedby</code> + live region (§M3)</td></tr><tr><td>16</td><td>Resolve the orphaned waitlist pages / missing waitlist form (§6.4)</td></tr></tbody></table></div>
+<h3>Phase 4 — EAA programme work</h3>
+<div class="table-wrapper"><table><thead><tr><th>#</th><th>Item</th></tr></thead><tbody><tr><td>17</td><td><strong>Confirm microenterprise status</strong> (headcount + turnover) to settle EAA applicability (§3.3)</td></tr><tr><td>18</td><td>Publish an accessibility statement for the website <strong>and</strong> the app (§7.1)</td></tr><tr><td>19</td><td>Audit the <strong>Ditto mobile app</strong> against WCAG 2.1 AA / EN 301 549 (§7.3)</td></tr><tr><td>20</td><td>Audit the subscription/checkout flow against Annex I §IV(g) (§7.5)</td></tr><tr><td>21</td><td>Stand up a scripted screen-reader pass (NVDA on Windows, VoiceOver on iOS) to confirm announcement wording and order (§2.3)</td></tr><tr><td>22</td><td>Add accessibility checks to CI — axe-core on pull requests, plus a regression test asserting <code>&lt;html lang&gt;</code> after locale switch, to prevent B1 recurring</td></tr></tbody></table></div>
+<hr>
+<h2>Appendix — artefacts and reproducibility</h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Contents</th></tr></thead><tbody><tr><td><code>axe-raw.json</code></td><td>Full axe-core results, 116 page loads (violations + incomplete, with element targets)</td></tr><tr><td><code>static-report.json</code></td><td>Source-HTML analysis of all 58 pages</td></tr><tr><td><code>journeys.json</code></td><td>Behavioural results — keyboard walks, motion, reduced-motion, reflow/zoom/text-spacing, mobile nav, forms</td></tr><tr><td><code>reference-EAA-AnnexI.txt</code></td><td>Extracted EAA Annex I text used for the mapping in §7</td></tr><tr><td><code>axe-audit.mjs</code>, <code>analyze.mjs</code>, <code>journeys.mjs</code>, <code>rollup.mjs</code>, <code>detail.mjs</code></td><td>Audit harnesses</td></tr><tr><td><code>run.sh</code></td><td>Rootless Chromium environment wrapper</td></tr><tr><td><code>shots/</code></td><td>Screenshots of key states (forms before/after submit, page renders)</td></tr></tbody></table></div>
+<p><strong>External sources consulted for the legal analysis:</strong></p>
+<ul>
+<li>Directive (EU) 2019/882 — <a href="https://www.legislation.gov.uk/eudr/2019/882/chapter/II/data.html">Article 4 (incl. the Article 4(5) microenterprise exemption)</a> and <a href="https://www.legislation.gov.uk/eudr/2019/882/annex/I/2020-01-31/data.xht?view=snippet&amp;wrap=true">Annex I (Sections III, IV, VII)</a></li>
+<li>Bird &amp; Bird, <a href="https://www.twobirds.com/en/insights/2026/understanding-the-impact-of-the-european-accessibility-act-on-medical-devices">Understanding the impact of the European Accessibility Act on Medical Devices</a></li>
+<li>KBS Advocaten, <a href="https://www.kbsadvocaten.nl/nieuwe-europese-toegankelijkheidsregels-raken-ook-de-zorg/">Nieuwe Europese toegankelijkheidsregels raken ook de zorg</a></li>
+<li>CCPC (IE market surveillance authority), <a href="https://www.ccpc.ie/enforcement-and-regulation/market-surveillance/accessibility/accessibility-for-businesses/european-accessibility-act-guidelines-for-microenterprises">EAA guidelines for microenterprises</a></li>
+<li>Taylor Wessing, <a href="https://www.taylorwessing.com/de/insights-and-events/insights/2025/09/european-accessibility-act-requirements-for-e-commerce-services">EAA requirements for e-commerce services</a></li>
+</ul>
+<p><strong>Limitations.</strong> Automated tools detect roughly 30–40% of WCAG issues; this audit supplements them with scripted behavioural testing and manual DOM inspection, but no human screen-reader session and no testing with disabled users was performed. 3,123 "incomplete" nodes require manual review (chiefly colour-contrast cases over images/gradients, and target-size edge cases). Dynamic states beyond those exercised — full checkout, account creation, app onboarding, logged-in surfaces — were not reachable from the public site. A conformance claim should not be made until Phase 1–3 fixes are verified and Phase 4 item 21 is complete.</p>
